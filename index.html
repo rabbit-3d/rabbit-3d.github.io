@@ -1,0 +1,1297 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Rabbit3D – Diseños para Impresión 3D</title>
+  <link rel="stylesheet" href="styles.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Syne:wght@300;400;500&display=swap" rel="stylesheet"/>
+</head>
+<body>
+
+  <header class="header">
+    <div class="header__inner">
+      <a href="#" class="logo">
+        <img id="headerLogo" src="imagenes/logo.png" alt="Rabbit3D" class="logo__img"/>
+      </a>
+      <div class="header__search">
+        <span class="header__search-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        </span>
+        <input type="text" id="buscador" class="buscador" placeholder="Buscar diseños..."/>
+      </div>
+      <nav class="nav">
+        <a href="#catalogo" class="nav__link">Catálogo</a>
+        <a href="#sobre-mi" class="nav__link">Sobre mí</a>
+        <a href="#contacto" class="nav__link">Contacto</a>
+        <button class="nav__icon-btn" id="btnFavoritos" title="Favoritos">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+          <span class="nav__badge" id="badgeFavoritos">0</span>
+        </button>
+        <button class="nav__icon-btn" id="btnCarrito" title="Carrito">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+          <span class="nav__badge" id="badgeCarrito">0</span>
+        </button>
+        <button class="nav__link nav__admin-btn" id="btnLoginToggle">Admin</button>
+      </nav>
+    </div>
+  </header>
+
+  <!-- MODAL FAVORITOS -->
+  <div class="modal-overlay" id="modalFavoritos">
+    <div class="modal modal-lista">
+      <button class="modal__close" id="btnCerrarFavoritos">✕</button>
+      <div class="modal-lista__header">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="22" height="22"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+        <h2 class="modal__title">Mis favoritos</h2>
+      </div>
+      <div id="listaFavoritos" class="modal-lista__items"></div>
+    </div>
+  </div>
+
+  <!-- MODAL CARRITO -->
+  <div class="modal-overlay" id="modalCarrito">
+    <div class="modal modal-lista">
+      <button class="modal__close" id="btnCerrarCarrito">✕</button>
+      <div class="modal-lista__header">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="22" height="22"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+        <h2 class="modal__title">Mi carrito</h2>
+      </div>
+      <div id="listaCarrito" class="modal-lista__items"></div>
+      <div class="carrito__total" id="carritoTotal"></div>
+      <a href="#contacto" class="btn btn--primary btn--full" id="btnComprarCarrito" style="display:none">Consultar por todos</a>
+    </div>
+  </div>
+
+  <!-- MODAL DETALLE -->
+  <div class="modal-overlay modal-detalle-overlay" id="modalDetalle">
+    <div class="modal modal-detalle">
+      <button class="modal__close" id="btnCerrarDetalle">✕</button>
+      <div class="detalle__grid">
+        <div class="detalle__img-wrap" id="detalleImgWrap">
+          <div class="card__placeholder">3D</div>
+        </div>
+        <div class="detalle__info">
+          <span class="detalle__badge" id="detalleBadge"></span>
+          <h2 class="detalle__nombre" id="detalleNombre"></h2>
+          <p class="detalle__desc" id="detalleDesc"></p>
+          <div class="detalle__precio-row">
+            <span class="detalle__precio" id="detallePrecio"></span>
+            <div style="display:flex;gap:0.6rem;align-items:center;">
+              <button class="detalle__accion-btn" id="detalleToggleFav" onclick="window.toggleFavoritoDetalle()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+                Favorito
+              </button>
+              <button class="detalle__accion-btn detalle__accion-btn--carrito" id="detalleToggleCarrito" onclick="window.toggleCarritoDetalle()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+                Al carrito
+              </button>
+            </div>
+          </div>
+          <div class="detalle__creador">
+            <div class="detalle__creador-avatar">R3D</div>
+            <div class="detalle__creador-info">
+              <p class="detalle__creador-nombre" id="detalleCreadorNombre">Rabbit3D</p>
+              <p class="detalle__creador-desc" id="detalleCreadorDesc"></p>
+              <div class="detalle__creador-redes" id="detalleRedes"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL MEDIA -->
+  <div class="modal-overlay" id="modalMedia">
+    <div class="modal modal-media">
+      <button class="modal__close" id="btnCerrarMedia">✕</button>
+      <h2 class="modal__title">Gestionar media</h2>
+
+      <div class="media-section">
+        <p class="form-label">Logo / Ícono del header</p>
+        <div class="upload-wrap" id="uploadLogoWrap">
+          <input type="file" id="logoFile" accept="image/*" style="display:none"/>
+          <div class="upload-preview" id="uploadLogoPreview">
+            <span class="upload-icon">↑</span>
+            <span class="upload-texto">Subir nuevo logo</span>
+            <span class="upload-sub">PNG o WEBP con fondo transparente</span>
+          </div>
+        </div>
+        <p class="form-error" id="logoError"></p>
+      </div>
+
+      <div class="media-section">
+        <p class="form-label">Videos del carrusel</p>
+        <div class="upload-wrap upload-wrap--video" id="uploadVideoWrap">
+          <input type="file" id="videoFile" accept="video/mp4" style="display:none"/>
+          <div class="upload-preview" id="uploadVideoPreview">
+            <span class="upload-icon">↑</span>
+            <span class="upload-texto">Subir nuevo video</span>
+            <span class="upload-sub">MP4 — se agrega al carrusel</span>
+          </div>
+        </div>
+        <p class="form-error" id="videoError"></p>
+      </div>
+
+      <div class="media-section">
+        <p class="form-label">Videos actuales en el carrusel</p>
+        <div id="listaVideos" class="media-lista"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL LOGIN -->
+  <div class="modal-overlay" id="modalLogin">
+    <div class="modal">
+      <button class="modal__close" id="btnCerrarModal">✕</button>
+      <h2 class="modal__title">Acceso Admin</h2>
+      <p class="modal__sub">Solo para el administrador de Rabbit3D</p>
+      <div class="form-group">
+        <label class="form-label">Email</label>
+        <input type="email" id="adminEmail" class="form-input" placeholder="tu@email.com"/>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Contraseña</label>
+        <input type="password" id="adminPass" class="form-input" placeholder="••••••••"/>
+      </div>
+      <p class="form-error" id="loginError"></p>
+      <button class="btn btn--primary btn--full" id="btnLogin">Iniciar sesión</button>
+    </div>
+  </div>
+
+  <!-- MODAL PRODUCTO (con campo orden) -->
+  <div class="modal-overlay" id="modalProducto">
+    <div class="modal">
+      <button class="modal__close" id="btnCerrarProducto">✕</button>
+      <h2 class="modal__title" id="modalProductoTitulo">Nuevo producto</h2>
+      <input type="hidden" id="productoId"/>
+      <div class="form-group">
+        <label class="form-label">Nombre</label>
+        <input type="text" id="productoNombre" class="form-input" placeholder="Ej: Cuadro Mandala"/>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Descripción</label>
+        <input type="text" id="productoDesc" class="form-input" placeholder="Breve descripción del diseño"/>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Precio (USD)</label>
+        <input type="number" id="productoPrecio" class="form-input" placeholder="2.99" step="0.01"/>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Categoría</label>
+        <select id="productoCategoria" class="form-input">
+          <option value="cuadros">Cuadros 2D</option>
+          <option value="llaveros">Llaveros</option>
+          <option value="cortantes">Cortantes</option>
+          <option value="otros">Otros</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Posición en grilla (orden)</label>
+        <input type="number" id="productoOrden" class="form-input" placeholder="Ej: 1, 2, 3… (menor = antes)" min="0" step="1"/>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Imagen del producto</label>
+        <div class="upload-wrap" id="uploadWrap">
+          <input type="file" id="productoImagenFile" accept="image/*" style="display:none"/>
+          <div class="upload-preview" id="uploadPreview">
+            <span class="upload-icon">↑</span>
+            <span class="upload-texto">Hacé clic para subir una imagen</span>
+            <span class="upload-sub">JPG, PNG o WEBP</span>
+          </div>
+        </div>
+        <input type="hidden" id="productoImagen"/>
+      </div>
+      <p class="form-error" id="productoError"></p>
+      <button class="btn btn--primary btn--full" id="btnGuardarProducto">Guardar producto</button>
+    </div>
+  </div>
+
+  <!-- MODAL PERFIL -->
+  <div class="modal-overlay" id="modalPerfil">
+    <div class="modal">
+      <button class="modal__close" id="btnCerrarPerfil">✕</button>
+      <h2 class="modal__title">Editar perfil</h2>
+      <div class="form-group">
+        <label class="form-label">Nombre</label>
+        <input type="text" id="perfilNombre" class="form-input" placeholder="Tu nombre o emprendimiento"/>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Descripción</label>
+        <textarea id="perfilDesc" class="form-input form-textarea" placeholder="Contá un poco sobre vos..."></textarea>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Instagram (link completo)</label>
+        <input type="text" id="perfilInstagram" class="form-input" placeholder="https://instagram.com/tuusuario"/>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Telegram (link completo)</label>
+        <input type="text" id="perfilTelegram" class="form-input" placeholder="https://t.me/tuusuario"/>
+      </div>
+      <div class="form-group">
+        <label class="form-label">TikTok (link completo)</label>
+        <input type="text" id="perfilTiktok" class="form-input" placeholder="https://tiktok.com/@tuusuario"/>
+      </div>
+      <p class="form-error" id="perfilError"></p>
+      <button class="btn btn--primary btn--full" id="btnGuardarPerfil">Guardar perfil</button>
+    </div>
+  </div>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero__bg-grid"></div>
+    <div class="hero__glow hero__glow--left"></div>
+    <div class="hero__glow hero__glow--right"></div>
+    <div class="hero__content">
+      <p class="hero__label">Diseños digitales · Imprimí en casa</p>
+      <h1 class="hero__title">
+        Diseños 3D<br/>
+        <span class="hero__title--accent">listos para imprimir</span>
+      </h1>
+      <p class="hero__desc">
+        Descargá archivos STL únicos para tu impresora 3D. Cuadros, llaveros,
+        cortantes y más, creados con precisión y creatividad.
+      </p>
+      <a href="#catalogo" class="btn btn--primary">Ver catálogo</a>
+    </div>
+
+    <!-- CARRUSEL DE VIDEOS (dinámico desde Supabase) -->
+    <div class="hero__carousel" id="heroCarousel">
+      <div class="carousel__track" id="carouselTrack">
+        <div class="carousel__placeholder">
+          <span>Cargando videos...</span>
+        </div>
+      </div>
+      <button class="carousel__btn carousel__btn--prev" id="carouselPrev" aria-label="Anterior">&#8249;</button>
+      <button class="carousel__btn carousel__btn--next" id="carouselNext" aria-label="Siguiente">&#8250;</button>
+      <div class="carousel__dots" id="carouselDots"></div>
+    </div>
+  </section>
+
+  <!-- CATÁLOGO -->
+  <section class="catalogo" id="catalogo">
+    <div class="section__header">
+      <h2 class="section__title">Catálogo</h2>
+      <p class="section__sub">Todos los diseños incluyen archivo STL listo para imprimir</p>
+    </div>
+
+    <div class="admin-bar" id="adminBar">
+      <span class="admin-bar__texto">Modo administrador activo · Arrastrá las cards para reordenar</span>
+      <button class="btn btn--sm" id="btnNuevoProducto">+ Nuevo producto</button>
+      <button class="btn btn--sm" id="btnEditarPerfil">Editar perfil</button>
+      <button class="btn btn--sm" id="btnGestionarMedia">Subir media</button>
+      <button class="btn btn--sm btn--cults" id="btnSincronizarCults">⟳ Sincronizar Cults3D</button>
+      <button class="btn btn--sm btn--danger" id="btnLogout">Cerrar sesión</button>
+    </div>
+
+    <div class="filtros">
+      <button class="filtro activo" data-cat="todos">Todos</button>
+      <button class="filtro" data-cat="cuadros">Cuadros 2D</button>
+      <button class="filtro" data-cat="llaveros">Llaveros</button>
+      <button class="filtro" data-cat="cortantes">Cortantes</button>
+      <button class="filtro" data-cat="otros">Otros</button>
+    </div>
+
+    <div class="productos" id="productos">
+      <p class="cargando">Cargando diseños...</p>
+    </div>
+  </section>
+
+  <!-- SOBRE MÍ -->
+  <section class="sobre-mi" id="sobre-mi">
+    <div class="sobre-mi__inner">
+      <div class="sobre-mi__img-wrap">
+        <div class="sobre-mi__avatar" id="sobreMiAvatar" title="Clic para cambiar foto de perfil">
+          <input type="file" id="fotoPerfilFile" accept="image/*" style="display:none"/>
+          <span id="sobreMiAvatarTexto">R3D</span>
+          <img id="sobreMiAvatarImg" style="display:none; position:absolute; inset:0; width:100%; height:100%; object-fit:cover; border-radius:50%;"/>
+          <div class="sobre-mi__avatar-overlay">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+            Cambiar foto
+          </div>
+        </div>
+        <span class="sobre-mi__foto-hint">Clic para editar</span>
+      </div>
+      <div class="sobre-mi__texto">
+        <h2 class="section__title" id="perfilNombreVista">Rabbit3D</h2>
+        <p id="perfilDescVista">Soy diseñador y maker de impresión 3D, apasionado por crear objetos que combinan funcionalidad y estética. Desde General Pico, La Pampa, diseño para el mundo.</p>
+        <div class="stats">
+          <div class="stat">
+            <span class="stat__num" id="statTotal">0</span>
+            <span class="stat__label">Diseños</span>
+          </div>
+          <div class="stat">
+            <span class="stat__num">39,6k</span>
+            <span class="stat__label">Descargas</span>
+          </div>
+        </div>
+      </div>
+      <div class="sobre-mi__contacto" id="sobreMiContacto">
+        <p class="sobre-mi__contacto-titulo">Contacto</p>
+        <!-- Se rellena dinámicamente con JS -->
+      </div>
+    </div>
+  </section>
+
+  <!-- CONTACTO -->
+  <section class="contacto" id="contacto">
+    <div class="section__header">
+      <h2 class="section__title">Contacto</h2>
+      <p class="section__sub">¿Querés un diseño personalizado o tenés alguna consulta?</p>
+    </div>
+    <div class="contacto__links" id="contactoLinks"></div>
+  </section>
+
+  <footer class="footer">
+    <p>© 2025 <strong>Rabbit3D</strong> · Diseños para impresión 3D · General Pico, La Pampa</p>
+  </footer>
+
+  <!-- MODAL CULTS3D -->
+  <div class="modal-overlay" id="modalCults">
+    <div class="modal">
+      <button class="modal__close" id="btnCerrarCults">✕</button>
+      <h2 class="modal__title">Sincronizar con Cults3D</h2>
+      <p class="modal__sub">Importa tus diseños automáticamente desde tu perfil de Cults3D</p>
+
+      <div class="form-group">
+        <label class="form-label">Tu usuario de Cults3D</label>
+        <input type="text" id="cultsNick" class="form-input" placeholder="Ej: Rabbit3D"/>
+      </div>
+      <div class="form-group">
+        <label class="form-label">API Key de Cults3D</label>
+        <input type="password" id="cultsApiKey" class="form-input" placeholder="Generala en cults3d.com → Ajustes → API"/>
+        <p style="font-size:0.72rem;color:var(--muted);margin-top:0.25rem;">
+          Generala en <a href="https://cults3d.com/en/api/keys" target="_blank" style="color:var(--cyan)">cults3d.com → Ajustes → API</a>
+        </p>
+      </div>
+
+      <div class="cults-info" id="cultsInfo" style="display:none">
+        <p id="cultsInfoTexto"></p>
+      </div>
+
+      <p class="form-error" id="cultsError"></p>
+      <button class="btn btn--primary btn--full" id="btnEjecutarSync">Importar diseños nuevos</button>
+
+      <div id="cultsResultado" style="display:none">
+        <div class="cults-resultado-lista" id="cultsResultadoLista"></div>
+      </div>
+    </div>
+  </div>
+
+  <script type="module">
+    import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
+
+    const SUPABASE_URL = 'https://jcrpxrfjenjdgqtwkiyw.supabase.co'
+    const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpjcnB4cmZqZW5qZGdxdHdraXl3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzUyNzAzMDYsImV4cCI6MjA5MDg0NjMwNn0.eygcb6oGMkXRUXoJUCs_9B5yr5doF3LrQn9C1-eYHpE'
+    const supabase = createClient(SUPABASE_URL, SUPABASE_KEY)
+
+    let esAdmin = false
+    let categoriaActual = 'todos'
+    let busqueda = ''
+    let productos = []
+    let perfilId = null
+    let perfilData = null
+    let productoDetalleActual = null
+
+    // Favoritos y carrito en localStorage
+    let favoritos = JSON.parse(localStorage.getItem('r3d_favoritos') || '[]')
+    let carrito   = JSON.parse(localStorage.getItem('r3d_carrito')   || '[]')
+
+    function guardarFavoritos() { localStorage.setItem('r3d_favoritos', JSON.stringify(favoritos)) }
+    function guardarCarrito()   { localStorage.setItem('r3d_carrito',   JSON.stringify(carrito))   }
+
+    function actualizarBadges() {
+      document.getElementById('badgeFavoritos').textContent = favoritos.length
+      document.getElementById('badgeCarrito').textContent   = carrito.length
+      document.getElementById('badgeFavoritos').style.display = favoritos.length > 0 ? 'flex' : 'none'
+      document.getElementById('badgeCarrito').style.display   = carrito.length   > 0 ? 'flex' : 'none'
+    }
+
+    window.toggleFavorito = (id) => {
+      id = String(id)
+      if (favoritos.includes(id)) { favoritos = favoritos.filter(x => x !== id) }
+      else { favoritos.push(id) }
+      guardarFavoritos()
+      actualizarBadges()
+      renderProductos()
+    }
+
+    window.toggleCarrito = (id) => {
+      id = String(id)
+      if (carrito.includes(id)) { carrito = carrito.filter(x => x !== id) }
+      else { carrito.push(id) }
+      guardarCarrito()
+      actualizarBadges()
+      renderProductos()
+    }
+
+    window.toggleFavoritoDetalle = () => {
+      if (!productoDetalleActual) return
+      window.toggleFavorito(productoDetalleActual)
+      actualizarBotonesDetalle()
+    }
+
+    window.toggleCarritoDetalle = () => {
+      if (!productoDetalleActual) return
+      window.toggleCarrito(productoDetalleActual)
+      actualizarBotonesDetalle()
+    }
+
+    function actualizarBotonesDetalle() {
+      const id = String(productoDetalleActual)
+      const btnFav = document.getElementById('detalleToggleFav')
+      const btnCart = document.getElementById('detalleToggleCarrito')
+      if (favoritos.includes(id)) {
+        btnFav.classList.add('activo')
+        btnFav.querySelector('svg').setAttribute('fill', 'currentColor')
+      } else {
+        btnFav.classList.remove('activo')
+        btnFav.querySelector('svg').setAttribute('fill', 'none')
+      }
+      if (carrito.includes(id)) {
+        btnCart.classList.add('activo')
+        btnCart.textContent = ''
+        btnCart.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg> En carrito`
+      } else {
+        btnCart.classList.remove('activo')
+        btnCart.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg> Al carrito`
+      }
+    }
+
+    // Panel favoritos
+    document.getElementById('btnFavoritos').addEventListener('click', () => {
+      const lista = document.getElementById('listaFavoritos')
+      const items = favoritos.map(id => productos.find(p => String(p.id) === id)).filter(Boolean)
+      if (items.length === 0) {
+        lista.innerHTML = '<p class="lista-vacia">No tenés diseños favoritos todavía.<br>Hacé clic en el corazón de cualquier diseño.</p>'
+      } else {
+        lista.innerHTML = items.map(p => `
+          <div class="lista-item" onclick="window.abrirDetalle('${p.id}');document.getElementById('modalFavoritos').classList.remove('activo')">
+            <div class="lista-item__img">${p.imagen_url ? `<img src="${p.imagen_url}"/>` : '<span>3D</span>'}</div>
+            <div class="lista-item__info">
+              <p class="lista-item__nombre">${p.nombre}</p>
+              <p class="lista-item__precio">$${Number(p.precio).toFixed(2)} USD</p>
+            </div>
+            <button class="lista-item__remove" onclick="event.stopPropagation();window.toggleFavorito('${p.id}');document.getElementById('btnFavoritos').click()" title="Quitar">✕</button>
+          </div>`).join('')
+      }
+      document.getElementById('modalFavoritos').classList.add('activo')
+    })
+    document.getElementById('btnCerrarFavoritos').addEventListener('click', () => {
+      document.getElementById('modalFavoritos').classList.remove('activo')
+    })
+
+    // Panel carrito
+    document.getElementById('btnCarrito').addEventListener('click', () => {
+      const lista = document.getElementById('listaCarrito')
+      const items = carrito.map(id => productos.find(p => String(p.id) === id)).filter(Boolean)
+      if (items.length === 0) {
+        lista.innerHTML = '<p class="lista-vacia">Tu carrito está vacío.<br>Agregá diseños desde el catálogo.</p>'
+        document.getElementById('carritoTotal').textContent = ''
+        document.getElementById('btnComprarCarrito').style.display = 'none'
+      } else {
+        lista.innerHTML = items.map(p => `
+          <div class="lista-item" onclick="window.abrirDetalle('${p.id}');document.getElementById('modalCarrito').classList.remove('activo')">
+            <div class="lista-item__img">${p.imagen_url ? `<img src="${p.imagen_url}"/>` : '<span>3D</span>'}</div>
+            <div class="lista-item__info">
+              <p class="lista-item__nombre">${p.nombre}</p>
+              <p class="lista-item__precio">$${Number(p.precio).toFixed(2)} USD</p>
+            </div>
+            <button class="lista-item__remove" onclick="event.stopPropagation();window.toggleCarrito('${p.id}');document.getElementById('btnCarrito').click()" title="Quitar">✕</button>
+          </div>`).join('')
+        const total = items.reduce((sum, p) => sum + Number(p.precio), 0)
+        document.getElementById('carritoTotal').textContent = `Total: $${total.toFixed(2)} USD`
+        document.getElementById('btnComprarCarrito').style.display = 'block'
+      }
+      document.getElementById('modalCarrito').classList.add('activo')
+    })
+    document.getElementById('btnCerrarCarrito').addEventListener('click', () => {
+      document.getElementById('modalCarrito').classList.remove('activo')
+    })
+    document.getElementById('btnComprarCarrito').addEventListener('click', () => {
+      document.getElementById('modalCarrito').classList.remove('activo')
+    })
+
+    const divProductos  = document.getElementById('productos')
+    const adminBar      = document.getElementById('adminBar')
+    const modalLogin    = document.getElementById('modalLogin')
+    const modalProducto = document.getElementById('modalProducto')
+    const modalPerfil   = document.getElementById('modalPerfil')
+    const loginError    = document.getElementById('loginError')
+    const productoError = document.getElementById('productoError')
+    const perfilError   = document.getElementById('perfilError')
+    const statTotal     = document.getElementById('statTotal')
+
+    // ══════════════════════════════════════════
+    //  PERFIL
+    // ══════════════════════════════════════════
+    async function cargarPerfil() {
+      const { data, error } = await supabase.from('perfil').select('*').limit(1)
+      if (error || !data || data.length === 0) return
+      const p = data[0]
+      perfilData = p
+      perfilId = p.id
+      if (p.nombre) document.getElementById('perfilNombreVista').textContent = p.nombre
+      if (p.descripcion) document.getElementById('perfilDescVista').textContent = p.descripcion
+
+      // Foto de perfil guardada
+      if (p.foto_perfil) {
+        const img = document.getElementById('sobreMiAvatarImg')
+        const txt = document.getElementById('sobreMiAvatarTexto')
+        img.src = p.foto_perfil
+        img.style.display = 'block'
+        if (txt) txt.style.display = 'none'
+      }
+
+      // Panel contacto lateral en Sobre mí
+      const contactoPanel = document.getElementById('sobreMiContacto')
+      let contactoHTML = '<p class="sobre-mi__contacto-titulo">Contacto</p>'
+      if (p.instagram) contactoHTML += `
+        <a href="${p.instagram}" target="_blank" class="sobre-mi__contacto-item sobre-mi__contacto-item--ig">
+          <svg viewBox="0 0 24 24" fill="currentColor" width="15" height="15"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 1.366.062 2.633.334 3.608 1.308.975.975 1.246 2.242 1.308 3.608.058 1.266.07 1.646.07 4.85s-.012 3.584-.07 4.85c-.062 1.366-.334 2.633-1.308 3.608-.975.975-2.242 1.246-3.608 1.308-1.266.058-1.646.07-4.85.07s-3.584-.012-4.85-.07c-1.366-.062-2.633-.334-3.608-1.308-.975-.975-1.246-2.242-1.308-3.608C2.175 15.584 2.163 15.204 2.163 12s.012-3.584.07-4.85c.062-1.366.334-2.633 1.308-3.608.975-.975 2.242-1.246 3.608-1.308C8.416 2.175 8.796 2.163 12 2.163zm0-2.163C8.741 0 8.333.014 7.053.072 5.775.13 4.602.402 3.635 1.368 2.668 2.335 2.396 3.508 2.338 4.786 2.28 6.066 2.163 6.474 2.163 12c0 5.526.117 5.934.175 7.214.058 1.278.33 2.451 1.297 3.418.967.967 2.14 1.239 3.418 1.297C8.333 23.986 8.741 24 12 24s3.667-.014 4.947-.072c1.278-.058 2.451-.33 3.418-1.297.967-.967 1.239-2.14 1.297-3.418.058-1.28.072-1.688.072-7.214 0-5.526-.014-5.934-.072-7.214-.058-1.278-.33-2.451-1.297-3.418C19.398.402 18.225.13 16.947.072 15.667.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 1 0 0 12.324 6.162 6.162 0 0 0 0-12.324zm0 10.162a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm6.406-11.845a1.44 1.44 0 1 0 0 2.881 1.44 1.44 0 0 0 0-2.881z"/></svg>
+          <span class="sobre-mi__contacto-label">Instagram</span>
+        </a>`
+      if (p.telegram) contactoHTML += `
+        <a href="${p.telegram}" target="_blank" class="sobre-mi__contacto-item sobre-mi__contacto-item--tg">
+          <svg viewBox="0 0 24 24" fill="currentColor" width="15" height="15"><path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/></svg>
+          <span class="sobre-mi__contacto-label">Telegram</span>
+        </a>`
+      if (p.tiktok) contactoHTML += `
+        <a href="${p.tiktok}" target="_blank" class="sobre-mi__contacto-item sobre-mi__contacto-item--tt">
+          <svg viewBox="0 0 24 24" fill="currentColor" width="15" height="15"><path d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93-.01 2.92.01 5.84-.02 8.75-.08 1.4-.54 2.79-1.35 3.94-1.31 1.92-3.58 3.17-5.91 3.21-1.43.08-2.86-.31-4.08-1.03-2.02-1.19-3.44-3.37-3.65-5.71-.02-.5-.03-1-.01-1.49.18-1.9 1.12-3.72 2.58-4.96 1.66-1.44 3.98-2.13 6.15-1.72.02 1.48-.04 2.96-.04 4.44-.99-.32-2.15-.23-3.02.37-.63.41-1.11 1.04-1.36 1.75-.21.51-.15 1.07-.14 1.61.24 1.64 1.82 3.02 3.5 2.87 1.12-.01 2.19-.66 2.77-1.61.19-.33.4-.67.41-1.06.1-1.79.06-3.57.07-5.36.01-4.03-.01-8.05.02-12.07z"/></svg>
+          <span class="sobre-mi__contacto-label">TikTok</span>
+        </a>`
+      if (!p.instagram && !p.telegram && !p.tiktok) {
+        contactoHTML += `<span style="font-size:0.75rem;color:var(--muted);padding:0.5rem 0;">Sin redes configuradas</span>`
+      }
+      contactoPanel.innerHTML = contactoHTML
+
+      const links = document.getElementById('contactoLinks')
+      links.innerHTML = ''
+      if (p.instagram) links.innerHTML += `
+        <a href="${p.instagram}" target="_blank" class="contacto__btn contacto__btn--instagram">
+          <svg class="social-svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 1.366.062 2.633.334 3.608 1.308.975.975 1.246 2.242 1.308 3.608.058 1.266.07 1.646.07 4.85s-.012 3.584-.07 4.85c-.062 1.366-.334 2.633-1.308 3.608-.975.975-2.242 1.246-3.608 1.308-1.266.058-1.646.07-4.85.07s-3.584-.012-4.85-.07c-1.366-.062-2.633-.334-3.608-1.308-.975-.975-1.246-2.242-1.308-3.608C2.175 15.584 2.163 15.204 2.163 12s.012-3.584.07-4.85c.062-1.366.334-2.633 1.308-3.608.975-.975 2.242-1.246 3.608-1.308C8.416 2.175 8.796 2.163 12 2.163zm0-2.163C8.741 0 8.333.014 7.053.072 5.775.13 4.602.402 3.635 1.368 2.668 2.335 2.396 3.508 2.338 4.786 2.28 6.066 2.163 6.474 2.163 12c0 5.526.117 5.934.175 7.214.058 1.278.33 2.451 1.297 3.418.967.967 2.14 1.239 3.418 1.297C8.333 23.986 8.741 24 12 24s3.667-.014 4.947-.072c1.278-.058 2.451-.33 3.418-1.297.967-.967 1.239-2.14 1.297-3.418.058-1.28.072-1.688.072-7.214 0-5.526-.014-5.934-.072-7.214-.058-1.278-.33-2.451-1.297-3.418C19.398.402 18.225.13 16.947.072 15.667.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 1 0 0 12.324 6.162 6.162 0 0 0 0-12.324zm0 10.162a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm6.406-11.845a1.44 1.44 0 1 0 0 2.881 1.44 1.44 0 0 0 0-2.881z"/></svg>
+          Instagram
+        </a>`
+      if (p.telegram) links.innerHTML += `
+        <a href="${p.telegram}" target="_blank" class="contacto__btn contacto__btn--telegram">
+          <svg class="social-svg" viewBox="0 0 24 24" fill="currentColor"><path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/></svg>
+          Telegram
+        </a>`
+      if (p.tiktok) links.innerHTML += `
+        <a href="${p.tiktok}" target="_blank" class="contacto__btn contacto__btn--tiktok">
+          <svg class="social-svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93-.01 2.92.01 5.84-.02 8.75-.08 1.4-.54 2.79-1.35 3.94-1.31 1.92-3.58 3.17-5.91 3.21-1.43.08-2.86-.31-4.08-1.03-2.02-1.19-3.44-3.37-3.65-5.71-.02-.5-.03-1-.01-1.49.18-1.9 1.12-3.72 2.58-4.96 1.66-1.44 3.98-2.13 6.15-1.72.02 1.48-.04 2.96-.04 4.44-.99-.32-2.15-.23-3.02.37-.63.41-1.11 1.04-1.36 1.75-.21.51-.15 1.07-.14 1.61.24 1.64 1.82 3.02 3.5 2.87 1.12-.01 2.19-.66 2.77-1.61.19-.33.4-.67.41-1.06.1-1.79.06-3.57.07-5.36.01-4.03-.01-8.05.02-12.07z"/></svg>
+          TikTok
+        </a>`
+    }
+
+    document.getElementById('btnEditarPerfil').addEventListener('click', async () => {
+      const { data } = await supabase.from('perfil').select('*').limit(1)
+      if (data && data.length > 0) {
+        const p = data[0]
+        document.getElementById('perfilNombre').value    = p.nombre || ''
+        document.getElementById('perfilDesc').value      = p.descripcion || ''
+        document.getElementById('perfilInstagram').value = p.instagram || ''
+        document.getElementById('perfilTelegram').value  = p.telegram || ''
+        document.getElementById('perfilTiktok').value    = p.tiktok || ''
+      }
+      perfilError.textContent = ''
+      modalPerfil.classList.add('activo')
+    })
+    document.getElementById('btnCerrarPerfil').addEventListener('click', () => modalPerfil.classList.remove('activo'))
+
+    document.getElementById('btnGuardarPerfil').addEventListener('click', async () => {
+      const datos = {
+        nombre:      document.getElementById('perfilNombre').value.trim(),
+        descripcion: document.getElementById('perfilDesc').value.trim(),
+        instagram:   document.getElementById('perfilInstagram').value.trim(),
+        telegram:    document.getElementById('perfilTelegram').value.trim(),
+        tiktok:      document.getElementById('perfilTiktok').value.trim(),
+      }
+      perfilError.textContent = ''
+      let error
+      if (perfilId) {
+        ;({ error } = await supabase.from('perfil').update(datos).eq('id', perfilId))
+      } else {
+        const res = await supabase.from('perfil').insert([datos]).select()
+        error = res.error
+        if (!error && res.data && res.data[0]) perfilId = res.data[0].id
+      }
+      if (error) { perfilError.textContent = 'Error al guardar el perfil: ' + error.message; return }
+      modalPerfil.classList.remove('activo')
+      await cargarPerfil()
+    })
+
+    // ══════════════════════════════════════════
+    //  MODAL DETALLE
+    // ══════════════════════════════════════════
+    document.getElementById('btnCerrarDetalle').addEventListener('click', () => {
+      document.getElementById('modalDetalle').classList.remove('activo')
+    })
+
+    window.abrirDetalle = (id) => {
+      const p = productos.find(x => String(x.id) === String(id))
+      if (!p) return
+      productoDetalleActual = String(p.id)
+      const imgWrap = document.getElementById('detalleImgWrap')
+      imgWrap.innerHTML = p.imagen_url
+        ? `<img src="${p.imagen_url}" alt="${p.nombre}" style="width:100%;height:100%;object-fit:cover;"/>`
+        : `<div class="card__placeholder" style="height:100%;">3D</div>`
+      document.getElementById('detalleBadge').textContent = labelCategoria(p.categoria)
+      document.getElementById('detalleNombre').textContent = p.nombre
+      document.getElementById('detalleDesc').textContent = p.descripcion || 'Sin descripción.'
+      document.getElementById('detallePrecio').textContent = `$${Number(p.precio).toFixed(2)} USD`
+      if (perfilData) {
+        if (perfilData.nombre) document.getElementById('detalleCreadorNombre').textContent = perfilData.nombre
+        if (perfilData.descripcion) document.getElementById('detalleCreadorDesc').textContent = perfilData.descripcion
+        const redes = document.getElementById('detalleRedes')
+        redes.innerHTML = ''
+        if (perfilData.instagram) redes.innerHTML += `<a href="${perfilData.instagram}" target="_blank" class="detalle__red detalle__red--ig">Instagram</a>`
+        if (perfilData.telegram)  redes.innerHTML += `<a href="${perfilData.telegram}" target="_blank" class="detalle__red detalle__red--tg">Telegram</a>`
+        if (perfilData.tiktok)    redes.innerHTML += `<a href="${perfilData.tiktok}" target="_blank" class="detalle__red detalle__red--tt">TikTok</a>`
+      }
+      actualizarBotonesDetalle()
+      document.getElementById('modalDetalle').classList.add('activo')
+    }
+
+    // ══════════════════════════════════════════
+    //  CARGAR Y RENDERIZAR PRODUCTOS
+    //  — ordena por campo "orden" (si existe), luego por id
+    //  — al actualizar NO modifica la posición visual porque
+    //    el orden viene de la BD y no se recalcula automáticamente
+    // ══════════════════════════════════════════
+    async function cargarProductos() {
+      divProductos.innerHTML = '<p class="cargando">Cargando diseños...</p>'
+      const { data, error } = await supabase.from('productos').select('*').order('orden', { ascending: true, nullsFirst: false })
+      if (error) { divProductos.innerHTML = '<p class="cargando">Error al cargar productos.</p>'; return }
+      // Fallback: si no hay columna "orden", ordenar por id
+      productos = (data || []).sort((a, b) => {
+        const oa = a.orden ?? 999999
+        const ob = b.orden ?? 999999
+        if (oa !== ob) return oa - ob
+        return a.id - b.id
+      })
+      statTotal.textContent = productos.length
+      renderProductos()
+    }
+
+    function renderProductos() {
+      let filtrados = categoriaActual === 'todos'
+        ? productos
+        : productos.filter(p => p.categoria === categoriaActual)
+      if (busqueda.trim()) {
+        const q = busqueda.toLowerCase()
+        filtrados = filtrados.filter(p => p.nombre.toLowerCase().includes(q))
+      }
+      if (filtrados.length === 0) {
+        divProductos.innerHTML = '<p class="cargando">No se encontraron diseños.</p>'
+        return
+      }
+      divProductos.innerHTML = filtrados.map((p, i) => `
+        <article class="card" data-id="${p.id}" data-cat="${p.categoria}" onclick="window.abrirDetalle('${p.id}')" style="cursor:pointer">
+          <span class="card__drag-handle" title="Arrastrá para reordenar">⠿</span>
+          <div class="card__img-wrap">
+            ${p.imagen_url
+              ? `<img src="${p.imagen_url}" alt="${p.nombre}" class="card__img"/>`
+              : `<div class="card__placeholder">3D</div>`}
+            <span class="card__num">${String(i+1).padStart(2,'0')}</span>
+            <span class="card__badge">${labelCategoria(p.categoria)}</span>
+            <div class="card__overlay">
+              <p class="card__nombre-overlay">${p.nombre}</p>
+              <p class="card__precio-overlay">$${Number(p.precio).toFixed(2)} USD</p>
+            </div>
+            ${esAdmin ? `
+              <div class="card__admin-btns" onclick="event.stopPropagation()">
+                <button class="card__admin-btn" onclick="window.editarProducto('${p.id}')">Editar</button>
+                <button class="card__admin-btn card__admin-btn--danger" onclick="window.eliminarProducto('${p.id}')">Eliminar</button>
+              </div>` : ''}
+          </div>
+          <div class="card__body">
+            <h3 class="card__nombre">${p.nombre}</h3>
+            <p class="card__desc">${p.descripcion || ''}</p>
+            <div class="card__footer">
+              <span class="card__precio">$${Number(p.precio).toFixed(2)} USD</span>
+              <div class="card__acciones" onclick="event.stopPropagation()">
+                <button class="card__accion-btn ${favoritos.includes(String(p.id)) ? 'activo' : ''}" onclick="window.toggleFavorito('${p.id}')" title="Favorito">
+                  <svg viewBox="0 0 24 24" fill="${favoritos.includes(String(p.id)) ? 'currentColor' : 'none'}" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+                </button>
+                <button class="card__accion-btn ${carrito.includes(String(p.id)) ? 'activo carrito-activo' : ''}" onclick="window.toggleCarrito('${p.id}')" title="Agregar al carrito">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+                </button>
+              </div>
+            </div>
+          </div>
+        </article>
+      `).join('')
+
+      if (esAdmin) initDragDrop()
+    }
+
+    function labelCategoria(cat) {
+      const labels = { cuadros: 'Cuadros 2D', llaveros: 'Llaveros', cortantes: 'Cortantes', otros: 'Otros' }
+      return labels[cat] || cat
+    }
+
+    // ══════════════════════════════════════════
+    //  DRAG AND DROP PARA REORDENAR EN GRILLA
+    // ══════════════════════════════════════════
+    function initDragDrop() {
+      const grid = document.getElementById('productos')
+      grid.classList.add('drag-mode')
+      const cards = grid.querySelectorAll('.card')
+      let dragSrc = null
+
+      cards.forEach(card => {
+        card.setAttribute('draggable', 'true')
+
+        card.addEventListener('dragstart', e => {
+          dragSrc = card
+          card.classList.add('dragging')
+          e.dataTransfer.effectAllowed = 'move'
+          e.dataTransfer.setData('text/plain', card.dataset.id)
+        })
+        card.addEventListener('dragend', () => {
+          card.classList.remove('dragging')
+          cards.forEach(c => c.classList.remove('drag-over'))
+        })
+        card.addEventListener('dragover', e => {
+          e.preventDefault()
+          e.dataTransfer.dropEffect = 'move'
+          if (card !== dragSrc) {
+            cards.forEach(c => c.classList.remove('drag-over'))
+            card.classList.add('drag-over')
+          }
+        })
+        card.addEventListener('dragleave', () => card.classList.remove('drag-over'))
+        card.addEventListener('drop', async e => {
+          e.preventDefault()
+          e.stopPropagation()
+          card.classList.remove('drag-over')
+          if (!dragSrc || dragSrc === card) return
+
+          // Reordenar en el DOM
+          const allCards = [...grid.querySelectorAll('.card')]
+          const srcIdx   = allCards.indexOf(dragSrc)
+          const dstIdx   = allCards.indexOf(card)
+          if (srcIdx < dstIdx) {
+            grid.insertBefore(dragSrc, card.nextSibling)
+          } else {
+            grid.insertBefore(dragSrc, card)
+          }
+
+          // Guardar nuevo orden en Supabase
+          await guardarOrden()
+        })
+      })
+    }
+
+    async function guardarOrden() {
+      const cards = document.querySelectorAll('#productos .card')
+      const updates = [...cards].map((card, i) => ({
+        id: card.dataset.id,
+        orden: i
+      }))
+      // Actualizar cada producto con su nuevo orden
+      for (const u of updates) {
+        await supabase.from('productos').update({ orden: u.orden }).eq('id', u.id)
+      }
+      // Recargar sin mover la posición visual (el orden ya está en la BD)
+      const { data } = await supabase.from('productos').select('*').order('orden', { ascending: true, nullsFirst: false })
+      productos = (data || []).sort((a, b) => {
+        const oa = a.orden ?? 999999
+        const ob = b.orden ?? 999999
+        return oa - ob
+      })
+      statTotal.textContent = productos.length
+      // No re-renderizar para no perder la posición visual actual
+    }
+
+    document.getElementById('buscador').addEventListener('input', e => {
+      busqueda = e.target.value
+      renderProductos()
+    })
+    document.querySelectorAll('.filtro').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.filtro').forEach(b => b.classList.remove('activo'))
+        btn.classList.add('activo')
+        categoriaActual = btn.dataset.cat
+        renderProductos()
+      })
+    })
+
+    // ══════════════════════════════════════════
+    //  LOGIN / LOGOUT
+    // ══════════════════════════════════════════
+    document.getElementById('btnLoginToggle').addEventListener('click', () => modalLogin.classList.add('activo'))
+    document.getElementById('btnCerrarModal').addEventListener('click', () => {
+      modalLogin.classList.remove('activo')
+      loginError.textContent = ''
+    })
+    document.getElementById('btnLogin').addEventListener('click', async () => {
+      const email = document.getElementById('adminEmail').value
+      const pass  = document.getElementById('adminPass').value
+      loginError.textContent = ''
+      const { error } = await supabase.auth.signInWithPassword({ email, password: pass })
+      if (error) { loginError.textContent = 'Email o contraseña incorrectos.'; return }
+      esAdmin = true
+      modalLogin.classList.remove('activo')
+      adminBar.classList.add('activo')
+      document.getElementById('btnLoginToggle').textContent = '✓ Admin'
+      renderProductos()
+    })
+    document.getElementById('btnLogout').addEventListener('click', async () => {
+      await supabase.auth.signOut()
+      esAdmin = false
+      adminBar.classList.remove('activo')
+      document.getElementById('btnLoginToggle').textContent = 'Admin'
+      document.getElementById('productos').classList.remove('drag-mode')
+      renderProductos()
+    })
+
+    // ══════════════════════════════════════════
+    //  CREAR / EDITAR PRODUCTO
+    // ══════════════════════════════════════════
+    document.getElementById('uploadWrap').addEventListener('click', () => {
+      document.getElementById('productoImagenFile').click()
+    })
+    document.getElementById('productoImagenFile').addEventListener('change', async (e) => {
+      const file = e.target.files[0]
+      if (!file) return
+      const preview = document.getElementById('uploadPreview')
+      preview.innerHTML = '<span class="upload-texto">Subiendo imagen...</span>'
+      const ext = file.name.split('.').pop()
+      const fileName = `${Date.now()}.${ext}`
+      const { data, error } = await supabase.storage.from('productos').upload(fileName, file, { upsert: true })
+      if (error) {
+        preview.innerHTML = '<span class="upload-icon">↑</span><span class="upload-texto" style="color:#d94060">Error al subir. Intentá de nuevo.</span>'
+        return
+      }
+      const { data: urlData } = supabase.storage.from('productos').getPublicUrl(fileName)
+      document.getElementById('productoImagen').value = urlData.publicUrl
+      preview.innerHTML = `<img src="${urlData.publicUrl}" style="width:100%;height:100%;object-fit:cover;border-radius:8px;"/>`
+    })
+
+    document.getElementById('btnNuevoProducto').addEventListener('click', () => {
+      document.getElementById('modalProductoTitulo').textContent = 'Nuevo producto'
+      document.getElementById('productoId').value = ''
+      document.getElementById('productoNombre').value = ''
+      document.getElementById('productoDesc').value = ''
+      document.getElementById('productoPrecio').value = ''
+      document.getElementById('productoCategoria').value = 'cuadros'
+      document.getElementById('productoOrden').value = productos.length  // al final por defecto
+      document.getElementById('productoImagen').value = ''
+      document.getElementById('productoImagenFile').value = ''
+      document.getElementById('uploadPreview').innerHTML = `
+        <span class="upload-icon">↑</span>
+        <span class="upload-texto">Hacé clic para subir una imagen</span>
+        <span class="upload-sub">JPG, PNG o WEBP</span>`
+      productoError.textContent = ''
+      modalProducto.classList.add('activo')
+    })
+    document.getElementById('btnCerrarProducto').addEventListener('click', () => modalProducto.classList.remove('activo'))
+
+    window.editarProducto = (id) => {
+      const p = productos.find(x => String(x.id) === String(id))
+      if (!p) return
+      document.getElementById('modalProductoTitulo').textContent = 'Editar producto'
+      document.getElementById('productoId').value = p.id
+      document.getElementById('productoNombre').value = p.nombre
+      document.getElementById('productoDesc').value = p.descripcion || ''
+      document.getElementById('productoPrecio').value = p.precio
+      document.getElementById('productoCategoria').value = p.categoria
+      document.getElementById('productoOrden').value = p.orden ?? ''
+      document.getElementById('productoImagen').value = p.imagen_url || ''
+      document.getElementById('productoImagenFile').value = ''
+      const preview = document.getElementById('uploadPreview')
+      if (p.imagen_url) {
+        preview.innerHTML = `<img src="${p.imagen_url}" style="width:100%;height:100%;object-fit:cover;border-radius:8px;"/>`
+      } else {
+        preview.innerHTML = `
+          <span class="upload-icon">↑</span>
+          <span class="upload-texto">Hacé clic para subir una imagen</span>
+          <span class="upload-sub">JPG, PNG o WEBP</span>`
+      }
+      productoError.textContent = ''
+      modalProducto.classList.add('activo')
+    }
+
+    document.getElementById('btnGuardarProducto').addEventListener('click', async () => {
+      const id       = document.getElementById('productoId').value
+      const nombre   = document.getElementById('productoNombre').value.trim()
+      const desc     = document.getElementById('productoDesc').value.trim()
+      const precio   = parseFloat(document.getElementById('productoPrecio').value)
+      const categoria= document.getElementById('productoCategoria').value
+      const imagen   = document.getElementById('productoImagen').value.trim()
+      const ordenVal = document.getElementById('productoOrden').value
+      const orden    = ordenVal !== '' ? parseInt(ordenVal) : null
+
+      if (!nombre || isNaN(precio)) {
+        productoError.textContent = 'Nombre y precio son obligatorios.'
+        return
+      }
+
+      const datos = { nombre, descripcion: desc, precio, categoria, imagen_url: imagen || null, orden }
+      let error
+      if (id) {
+        ;({ error } = await supabase.from('productos').update(datos).eq('id', id))
+      } else {
+        ;({ error } = await supabase.from('productos').insert([datos]))
+      }
+      if (error) { productoError.textContent = 'Error al guardar: ' + error.message; return }
+      modalProducto.classList.remove('activo')
+      await cargarProductos()
+    })
+
+    window.eliminarProducto = async (id) => {
+      if (!confirm('¿Seguro que querés eliminar este producto?')) return
+      const { error } = await supabase.from('productos').delete().eq('id', id)
+      if (error) { alert('Error al eliminar.'); return }
+      await cargarProductos()
+    }
+
+    // ══════════════════════════════════════════
+    //  MEDIA (logo, videos carrusel)
+    // ══════════════════════════════════════════
+    let videosMedia = []
+
+    async function cargarMedia() {
+      const { data } = await supabase.from('media').select('*')
+      if (!data) return
+
+      // Logo
+      const logo = data.find(m => m.tipo === 'logo')
+      if (logo) document.getElementById('headerLogo').src = logo.url
+
+      // Videos
+      videosMedia = data.filter(m => m.tipo === 'video')
+      renderCarrusel()
+    }
+
+    function renderCarrusel() {
+      const track = document.getElementById('carouselTrack')
+      const dots  = document.getElementById('carouselDots')
+
+      if (videosMedia.length === 0) {
+        track.innerHTML = '<div class="carousel__placeholder"><span>Sin videos aún</span></div>'
+        dots.innerHTML = ''
+        return
+      }
+
+      track.innerHTML = videosMedia.map((v, i) => `
+        <div class="carousel__slide ${i === 0 ? 'active' : ''}">
+          <video class="carousel__video" ${i === 0 ? 'autoplay' : ''} muted loop playsinline>
+            <source src="${v.url}" type="video/mp4"/>
+          </video>
+        </div>`).join('')
+
+      dots.innerHTML = videosMedia.map((_, i) => `
+        <button class="carousel__dot ${i === 0 ? 'active' : ''}" data-idx="${i}"></button>`).join('')
+
+      iniciarCarrusel()
+    }
+
+    function iniciarCarrusel() {
+      const track  = document.getElementById('carouselTrack')
+      const slides = [...track.querySelectorAll('.carousel__slide')]
+      const dots   = [...document.querySelectorAll('.carousel__dot')]
+      let current  = 0
+      let timer    = null
+
+      if (!slides.length) return
+
+      function goTo(idx) {
+        slides[current].classList.remove('active')
+        const outVid = slides[current].querySelector('video')
+        if (outVid) outVid.pause()
+        current = (idx + slides.length) % slides.length
+        slides[current].classList.add('active')
+        dots.forEach((d, i) => d.classList.toggle('active', i === current))
+        const inVid = slides[current].querySelector('video')
+        if (inVid) { inVid.currentTime = 0; inVid.play().catch(() => {}) }
+        clearInterval(timer)
+        timer = setInterval(() => goTo(current + 1), 6000)
+      }
+
+      document.getElementById('carouselPrev').onclick = () => goTo(current - 1)
+      document.getElementById('carouselNext').onclick = () => goTo(current + 1)
+      dots.forEach(d => d.addEventListener('click', () => goTo(+d.dataset.idx)))
+      timer = setInterval(() => goTo(current + 1), 6000)
+    }
+
+    // Modal media
+    document.getElementById('btnGestionarMedia').addEventListener('click', async () => {
+      renderListaVideos()
+      document.getElementById('modalMedia').classList.add('activo')
+    })
+    document.getElementById('btnCerrarMedia').addEventListener('click', () => {
+      document.getElementById('modalMedia').classList.remove('activo')
+    })
+
+    function renderListaVideos() {
+      const lista = document.getElementById('listaVideos')
+      if (videosMedia.length === 0) {
+        lista.innerHTML = '<p class="lista-vacia" style="padding:1rem 0">No hay videos cargados aún.</p>'
+        return
+      }
+      lista.innerHTML = videosMedia.map(v => `
+        <div class="media-item">
+          <video src="${v.url}" class="media-item__preview" muted></video>
+          <span class="media-item__nombre">${v.nombre}</span>
+          <button class="lista-item__remove" onclick="window.eliminarVideo('${v.id}', '${v.nombre}')" title="Eliminar">✕</button>
+        </div>`).join('')
+    }
+
+    // Subir logo
+    document.getElementById('uploadLogoWrap').addEventListener('click', () => {
+      document.getElementById('logoFile').click()
+    })
+    document.getElementById('logoFile').addEventListener('change', async (e) => {
+      const file = e.target.files[0]
+      if (!file) return
+      const preview = document.getElementById('uploadLogoPreview')
+      const logoError = document.getElementById('logoError')
+      preview.innerHTML = '<span class="upload-texto">Subiendo logo...</span>'
+      logoError.textContent = ''
+
+      const ext = file.name.split('.').pop()
+      const fileName = `logo_${Date.now()}.${ext}`
+      const { error: upErr } = await supabase.storage.from('media').upload(fileName, file, { upsert: true })
+      if (upErr) { logoError.textContent = 'Error al subir: ' + upErr.message; return }
+
+      const { data: urlData } = supabase.storage.from('media').getPublicUrl(fileName)
+      const url = urlData.publicUrl
+
+      // Eliminar logo anterior
+      const { data: existing } = await supabase.from('media').select('id').eq('tipo', 'logo').limit(1)
+      if (existing && existing.length > 0) {
+        await supabase.from('media').delete().eq('id', existing[0].id)
+      }
+      await supabase.from('media').insert([{ tipo: 'logo', url, nombre: fileName }])
+
+      document.getElementById('headerLogo').src = url
+      preview.innerHTML = `<img src="${url}" style="height:60px;object-fit:contain;"/>`
+    })
+
+    // Subir video
+    document.getElementById('uploadVideoWrap').addEventListener('click', () => {
+      document.getElementById('videoFile').click()
+    })
+    document.getElementById('videoFile').addEventListener('change', async (e) => {
+      const file = e.target.files[0]
+      if (!file) return
+      const preview = document.getElementById('uploadVideoPreview')
+      const videoError = document.getElementById('videoError')
+      preview.innerHTML = '<span class="upload-texto">Subiendo video... puede tardar unos segundos.</span>'
+      videoError.textContent = ''
+
+      const fileName = `video_${Date.now()}.mp4`
+      const { error: upErr } = await supabase.storage.from('media').upload(fileName, file, { upsert: true })
+      if (upErr) { videoError.textContent = 'Error al subir: ' + upErr.message; return }
+
+      const { data: urlData } = supabase.storage.from('media').getPublicUrl(fileName)
+      await supabase.from('media').insert([{ tipo: 'video', url: urlData.publicUrl, nombre: fileName }])
+
+      preview.innerHTML = `<span class="upload-icon">✓</span><span class="upload-texto">Video subido correctamente</span>`
+      await cargarMedia()
+      renderListaVideos()
+    })
+
+    // Eliminar video
+    window.eliminarVideo = async (id, nombre) => {
+      if (!confirm('¿Eliminar este video del carrusel?')) return
+      await supabase.storage.from('media').remove([nombre])
+      await supabase.from('media').delete().eq('id', id)
+      await cargarMedia()
+      renderListaVideos()
+    }
+
+    // ══════════════════════════════════════════
+    //  FOTO DE PERFIL
+    // ══════════════════════════════════════════
+    const sobreMiAvatar = document.getElementById('sobreMiAvatar')
+    const fotoPerfilFile = document.getElementById('fotoPerfilFile')
+
+    sobreMiAvatar.addEventListener('click', () => {
+      fotoPerfilFile.click()
+    })
+
+    fotoPerfilFile.addEventListener('change', async (e) => {
+      const file = e.target.files[0]
+      if (!file) return
+
+      const img = document.getElementById('sobreMiAvatarImg')
+      const txt = document.getElementById('sobreMiAvatarTexto')
+
+      // Preview local inmediato
+      const reader = new FileReader()
+      reader.onload = (ev) => {
+        img.src = ev.target.result
+        img.style.display = 'block'
+        if (txt) txt.style.display = 'none'
+      }
+      reader.readAsDataURL(file)
+
+      // Subir a Supabase storage
+      const ext = file.name.split('.').pop()
+      const fileName = `foto_perfil_${Date.now()}.${ext}`
+      const { error: upErr } = await supabase.storage.from('media').upload(fileName, file, { upsert: true })
+      if (upErr) { alert('Error al subir la foto: ' + upErr.message); return }
+
+      const { data: urlData } = supabase.storage.from('media').getPublicUrl(fileName)
+      const url = urlData.publicUrl
+
+      // Si perfilId no cargó todavía, reintentar cargar el perfil primero
+      if (!perfilId) {
+        const { data: pd } = await supabase.from('perfil').select('id').limit(1)
+        if (pd && pd.length > 0) perfilId = pd[0].id
+      }
+
+      let saveError
+      if (perfilId) {
+        const res = await supabase.from('perfil').update({ foto_perfil: url }).eq('id', perfilId)
+        saveError = res.error
+      } else {
+        // No hay ningún registro de perfil: crear uno
+        const res = await supabase.from('perfil').insert([{ foto_perfil: url }]).select()
+        saveError = res.error
+        if (!saveError && res.data && res.data[0]) perfilId = res.data[0].id
+      }
+
+      if (saveError) {
+        alert('La foto se subió pero no se pudo guardar en el perfil: ' + saveError.message)
+        return
+      }
+
+      // Actualizar imagen definitiva desde servidor
+      img.src = url
+    })
+
+    // ══════════════════════════════════════════
+    //  SINCRONIZACIÓN CON CULTS3D
+    // ══════════════════════════════════════════
+    document.getElementById('btnSincronizarCults').addEventListener('click', () => {
+      // Pre-cargar credenciales guardadas si las hay
+      const savedNick   = localStorage.getItem('cults_nick') || ''
+      const savedApiKey = localStorage.getItem('cults_api_key') || ''
+      document.getElementById('cultsNick').value = savedNick
+      document.getElementById('cultsApiKey').value = savedApiKey
+      document.getElementById('cultsError').textContent = ''
+      document.getElementById('cultsInfo').style.display = 'none'
+      document.getElementById('cultsResultado').style.display = 'none'
+      document.getElementById('modalCults').classList.add('activo')
+    })
+    document.getElementById('btnCerrarCults').addEventListener('click', () => {
+      document.getElementById('modalCults').classList.remove('activo')
+    })
+
+    document.getElementById('btnEjecutarSync').addEventListener('click', async () => {
+      const nick   = document.getElementById('cultsNick').value.trim()
+      const apiKey = document.getElementById('cultsApiKey').value.trim()
+      const errEl  = document.getElementById('cultsError')
+      const infoEl = document.getElementById('cultsInfo')
+      const resEl  = document.getElementById('cultsResultado')
+      const listaEl= document.getElementById('cultsResultadoLista')
+      errEl.textContent = ''
+      infoEl.style.display = 'none'
+      resEl.style.display = 'none'
+
+      if (!nick || !apiKey) { errEl.textContent = 'Completá tu usuario y API Key de Cults3D.'; return }
+
+      const btn = document.getElementById('btnEjecutarSync')
+      btn.textContent = 'Consultando Cults3D...'
+      btn.disabled = true
+
+      // Guardar credenciales localmente para la próxima vez
+      localStorage.setItem('cults_nick', nick)
+      localStorage.setItem('cults_api_key', apiKey)
+
+      const query = `{
+        myself {
+          creationsBatch(limit: 50, offset: 0) {
+            results {
+              name(locale: ES)
+              illustrationImageUrl
+              downloadsCount
+              shortUrl
+              price(currency: USD) { cents }
+            }
+          }
+        }
+      }`
+
+      let cultsDesigns
+      try {
+        const resp = await supabase.functions.invoke('cults-proxy', {
+          body: { nick, apiKey, query }
+        })
+        if (resp.error) throw new Error(resp.error.message)
+        const json = resp.data
+        if (json.errors) throw new Error(json.errors[0].message)
+        cultsDesigns = json.data.myself.creationsBatch.results
+      } catch (err) {
+        errEl.textContent = 'Error al conectar con Cults3D: ' + err.message
+        btn.textContent = 'Importar diseños nuevos'; btn.disabled = false
+        return
+      }
+
+      if (!cultsDesigns || cultsDesigns.length === 0) {
+        errEl.textContent = 'No se encontraron diseños en tu cuenta de Cults3D.'
+        btn.textContent = 'Importar diseños nuevos'; btn.disabled = false
+        return
+      }
+
+      // Cargar productos existentes (por nombre) para evitar duplicados
+      const { data: existentes } = await supabase.from('productos').select('nombre')
+      const nombresExistentes = new Set((existentes || []).map(p => p.nombre.toLowerCase().trim()))
+
+      btn.textContent = 'Importando...'
+      let nuevos = 0
+      const resultadosHTML = []
+
+      for (const d of cultsDesigns) {
+        const nombre = d.name || 'Sin nombre'
+        const yaExiste = nombresExistentes.has(nombre.toLowerCase().trim())
+
+        if (!yaExiste) {
+          const precio = d.price ? (d.price.cents / 100).toFixed(2) : '0.00'
+          await supabase.from('productos').insert([{
+            nombre,
+            descripcion: `Diseño importado desde Cults3D. Ver en: ${d.shortUrl}`,
+            precio: parseFloat(precio),
+            imagen_url: d.illustrationImageUrl || null,
+            categoria: 'otros'
+          }])
+          nuevos++
+        }
+
+        resultadosHTML.push(`
+          <div class="cults-item">
+            ${d.illustrationImageUrl ? `<img class="cults-item__img" src="${d.illustrationImageUrl}" alt="${nombre}"/>` : '<div class="cults-item__img"></div>'}
+            <span class="cults-item__nombre">${nombre}</span>
+            <span class="cults-item__status ${yaExiste ? 'cults-item__status--existe' : 'cults-item__status--nuevo'}">
+              ${yaExiste ? 'Ya existe' : '✓ Importado'}
+            </span>
+          </div>`)
+      }
+
+      // Mostrar resultado
+      document.getElementById('cultsInfoTexto').textContent =
+        `${cultsDesigns.length} diseños encontrados en Cults3D · ${nuevos} importados como nuevos · ${cultsDesigns.length - nuevos} ya existían`
+      infoEl.style.display = 'block'
+      listaEl.innerHTML = resultadosHTML.join('')
+      resEl.style.display = 'block'
+
+      btn.textContent = 'Importar diseños nuevos'; btn.disabled = false
+      if (nuevos > 0) await cargarProductos()
+    })
+
+    // INICIO
+    actualizarBadges()
+    cargarPerfil()
+    cargarProductos()
+    cargarMedia()
+  </script>
+
+  <!-- CARRUSEL JS (vacío, ahora es dinámico) -->
+</body>
+</html>
