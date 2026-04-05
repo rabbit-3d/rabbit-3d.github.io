@@ -985,3 +985,30 @@ a { text-decoration: none; color: inherit; }
   border: 1px solid var(--border); border-radius: 5px;
   padding: 0.25rem 0.6rem;
 }
+
+/* ══════════════════════════════════════════
+   SELECTOR DE ORDEN
+══════════════════════════════════════════ */
+.filtro-orden-wrap {
+  display: flex; align-items: center; gap: 0.4rem;
+  color: var(--muted);
+}
+.filtro-orden {
+  font-family: var(--font-head);
+  font-size: 0.56rem; font-weight: 700;
+  letter-spacing: 0.08em; text-transform: uppercase;
+  background: var(--bg3); color: var(--muted);
+  border: 1px solid var(--border);
+  border-radius: 20px; padding: 0.38rem 0.8rem;
+  cursor: pointer; outline: none;
+  transition: border-color 0.2s, color 0.2s;
+  appearance: none; -webkit-appearance: none;
+}
+.filtro-orden:hover, .filtro-orden:focus {
+  border-color: var(--cyan-mid); color: var(--text);
+}
+
+/* Avatar creador con foto */
+.detalle__creador-avatar {
+  overflow: hidden;
+}
