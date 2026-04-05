@@ -23,6 +23,9 @@
       <nav class="nav">
         <a href="#catalogo" class="nav__link">Catálogo</a>
         <a href="#sobre-mi" class="nav__link">Sobre mí</a>
+        <a href="#top-designs" class="nav__link">Top Diseños</a>
+        <a href="#youtube" class="nav__link">Videos</a>
+        <a href="#sugerencias" class="nav__link">Sugerencias</a>
         <a href="#contacto" class="nav__link">Contacto</a>
         <button class="nav__icon-btn" id="btnFavoritos" title="Favoritos">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
@@ -298,6 +301,7 @@
       <button class="btn btn--sm" id="btnGestionarMedia">Subir media</button>
       <button class="btn btn--sm btn--cults" id="btnSincronizarCults">⟳ Sincronizar Cults3D</button>
       <button class="btn btn--sm btn--eliminar-masivo" id="btnEliminarMasivo">🗑 Eliminar seleccionados</button>
+      <button class="btn btn--sm" id="btnAdminYt">▶ Gestionar videos YT</button>
       <button class="btn btn--sm btn--danger" id="btnLogout">Cerrar sesión</button>
     </div>
 
@@ -315,9 +319,7 @@
       <div class="filtro-orden-wrap">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13"><path d="M3 6h18M7 12h10M11 18h2"/></svg>
         <select id="selectOrden" class="filtro-orden">
-          <option value="manual">Orden manual</option>
-          <option value="recientes">Más recientes primero</option>
-          <option value="antiguos">Más antiguos primero</option>
+          <option value="llegada">Orden de llegada</option>
           <option value="descargas">Más descargados</option>
         </select>
       </div>
@@ -325,6 +327,73 @@
 
     <div class="productos" id="productos">
       <p class="cargando">Cargando diseños...</p>
+    </div>
+  </section>
+
+  <!-- TOP DESIGNS CAROUSEL -->
+  <section class="top-designs" id="top-designs">
+    <div class="section__header">
+      <h2 class="section__title">Top Diseños</h2>
+      <p class="section__sub">Los 20 más descargados por la comunidad</p>
+    </div>
+    <div class="top-designs__track-wrap">
+      <button class="top-designs__btn top-designs__btn--prev" id="topPrev" aria-label="Anterior">&#8249;</button>
+      <div class="top-designs__viewport" id="topViewport">
+        <div class="top-designs__track" id="topTrack">
+          <p class="cargando" style="padding:2rem">Cargando...</p>
+        </div>
+      </div>
+      <button class="top-designs__btn top-designs__btn--next" id="topNext" aria-label="Siguiente">&#8250;</button>
+    </div>
+    <div class="top-designs__dots" id="topDots"></div>
+  </section>
+
+  <!-- YOUTUBE VIDEOS -->
+  <section class="yt-section" id="youtube">
+    <div class="section__header">
+      <h2 class="section__title">Videos de Impresión 3D</h2>
+      <p class="section__sub">Tutoriales, reviews y proyectos de mi canal de YouTube</p>
+    </div>
+    <div id="ytAdminBar" class="yt-admin-bar" style="display:none">
+      <div class="yt-admin-form">
+        <input type="text" id="ytUrlInput" class="form-input" placeholder="https://www.youtube.com/watch?v=... o youtu.be/... o /shorts/..."/>
+        <input type="text" id="ytTituloInput" class="form-input" placeholder="Título del video (opcional)"/>
+        <button class="btn btn--primary" id="btnAgregarYt">+ Agregar video</button>
+      </div>
+      <p class="form-error" id="ytError"></p>
+    </div>
+    <div class="yt-grid" id="ytGrid">
+      <p class="cargando">Cargando videos...</p>
+    </div>
+  </section>
+
+  <!-- SUGERENCIAS -->
+  <section class="sugerencias" id="sugerencias">
+    <div class="section__header">
+      <h2 class="section__title">Sugerencias para la página</h2>
+      <p class="section__sub">¿Cómo podría mejorar esta página? Dejame tu idea o comentario</p>
+    </div>
+    <div class="sugerencias__wrap">
+      <div class="sugerencias__form">
+        <div class="form-group">
+          <label class="form-label">Tu nombre (opcional)</label>
+          <input type="text" id="sugNombre" class="form-input" placeholder="Ej: Martín"/>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Tu sugerencia o mejora</label>
+          <textarea id="sugTexto" class="form-input form-textarea" placeholder="Me gustaría que la página tuviera...&#10;Sería útil poder..."></textarea>
+        </div>
+        <p class="form-error" id="sugError"></p>
+        <p class="form-success" id="sugExito" style="display:none">¡Gracias! Tu sugerencia fue enviada.</p>
+        <button class="btn btn--primary" id="btnEnviarSug">Enviar sugerencia</button>
+      </div>
+      <div class="sugerencias__lista-wrap">
+        <p class="sugerencias__lista-titulo">Últimas sugerencias</p>
+        <div class="sugerencias__lista" id="sugLista"><p class="cargando">Cargando...</p></div>
+        <div id="sugAdminAcciones" style="display:none; margin-top:0.75rem;">
+          <button class="btn btn--sm btn--danger" id="btnLimpiarSug">🗑 Limpiar todas</button>
+        </div>
+      </div>
     </div>
   </section>
 
@@ -443,7 +512,9 @@
     let esAdmin = false
     let categoriaActual = 'todos'
     let filtroPrecios   = 'todos'
-    let ordenActual     = 'manual'
+    let ordenActual     = 'llegada'
+    let paginaProductos  = 1
+    const POR_PAGINA     = 40
     let busqueda = ''
     let productos = []
     let perfilId = null
@@ -511,9 +582,8 @@
       document.getElementById('modalFavoritos').classList.remove('activo')
     })
 
-    // Cerrar cualquier modal al hacer click en el overlay (fuera del contenido)
     document.querySelectorAll('.modal-overlay').forEach(overlay => {
-      overlay.addEventListener('click', (e) => {
+      overlay.addEventListener('click', e => {
         if (e.target === overlay) overlay.classList.remove('activo')
       })
     })
@@ -800,9 +870,12 @@
       })
       statTotal.textContent = productos.length
       renderProductos()
+      renderTopDesigns()
     }
 
-    function renderProductos() {
+    function renderProductos(reset = true) {
+      if (reset) paginaProductos = 1
+
       let filtrados = categoriaActual === 'todos'
         ? [...productos]
         : productos.filter(p => p.categoria === categoriaActual)
@@ -813,34 +886,31 @@
         filtrados = filtrados.filter(p => p.nombre.toLowerCase().includes(q))
       }
 
-      // Ordenamiento
-      // El campo "orden" refleja el orden de sincronización desde Cults:
-      // orden 0 = sincronizado primero = diseño más reciente en Cults
-      // orden alto = sincronizado último = diseño más antiguo en Cults
-      // Productos sin orden (null) van siempre al final.
-      if (ordenActual === 'recientes') {
-        filtrados.sort((a, b) => {
-          if (a.orden == null && b.orden == null) return 0
-          if (a.orden == null) return 1
-          if (b.orden == null) return -1
-          return a.orden - b.orden   // ascendente: menor orden = más reciente
-        })
-      } else if (ordenActual === 'antiguos') {
-        filtrados.sort((a, b) => {
-          if (a.orden == null && b.orden == null) return 0
-          if (a.orden == null) return 1
-          if (b.orden == null) return -1
-          return b.orden - a.orden   // descendente: mayor orden = más antiguo
-        })
-      } else if (ordenActual === 'descargas') {
+      // Ordenamiento: por defecto orden de llegada (id), o por descargas
+      if (ordenActual === 'descargas') {
         filtrados.sort((a, b) => (Number(b.descargas) || 0) - (Number(a.descargas) || 0))
+      } else {
+        // 'llegada': orden por id ascendente (orden de sincronización)
+        filtrados.sort((a, b) => {
+          const oa = a.orden ?? 999999
+          const ob = b.orden ?? 999999
+          if (oa !== ob) return oa - ob
+          return a.id - b.id
+        })
       }
-      // 'manual' ya viene ordenado por cargarProductos
+
       if (filtrados.length === 0) {
         divProductos.innerHTML = '<p class="cargando">No se encontraron diseños.</p>'
         return
       }
-      divProductos.innerHTML = filtrados.map((p, i) => {
+
+      // Paginación: mostrar hasta paginaProductos * POR_PAGINA
+      const total      = filtrados.length
+      const mostrar    = paginaProductos * POR_PAGINA
+      const visibles   = filtrados.slice(0, mostrar)
+      const hayMas     = total > mostrar
+
+      divProductos.innerHTML = visibles.map((p, i) => {
         const precio = Number(p.precio)
         const precioTexto = precio === 0 ? 'Gratis' : `$${precio.toFixed(2)} USD`
         const esGratis = precio === 0
@@ -883,6 +953,26 @@
           </div>
         </article>`
       }).join('')
+
+      // Botón "Ver más"
+      if (hayMas) {
+        divProductos.insertAdjacentHTML('beforeend', `
+          <div class="ver-mas-wrap" id="verMasWrap">
+            <button class="btn-ver-mas" id="btnVerMas">
+              Ver más
+              <span class="ver-mas-count">${visibles.length} de ${total}</span>
+            </button>
+          </div>`)
+        document.getElementById('btnVerMas').addEventListener('click', () => {
+          paginaProductos++
+          renderProductos(false)
+          // Scroll suave al nuevo contenido
+          setTimeout(() => {
+            const wrap = document.getElementById('verMasWrap')
+            if (wrap) wrap.scrollIntoView({ behavior: 'smooth', block: 'center' })
+          }, 50)
+        })
+      }
 
       if (esAdmin) initDragDrop()
     }
@@ -968,10 +1058,12 @@
 
     document.getElementById('buscador').addEventListener('input', e => {
       busqueda = e.target.value
+      paginaProductos = 1
       renderProductos()
     })
     document.getElementById('selectOrden').addEventListener('change', e => {
       ordenActual = e.target.value
+      paginaProductos = 1
       renderProductos()
     })
     document.querySelectorAll('.filtro-precio').forEach(btn => {
@@ -979,6 +1071,7 @@
         document.querySelectorAll('.filtro-precio').forEach(b => b.classList.remove('activo'))
         btn.classList.add('activo')
         filtroPrecios = btn.dataset.precio
+        paginaProductos = 1
         renderProductos()
       })
     })
@@ -987,6 +1080,7 @@
         document.querySelectorAll('.filtro').forEach(b => b.classList.remove('activo'))
         btn.classList.add('activo')
         categoriaActual = btn.dataset.cat
+        paginaProductos = 1
         renderProductos()
       })
     })
@@ -1009,8 +1103,11 @@
       modalLogin.classList.remove('activo')
       adminBar.classList.add('activo')
       document.getElementById('btnLoginToggle').textContent = '✓ Admin'
+      document.getElementById('sugAdminAcciones').style.display = 'block'
       actualizarAvatarAdmin()
       renderProductos()
+      cargarSugerencias()
+      cargarYoutube()
     })
     document.getElementById('btnLogout').addEventListener('click', async () => {
       await supabase.auth.signOut()
@@ -1018,8 +1115,12 @@
       adminBar.classList.remove('activo')
       document.getElementById('btnLoginToggle').textContent = 'Admin'
       document.getElementById('productos').classList.remove('drag-mode')
+      document.getElementById('ytAdminBar').style.display = 'none'
+      document.getElementById('sugAdminAcciones').style.display = 'none'
       actualizarAvatarAdmin()
       renderProductos()
+      cargarYoutube()
+      cargarSugerencias()
     })
 
     // ══════════════════════════════════════════
@@ -1610,12 +1711,230 @@
       if (nuevos > 0) await cargarProductos()
     })
 
+    // ══════════════════════════════════════════
+    //  TOP DESIGNS CAROUSEL (hasta 20 diseños)
+    // ══════════════════════════════════════════
+    function renderTopDesigns() {
+      const track = document.getElementById('topTrack')
+      const dotsEl = document.getElementById('topDots')
+      if (!track) return
+      const top = [...productos]
+        .filter(p => p.descargas && Number(p.descargas) > 0)
+        .sort((a, b) => Number(b.descargas) - Number(a.descargas))
+        .slice(0, 20)
+      if (top.length === 0) {
+        track.innerHTML = '<p class="cargando" style="padding:2rem;width:100%">Aún no hay datos de descargas.</p>'
+        if (dotsEl) dotsEl.innerHTML = ''
+        return
+      }
+      track.innerHTML = top.map((p, i) => {
+        const precio = Number(p.precio)
+        const precioTxt = precio === 0 ? 'Gratis' : `$${precio.toFixed(2)} USD`
+        return `
+        <article class="top-card" onclick="window.abrirDetalle('${p.id}')" style="cursor:pointer">
+          <div class="top-card__rank">${String(i + 1).padStart(2, '0')}</div>
+          <div class="top-card__img">
+            ${p.imagen_url ? `<img src="${p.imagen_url}" alt="${p.nombre}" loading="lazy"/>` : `<div class="card__placeholder">3D</div>`}
+          </div>
+          <div class="top-card__body">
+            <p class="top-card__nombre">${p.nombre}</p>
+            <p class="top-card__precio">${precioTxt}</p>
+            <p class="top-card__descargas">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="11" height="11"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+              ${Number(p.descargas).toLocaleString()} descargas
+            </p>
+          </div>
+        </article>`
+      }).join('')
+      initTopCarousel(top.length)
+    }
+
+    function initTopCarousel(total) {
+      const viewport = document.getElementById('topViewport')
+      const track    = document.getElementById('topTrack')
+      const dotsEl   = document.getElementById('topDots')
+      if (!track || !viewport) return
+
+      // Clonar botones para limpiar listeners acumulados de renders anteriores
+      const oldPrev = document.getElementById('topPrev')
+      const oldNext = document.getElementById('topNext')
+      const btnPrev = oldPrev.cloneNode(true)
+      const btnNext = oldNext.cloneNode(true)
+      oldPrev.parentNode.replaceChild(btnPrev, oldPrev)
+      oldNext.parentNode.replaceChild(btnNext, oldNext)
+
+      const CARD_W = 200, GAP = 16, STEP = CARD_W + GAP
+
+      function getVisible() { return Math.max(1, Math.floor(viewport.offsetWidth / STEP)) }
+
+      function update() {
+        const maxScroll = viewport.scrollWidth - viewport.offsetWidth
+        const atStart = viewport.scrollLeft <= 2
+        const atEnd   = viewport.scrollLeft >= maxScroll - 2
+        btnPrev.style.opacity = atStart ? '0.3' : '1'
+        btnPrev.style.pointerEvents = atStart ? 'none' : 'auto'
+        btnNext.style.opacity = atEnd ? '0.3' : '1'
+        btnNext.style.pointerEvents = atEnd ? 'none' : 'auto'
+        if (dotsEl && total > 0) {
+          const pages = Math.max(1, Math.ceil(total / getVisible()))
+          const cur   = Math.min(pages - 1, Math.round(viewport.scrollLeft / (STEP * getVisible())))
+          dotsEl.innerHTML = Array.from({length: pages}, (_, i) =>
+            `<span class="top-dot ${i === cur ? 'activo' : ''}"></span>`).join('')
+        }
+      }
+
+      function next() { viewport.scrollBy({ left:  STEP * getVisible(), behavior: 'smooth' }) }
+      function prev() { viewport.scrollBy({ left: -STEP * getVisible(), behavior: 'smooth' }) }
+
+      btnNext.addEventListener('click', next)
+      btnPrev.addEventListener('click', prev)
+      viewport.addEventListener('scroll', update, { passive: true })
+
+      // Swipe táctil
+      let touchStartX = 0
+      viewport.addEventListener('touchstart', e => { touchStartX = e.touches[0].clientX }, { passive: true })
+      viewport.addEventListener('touchend', e => {
+        const dx = e.changedTouches[0].clientX - touchStartX
+        if (Math.abs(dx) > 40) { dx < 0 ? next() : prev() }
+      }, { passive: true })
+
+      // Teclado
+      viewport.setAttribute('tabindex', '0')
+      viewport.addEventListener('keydown', e => {
+        if (e.key === 'ArrowRight') next()
+        if (e.key === 'ArrowLeft')  prev()
+      })
+
+      // Esperar dos frames para que el DOM esté pintado y scrollWidth sea correcto
+      requestAnimationFrame(() => requestAnimationFrame(update))
+    }
+
+    // ══════════════════════════════════════════
+    //  YOUTUBE VIDEOS
+    // ══════════════════════════════════════════
+    function ytIdFromUrl(url) {
+      url = url.trim()
+      let m
+      m = url.match(/[?&]v=([a-zA-Z0-9_-]{11})/)
+      if (m) return m[1]
+      m = url.match(/youtu\.be\/([a-zA-Z0-9_-]{11})/)
+      if (m) return m[1]
+      m = url.match(/youtube\.com\/embed\/([a-zA-Z0-9_-]{11})/)
+      if (m) return m[1]
+      m = url.match(/youtube\.com\/shorts\/([a-zA-Z0-9_-]{11})/)
+      if (m) return m[1]
+      if (/^[a-zA-Z0-9_-]{11}$/.test(url)) return url
+      return null
+    }
+
+    async function cargarYoutube() {
+      const grid = document.getElementById('ytGrid')
+      const { data, error } = await supabase.from('youtube_videos').select('*').order('created_at', { ascending: false })
+      if (error || !data || data.length === 0) {
+        grid.innerHTML = '<p class="cargando">No hay videos cargados aún.</p>'
+        return
+      }
+      grid.innerHTML = data.map(v => `
+        <div class="yt-card" data-id="${v.id}">
+          ${esAdmin ? `<button class="yt-card__del" onclick="window.eliminarYt('${v.id}')" title="Eliminar">✕</button>` : ''}
+          <a href="https://www.youtube.com/watch?v=${v.yt_id}" target="_blank" rel="noopener" class="yt-card__thumb">
+            <img src="https://img.youtube.com/vi/${v.yt_id}/mqdefault.jpg" alt="${v.titulo || 'Video'}" loading="lazy"/>
+            <div class="yt-card__play"><svg viewBox="0 0 24 24" fill="currentColor" width="32" height="32"><path d="M8 5v14l11-7z"/></svg></div>
+          </a>
+          <p class="yt-card__titulo">${v.titulo || 'Ver en YouTube'}</p>
+        </div>`).join('')
+    }
+
+    window.eliminarYt = async (id) => {
+      if (!confirm('¿Eliminar este video?')) return
+      await supabase.from('youtube_videos').delete().eq('id', id)
+      await cargarYoutube()
+    }
+
+    document.getElementById('btnAdminYt').addEventListener('click', () => {
+      const bar = document.getElementById('ytAdminBar')
+      bar.style.display = bar.style.display === 'none' ? 'block' : 'none'
+    })
+
+    document.getElementById('btnAgregarYt').addEventListener('click', async () => {
+      const urlVal    = document.getElementById('ytUrlInput').value.trim()
+      const tituloVal = document.getElementById('ytTituloInput').value.trim()
+      const errEl     = document.getElementById('ytError')
+      const btn       = document.getElementById('btnAgregarYt')
+      errEl.textContent = ''
+      const ytId = ytIdFromUrl(urlVal)
+      if (!ytId) { errEl.textContent = 'URL de YouTube inválida. Pegá el link completo del video.'; return }
+      btn.disabled = true; btn.textContent = 'Guardando...'
+      const { error } = await supabase.from('youtube_videos').insert([{ yt_id: ytId, titulo: tituloVal || null }])
+      btn.disabled = false; btn.textContent = '+ Agregar video'
+      if (error) { errEl.textContent = 'Error al guardar: ' + error.message; return }
+      document.getElementById('ytUrlInput').value = ''
+      document.getElementById('ytTituloInput').value = ''
+      await cargarYoutube()
+    })
+
+    // ══════════════════════════════════════════
+    //  SUGERENCIAS
+    // ══════════════════════════════════════════
+    async function cargarSugerencias() {
+      const lista = document.getElementById('sugLista')
+      const { data, error } = await supabase.from('sugerencias').select('*').order('created_at', { ascending: false }).limit(20)
+      if (error || !data || data.length === 0) {
+        lista.innerHTML = '<p class="cargando">Aún no hay sugerencias.</p>'
+        return
+      }
+      lista.innerHTML = data.map(s => {
+        const fecha = new Date(s.created_at).toLocaleDateString('es-AR', { day: '2-digit', month: 'short', year: 'numeric' })
+        return `
+        <div class="sug-item">
+          <div class="sug-item__header">
+            <span class="sug-item__nombre">${s.nombre || 'Anónimo'}</span>
+            <span class="sug-item__fecha">${fecha}</span>
+            ${esAdmin ? `<button class="sug-item__del" onclick="window.eliminarSug('${s.id}')" title="Eliminar">✕</button>` : ''}
+          </div>
+          <p class="sug-item__texto">${s.texto}</p>
+        </div>`
+      }).join('')
+    }
+
+    window.eliminarSug = async (id) => {
+      await supabase.from('sugerencias').delete().eq('id', id)
+      await cargarSugerencias()
+    }
+
+    document.getElementById('btnEnviarSug').addEventListener('click', async () => {
+      const nombre  = document.getElementById('sugNombre').value.trim()
+      const texto   = document.getElementById('sugTexto').value.trim()
+      const errEl   = document.getElementById('sugError')
+      const exitoEl = document.getElementById('sugExito')
+      const btn     = document.getElementById('btnEnviarSug')
+      errEl.textContent = ''; exitoEl.style.display = 'none'
+      if (!texto) { errEl.textContent = 'Escribí tu sugerencia antes de enviar.'; return }
+      btn.disabled = true; btn.textContent = 'Enviando...'
+      const { error } = await supabase.from('sugerencias').insert([{ nombre: nombre || null, texto }])
+      btn.disabled = false; btn.textContent = 'Enviar sugerencia'
+      if (error) { errEl.textContent = 'Error al enviar: ' + error.message; return }
+      document.getElementById('sugNombre').value = ''
+      document.getElementById('sugTexto').value  = ''
+      exitoEl.style.display = 'block'
+      setTimeout(() => { exitoEl.style.display = 'none' }, 4000)
+      await cargarSugerencias()
+    })
+
+    document.getElementById('btnLimpiarSug').addEventListener('click', async () => {
+      if (!confirm('¿Eliminar TODAS las sugerencias?')) return
+      await supabase.from('sugerencias').delete().neq('id', 0)
+      await cargarSugerencias()
+    })
+
     // INICIO
     actualizarBadges()
     cargarPerfil()
     cargarDisenador()
     cargarProductos()
     cargarMedia()
+    cargarYoutube()
+    cargarSugerencias()
     console.info('[Rabbit3D] Supabase URL:', SUPABASE_URL)
   </script>
 
