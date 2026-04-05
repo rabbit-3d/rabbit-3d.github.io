@@ -223,6 +223,7 @@ a { text-decoration: none; color: inherit; }
 ══════════════════════════════════════════ */
 .hero {
   position: relative;
+  isolation: isolate;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -238,7 +239,8 @@ a { text-decoration: none; color: inherit; }
     linear-gradient(rgba(21,154,156,0.04) 1px, transparent 1px),
     linear-gradient(90deg, rgba(21,154,156,0.04) 1px, transparent 1px);
   background-size: 60px 60px;
-  pointer-events: none; z-index: -1;
+  pointer-events: none !important; z-index: -1;
+  user-select: none;
 }
 .hero__glow {
   position: absolute; border-radius: 50%;
@@ -316,7 +318,7 @@ a { text-decoration: none; color: inherit; }
 /* ══════════════════════════════════════════
    CATÁLOGO
 ══════════════════════════════════════════ */
-.catalogo { max-width: 1400px; margin: 0 auto; padding: 3rem 1.5rem 4rem; }
+.catalogo { max-width: 1400px; margin: 0 auto; padding: 3rem 1.5rem 4rem; position: relative; z-index: 1; }
 
 /* Separador visual entre hero y catálogo */
 .catalogo .section__header {
@@ -496,7 +498,7 @@ a { text-decoration: none; color: inherit; }
   border-top: 1px solid var(--border-sub);
   border-bottom: 1px solid var(--border-sub);
   padding: 5rem 2rem;
-}
+ position: relative; z-index: 1; }
 .sobre-mi__inner {
   max-width: 1100px; margin: 0 auto;
   display: grid;
@@ -583,7 +585,7 @@ a { text-decoration: none; color: inherit; }
 /* ══════════════════════════════════════════
    CONTACTO
 ══════════════════════════════════════════ */
-.contacto { max-width: 680px; margin: 0 auto; padding: 5.5rem 2rem; text-align: center; }
+.contacto { max-width: 680px; margin: 0 auto; padding: 5.5rem 2rem; text-align: center;  position: relative; z-index: 1; }
 .contacto__links { display: flex; gap: 0.85rem; justify-content: center; flex-wrap: wrap; margin-top: 2rem; }
 .contacto__btn {
   display: flex; align-items: center; gap: 0.6rem;
@@ -608,7 +610,7 @@ a { text-decoration: none; color: inherit; }
   text-align: center; padding: 2rem;
   border-top: 1px solid var(--border-sub);
   color: var(--muted); font-size: 0.78rem; opacity: 0.7;
-}
+ position: relative; z-index: 1; }
 .footer strong { color: var(--cyan); opacity: 1; }
 
 /* ══════════════════════════════════════════

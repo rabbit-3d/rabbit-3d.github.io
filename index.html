@@ -511,6 +511,13 @@
       document.getElementById('modalFavoritos').classList.remove('activo')
     })
 
+    // Cerrar cualquier modal al hacer click en el overlay (fuera del contenido)
+    document.querySelectorAll('.modal-overlay').forEach(overlay => {
+      overlay.addEventListener('click', (e) => {
+        if (e.target === overlay) overlay.classList.remove('activo')
+      })
+    })
+
     const divProductos  = document.getElementById('productos')
     const adminBar      = document.getElementById('adminBar')
     const modalLogin    = document.getElementById('modalLogin')
