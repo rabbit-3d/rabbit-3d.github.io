@@ -408,7 +408,9 @@ a { text-decoration: none; color: inherit; }
   background: var(--bg3); overflow: hidden;
 }
 .card__img { transition: transform 0.5s ease; }
+.card__video { transition: transform 0.5s ease; display: block; width: 100%; height: 100%; object-fit: cover; }
 .card:hover .card__img { transform: scale(1.05); }
+.card:hover .card__video { transform: scale(1.05); }
 
 .card__num {
   position: absolute; top: 0.5rem; left: 0.5rem;
@@ -907,6 +909,10 @@ a { text-decoration: none; color: inherit; }
   text-decoration: none;
 }
 .card__accion-btn--cults:hover { border-color: var(--cyan-mid); color: var(--cyan); }
+.card__accion-btn--descarga {
+  color: var(--cyan) !important;
+  border-color: rgba(21,154,156,0.4) !important;
+}
 
 /* Botón eliminar masivo */
 .btn--eliminar-masivo {
@@ -963,7 +969,7 @@ a { text-decoration: none; color: inherit; }
 }
 .cults-progress__texto { font-size: 0.75rem; color: var(--muted); }
 
-/* Botón Cults3D en detalle */
+/* Botón Cults3D en detalle — estilo descarga */
 .btn-cults3d {
   display: flex; align-items: center; gap: 0.6rem;
   padding: 0.65rem 1.2rem;
@@ -975,6 +981,18 @@ a { text-decoration: none; color: inherit; }
   width: fit-content;
 }
 .btn-cults3d:hover { background: transparent; color: var(--cyan); outline: 1.5px solid var(--cyan); }
+.btn-cults3d--descarga {
+  background: linear-gradient(135deg, #159A9C 0%, #0e7375 100%);
+  border: 1.5px solid var(--cyan);
+  box-shadow: 0 4px 14px rgba(21,154,156,0.25);
+  position: relative; overflow: hidden;
+}
+.btn-cults3d--descarga:hover {
+  background: transparent;
+  color: var(--cyan);
+  outline: none;
+  box-shadow: none;
+}
 
 /* Descargas en detalle */
 .detalle__meta { display: flex; gap: 0.75rem; align-items: center; }
