@@ -856,3 +856,132 @@ a { text-decoration: none; color: inherit; }
   text-overflow: ellipsis;
   white-space: nowrap;
 }
+
+/* ══════════════════════════════════════════
+   NUEVAS FUNCIONALIDADES
+══════════════════════════════════════════ */
+
+/* Separador en filtros */
+.filtros-sep {
+  color: var(--border);
+  display: flex;
+  align-items: center;
+  padding: 0 0.2rem;
+  font-size: 0.8rem;
+}
+
+/* Filtro de precio */
+.filtro-precio {
+  font-family: var(--font-head);
+  font-size: 0.56rem; font-weight: 700;
+  letter-spacing: 0.1em; text-transform: uppercase;
+  padding: 0.38rem 1rem;
+  border: 1px solid var(--border);
+  background: transparent; color: var(--muted);
+  border-radius: 30px; cursor: pointer; transition: all 0.2s;
+}
+.filtro-precio:hover { border-color: var(--cyan-mid); color: var(--text); }
+.filtro-precio.activo { border-color: var(--cyan); color: var(--cyan); background: var(--cyan-dim); }
+
+/* Badge gratis en card */
+.card__badge-gratis {
+  position: absolute; bottom: 0.5rem; left: 0.5rem;
+  font-family: var(--font-head); font-size: 0.46rem; font-weight: 700;
+  letter-spacing: 0.1em; text-transform: uppercase;
+  padding: 0.15rem 0.46rem;
+  background: rgba(21,154,156,0.85); color: #fff;
+  border-radius: 3px;
+}
+.card__precio--gratis { color: var(--cyan); }
+.card__descargas-overlay {
+  font-family: var(--font-head); font-size: 0.62rem;
+  color: var(--muted); margin-top: 0.1rem;
+}
+
+/* Botón Cults3D en card */
+.card__accion-btn--cults {
+  background: var(--bg2); border: 1px solid var(--border);
+  border-radius: 6px; padding: 0.28rem 0.38rem;
+  color: var(--muted); cursor: pointer;
+  transition: all 0.2s; display: flex; align-items: center;
+  text-decoration: none;
+}
+.card__accion-btn--cults:hover { border-color: var(--cyan-mid); color: var(--cyan); }
+
+/* Botón eliminar masivo */
+.btn--eliminar-masivo {
+  border-color: rgba(217,64,96,0.4) !important;
+  color: #d94060 !important;
+}
+.btn--eliminar-masivo:hover { background: rgba(217,64,96,0.1) !important; }
+
+/* Modal eliminar masivo */
+.modal-eliminar { max-width: 520px; max-height: 85vh; overflow-y: auto; }
+.eliminar-acciones {
+  display: flex; gap: 0.6rem; align-items: center; flex-wrap: wrap;
+  padding-bottom: 0.8rem; border-bottom: 1px solid var(--border-sub);
+}
+.eliminar-count {
+  font-family: var(--font-head); font-size: 0.6rem;
+  color: var(--cyan); margin-left: auto;
+}
+.eliminar-lista { display: flex; flex-direction: column; gap: 0.5rem; margin-top: 0.75rem; }
+.eliminar-item { display: flex; align-items: center; gap: 0.75rem; }
+.eliminar-check { width: 16px; height: 16px; accent-color: var(--cyan); cursor: pointer; flex-shrink: 0; }
+.eliminar-label {
+  display: flex; align-items: center; gap: 0.65rem;
+  cursor: pointer; flex: 1;
+  background: var(--bg3); border: 1px solid var(--border);
+  border-radius: 7px; padding: 0.5rem 0.75rem;
+  transition: border-color 0.2s;
+}
+.eliminar-label:hover { border-color: var(--border); }
+.eliminar-item__img {
+  width: 44px; height: 44px; border-radius: 5px; overflow: hidden;
+  background: var(--bg2); flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.55rem; color: var(--muted);
+}
+.eliminar-item__img img { width: 100%; height: 100%; object-fit: cover; }
+.eliminar-item__nombre { font-family: var(--font-head); font-size: 0.68rem; font-weight: 700; color: var(--text); }
+.eliminar-item__cat { font-size: 0.7rem; color: var(--muted); margin-top: 0.1rem; }
+
+/* Modal Cults3D mejorado */
+.modal-cults { max-width: 500px; max-height: 88vh; overflow-y: auto; }
+.cults-progress {
+  background: var(--bg3); border-radius: 8px;
+  padding: 0.85rem 1rem; border: 1px solid var(--border);
+}
+.cults-progress__bar {
+  height: 4px; background: var(--border);
+  border-radius: 2px; overflow: hidden; margin-bottom: 0.5rem;
+}
+.cults-progress__fill {
+  height: 100%; background: var(--cyan);
+  border-radius: 2px; transition: width 0.3s ease;
+  width: 0%;
+}
+.cults-progress__texto { font-size: 0.75rem; color: var(--muted); }
+
+/* Botón Cults3D en detalle */
+.btn-cults3d {
+  display: flex; align-items: center; gap: 0.6rem;
+  padding: 0.65rem 1.2rem;
+  background: var(--cyan); color: #fff;
+  border-radius: 8px; font-family: var(--font-head);
+  font-size: 0.62rem; font-weight: 700;
+  letter-spacing: 0.1em; text-transform: uppercase;
+  text-decoration: none; transition: all 0.2s;
+  width: fit-content;
+}
+.btn-cults3d:hover { background: transparent; color: var(--cyan); outline: 1.5px solid var(--cyan); }
+
+/* Descargas en detalle */
+.detalle__meta { display: flex; gap: 0.75rem; align-items: center; }
+.detalle__descargas {
+  display: flex; align-items: center; gap: 0.35rem;
+  font-family: var(--font-head); font-size: 0.62rem;
+  color: var(--muted); background: var(--bg3);
+  border: 1px solid var(--border); border-radius: 5px;
+  padding: 0.25rem 0.6rem;
+}

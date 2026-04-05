@@ -75,9 +75,15 @@
           <span class="detalle__badge" id="detalleBadge"></span>
           <h2 class="detalle__nombre" id="detalleNombre"></h2>
           <p class="detalle__desc" id="detalleDesc"></p>
+          <div class="detalle__meta">
+            <span class="detalle__descargas" id="detalleDescargas" style="display:none">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+              <span id="detalleDescargasNum"></span> descargas
+            </span>
+          </div>
           <div class="detalle__precio-row">
             <span class="detalle__precio" id="detallePrecio"></span>
-            <div style="display:flex;gap:0.6rem;align-items:center;">
+            <div style="display:flex;gap:0.6rem;align-items:center;flex-wrap:wrap;">
               <button class="detalle__accion-btn" id="detalleToggleFav" onclick="window.toggleFavoritoDetalle()">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
                 Favorito
@@ -88,6 +94,10 @@
               </button>
             </div>
           </div>
+          <a class="btn-cults3d" id="detalleCultsBtn" href="#" target="_blank" style="display:none">
+            <svg viewBox="0 0 24 24" fill="currentColor" width="16" height="16"><path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm0 2c5.523 0 10 4.477 10 10S17.523 22 12 22 2 17.523 2 12 6.477 2 12 2zm-1 5v6l5 3 .75-1.3-4.25-2.45V7H11z"/></svg>
+            Ver en Cults3D
+          </a>
           <div class="detalle__creador">
             <div class="detalle__creador-avatar">R3D</div>
             <div class="detalle__creador-info">
@@ -281,6 +291,7 @@
       <button class="btn btn--sm" id="btnEditarPerfil">Editar perfil</button>
       <button class="btn btn--sm" id="btnGestionarMedia">Subir media</button>
       <button class="btn btn--sm btn--cults" id="btnSincronizarCults">⟳ Sincronizar Cults3D</button>
+      <button class="btn btn--sm btn--eliminar-masivo" id="btnEliminarMasivo">🗑 Eliminar seleccionados</button>
       <button class="btn btn--sm btn--danger" id="btnLogout">Cerrar sesión</button>
     </div>
 
@@ -290,6 +301,10 @@
       <button class="filtro" data-cat="llaveros">Llaveros</button>
       <button class="filtro" data-cat="cortantes">Cortantes</button>
       <button class="filtro" data-cat="otros">Otros</button>
+      <span class="filtros-sep">|</span>
+      <button class="filtro-precio activo" data-precio="todos">Todos los precios</button>
+      <button class="filtro-precio" data-precio="gratis">Gratis</button>
+      <button class="filtro-precio" data-precio="pago">De pago</button>
     </div>
 
     <div class="productos" id="productos">
@@ -348,10 +363,10 @@
 
   <!-- MODAL CULTS3D -->
   <div class="modal-overlay" id="modalCults">
-    <div class="modal">
+    <div class="modal modal-cults">
       <button class="modal__close" id="btnCerrarCults">✕</button>
       <h2 class="modal__title">Sincronizar con Cults3D</h2>
-      <p class="modal__sub">Importa tus diseños automáticamente desde tu perfil de Cults3D</p>
+      <p class="modal__sub">Importa todos tus diseños automáticamente desde Cults3D</p>
 
       <div class="form-group">
         <label class="form-label">Tu usuario de Cults3D</label>
@@ -365,16 +380,40 @@
         </p>
       </div>
 
+      <div class="cults-progress" id="cultsProgress" style="display:none">
+        <div class="cults-progress__bar">
+          <div class="cults-progress__fill" id="cultsProgressFill"></div>
+        </div>
+        <p class="cults-progress__texto" id="cultsProgressTexto"></p>
+      </div>
+
       <div class="cults-info" id="cultsInfo" style="display:none">
         <p id="cultsInfoTexto"></p>
       </div>
 
       <p class="form-error" id="cultsError"></p>
-      <button class="btn btn--primary btn--full" id="btnEjecutarSync">Importar diseños nuevos</button>
+      <button class="btn btn--primary btn--full" id="btnEjecutarSync">⟳ Sincronizar todos los diseños</button>
 
-      <div id="cultsResultado" style="display:none">
+      <div id="cultsResultado" style="display:none; margin-top:1rem;">
         <div class="cults-resultado-lista" id="cultsResultadoLista"></div>
       </div>
+    </div>
+  </div>
+
+  <!-- MODAL ELIMINAR MASIVO -->
+  <div class="modal-overlay" id="modalEliminarMasivo">
+    <div class="modal modal-eliminar">
+      <button class="modal__close" id="btnCerrarEliminar">✕</button>
+      <h2 class="modal__title">Eliminar diseños</h2>
+      <p class="modal__sub">Seleccioná los diseños que querés eliminar</p>
+      <div class="eliminar-acciones">
+        <button class="btn btn--sm" id="btnSeleccionarTodos">Seleccionar todos</button>
+        <button class="btn btn--sm" id="btnDeseleccionarTodos">Deseleccionar todos</button>
+        <span class="eliminar-count" id="eliminarCount">0 seleccionados</span>
+      </div>
+      <div id="listaEliminar" class="eliminar-lista"></div>
+      <p class="form-error" id="eliminarError"></p>
+      <button class="btn btn--danger btn--full" id="btnConfirmarEliminar">Eliminar seleccionados</button>
     </div>
   </div>
 
@@ -387,6 +426,7 @@
 
     let esAdmin = false
     let categoriaActual = 'todos'
+    let filtroPrecios   = 'todos'
     let busqueda = ''
     let productos = []
     let perfilId = null
@@ -640,7 +680,29 @@
       document.getElementById('detalleBadge').textContent = labelCategoria(p.categoria)
       document.getElementById('detalleNombre').textContent = p.nombre
       document.getElementById('detalleDesc').textContent = p.descripcion || 'Sin descripción.'
-      document.getElementById('detallePrecio').textContent = `$${Number(p.precio).toFixed(2)} USD`
+
+      // Precio
+      const precio = Number(p.precio)
+      document.getElementById('detallePrecio').textContent = precio === 0 ? 'Gratis' : `$${precio.toFixed(2)} USD`
+
+      // Descargas
+      const descEl = document.getElementById('detalleDescargas')
+      if (p.descargas && p.descargas > 0) {
+        document.getElementById('detalleDescargasNum').textContent = p.descargas.toLocaleString()
+        descEl.style.display = 'flex'
+      } else {
+        descEl.style.display = 'none'
+      }
+
+      // Botón Cults3D
+      const cultsBtn = document.getElementById('detalleCultsBtn')
+      if (p.cults_url) {
+        cultsBtn.href = p.cults_url
+        cultsBtn.style.display = 'flex'
+      } else {
+        cultsBtn.style.display = 'none'
+      }
+
       if (perfilData) {
         if (perfilData.nombre) document.getElementById('detalleCreadorNombre').textContent = perfilData.nombre
         if (perfilData.descripcion) document.getElementById('detalleCreadorDesc').textContent = perfilData.descripcion
@@ -679,6 +741,8 @@
       let filtrados = categoriaActual === 'todos'
         ? productos
         : productos.filter(p => p.categoria === categoriaActual)
+      if (filtroPrecios === 'gratis') filtrados = filtrados.filter(p => !p.precio || Number(p.precio) === 0)
+      if (filtroPrecios === 'pago')   filtrados = filtrados.filter(p => p.precio && Number(p.precio) > 0)
       if (busqueda.trim()) {
         const q = busqueda.toLowerCase()
         filtrados = filtrados.filter(p => p.nombre.toLowerCase().includes(q))
@@ -687,7 +751,11 @@
         divProductos.innerHTML = '<p class="cargando">No se encontraron diseños.</p>'
         return
       }
-      divProductos.innerHTML = filtrados.map((p, i) => `
+      divProductos.innerHTML = filtrados.map((p, i) => {
+        const precio = Number(p.precio)
+        const precioTexto = precio === 0 ? 'Gratis' : `$${precio.toFixed(2)} USD`
+        const esGratis = precio === 0
+        return `
         <article class="card" data-id="${p.id}" data-cat="${p.categoria}" onclick="window.abrirDetalle('${p.id}')" style="cursor:pointer">
           <span class="card__drag-handle" title="Arrastrá para reordenar">⠿</span>
           <div class="card__img-wrap">
@@ -696,9 +764,11 @@
               : `<div class="card__placeholder">3D</div>`}
             <span class="card__num">${String(i+1).padStart(2,'0')}</span>
             <span class="card__badge">${labelCategoria(p.categoria)}</span>
+            ${esGratis ? `<span class="card__badge-gratis">Gratis</span>` : ''}
             <div class="card__overlay">
               <p class="card__nombre-overlay">${p.nombre}</p>
-              <p class="card__precio-overlay">$${Number(p.precio).toFixed(2)} USD</p>
+              <p class="card__precio-overlay">${precioTexto}</p>
+              ${p.descargas ? `<p class="card__descargas-overlay">↓ ${Number(p.descargas).toLocaleString()}</p>` : ''}
             </div>
             ${esAdmin ? `
               <div class="card__admin-btns" onclick="event.stopPropagation()">
@@ -708,10 +778,12 @@
           </div>
           <div class="card__body">
             <h3 class="card__nombre">${p.nombre}</h3>
-            <p class="card__desc">${p.descripcion || ''}</p>
             <div class="card__footer">
-              <span class="card__precio">$${Number(p.precio).toFixed(2)} USD</span>
+              <span class="card__precio ${esGratis ? 'card__precio--gratis' : ''}">${precioTexto}</span>
               <div class="card__acciones" onclick="event.stopPropagation()">
+                ${p.cults_url ? `<a href="${p.cults_url}" target="_blank" class="card__accion-btn card__accion-btn--cults" title="Ver en Cults3D" onclick="event.stopPropagation()">
+                  <svg viewBox="0 0 24 24" fill="currentColor" width="14" height="14"><path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm0 2c5.523 0 10 4.477 10 10S17.523 22 12 22 2 17.523 2 12 6.477 2 12 2zm-1 5v6l5 3 .75-1.3-4.25-2.45V7H11z"/></svg>
+                </a>` : ''}
                 <button class="card__accion-btn ${favoritos.includes(String(p.id)) ? 'activo' : ''}" onclick="window.toggleFavorito('${p.id}')" title="Favorito">
                   <svg viewBox="0 0 24 24" fill="${favoritos.includes(String(p.id)) ? 'currentColor' : 'none'}" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
                 </button>
@@ -721,8 +793,8 @@
               </div>
             </div>
           </div>
-        </article>
-      `).join('')
+        </article>`
+      }).join('')
 
       if (esAdmin) initDragDrop()
     }
@@ -809,6 +881,14 @@
     document.getElementById('buscador').addEventListener('input', e => {
       busqueda = e.target.value
       renderProductos()
+    })
+    document.querySelectorAll('.filtro-precio').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.filtro-precio').forEach(b => b.classList.remove('activo'))
+        btn.classList.add('activo')
+        filtroPrecios = btn.dataset.precio
+        renderProductos()
+      })
     })
     document.querySelectorAll('.filtro').forEach(btn => {
       btn.addEventListener('click', () => {
@@ -1167,10 +1247,69 @@
     })
 
     // ══════════════════════════════════════════
-    //  SINCRONIZACIÓN CON CULTS3D
+    //  ELIMINAR MASIVO
+    // ══════════════════════════════════════════
+    document.getElementById('btnEliminarMasivo').addEventListener('click', () => {
+      const lista = document.getElementById('listaEliminar')
+      lista.innerHTML = productos.map(p => `
+        <div class="eliminar-item">
+          <input type="checkbox" class="eliminar-check" id="chk_${p.id}" value="${p.id}"/>
+          <label for="chk_${p.id}" class="eliminar-label">
+            <div class="eliminar-item__img">${p.imagen_url ? `<img src="${p.imagen_url}"/>` : '<span>3D</span>'}</div>
+            <div>
+              <p class="eliminar-item__nombre">${p.nombre}</p>
+              <p class="eliminar-item__cat">${labelCategoria(p.categoria)}</p>
+            </div>
+          </label>
+        </div>`).join('')
+      document.querySelectorAll('.eliminar-check').forEach(chk => {
+        chk.addEventListener('change', () => {
+          const n = document.querySelectorAll('.eliminar-check:checked').length
+          document.getElementById('eliminarCount').textContent = `${n} seleccionado${n !== 1 ? 's' : ''}`
+        })
+      })
+      document.getElementById('eliminarCount').textContent = '0 seleccionados'
+      document.getElementById('eliminarError').textContent = ''
+      document.getElementById('modalEliminarMasivo').classList.add('activo')
+    })
+    document.getElementById('btnCerrarEliminar').addEventListener('click', () => {
+      document.getElementById('modalEliminarMasivo').classList.remove('activo')
+    })
+    document.getElementById('btnSeleccionarTodos').addEventListener('click', () => {
+      document.querySelectorAll('.eliminar-check').forEach(c => { c.checked = true })
+      const n = document.querySelectorAll('.eliminar-check').length
+      document.getElementById('eliminarCount').textContent = `${n} seleccionado${n !== 1 ? 's' : ''}`
+    })
+    document.getElementById('btnDeseleccionarTodos').addEventListener('click', () => {
+      document.querySelectorAll('.eliminar-check').forEach(c => { c.checked = false })
+      document.getElementById('eliminarCount').textContent = '0 seleccionados'
+    })
+    document.getElementById('btnConfirmarEliminar').addEventListener('click', async () => {
+      const seleccionados = [...document.querySelectorAll('.eliminar-check:checked')].map(c => c.value)
+      if (seleccionados.length === 0) { document.getElementById('eliminarError').textContent = 'Seleccioná al menos un diseño.'; return }
+      if (!confirm(`¿Seguro que querés eliminar ${seleccionados.length} diseño${seleccionados.length !== 1 ? 's' : ''}?`)) return
+      for (const id of seleccionados) {
+        await supabase.from('productos').delete().eq('id', id)
+      }
+      document.getElementById('modalEliminarMasivo').classList.remove('activo')
+      await cargarProductos()
+    })
+
+    // ══════════════════════════════════════════
+    //  CATEGORIZACIÓN AUTOMÁTICA
+    // ══════════════════════════════════════════
+    function detectarCategoria(nombre) {
+      const n = nombre.toLowerCase()
+      if (n.includes('cuadro') || n.includes('frame') || n.includes('litofanía') || n.includes('lithophane')) return 'cuadros'
+      if (n.includes('llavero') || n.includes('keychain') || n.includes('key chain')) return 'llaveros'
+      if (n.includes('cortante') || n.includes('cutter') || n.includes('cookie') || n.includes('galleta')) return 'cortantes'
+      return 'otros'
+    }
+
+    // ══════════════════════════════════════════
+    //  SINCRONIZACIÓN CON CULTS3D (TODAS LAS PÁGINAS)
     // ══════════════════════════════════════════
     document.getElementById('btnSincronizarCults').addEventListener('click', () => {
-      // Pre-cargar credenciales guardadas si las hay
       const savedNick   = localStorage.getItem('cults_nick') || ''
       const savedApiKey = localStorage.getItem('cults_api_key') || ''
       document.getElementById('cultsNick').value = savedNick
@@ -1178,6 +1317,7 @@
       document.getElementById('cultsError').textContent = ''
       document.getElementById('cultsInfo').style.display = 'none'
       document.getElementById('cultsResultado').style.display = 'none'
+      document.getElementById('cultsProgress').style.display = 'none'
       document.getElementById('modalCults').classList.add('activo')
     })
     document.getElementById('btnCerrarCults').addEventListener('click', () => {
@@ -1191,77 +1331,134 @@
       const infoEl = document.getElementById('cultsInfo')
       const resEl  = document.getElementById('cultsResultado')
       const listaEl= document.getElementById('cultsResultadoLista')
+      const progEl = document.getElementById('cultsProgress')
+      const progFill = document.getElementById('cultsProgressFill')
+      const progTxt  = document.getElementById('cultsProgressTexto')
+
       errEl.textContent = ''
       infoEl.style.display = 'none'
       resEl.style.display = 'none'
+      progEl.style.display = 'none'
 
       if (!nick || !apiKey) { errEl.textContent = 'Completá tu usuario y API Key de Cults3D.'; return }
 
       const btn = document.getElementById('btnEjecutarSync')
-      btn.textContent = 'Consultando Cults3D...'
+      btn.textContent = 'Conectando con Cults3D...'
       btn.disabled = true
 
-      // Guardar credenciales localmente para la próxima vez
       localStorage.setItem('cults_nick', nick)
       localStorage.setItem('cults_api_key', apiKey)
 
-      const query = `{
-        myself {
-          creationsBatch(limit: 50, offset: 0) {
-            results {
-              name(locale: ES)
-              illustrationImageUrl
-              downloadsCount
-              shortUrl
-              price(currency: USD) { cents }
+      // Cargar productos existentes para detectar duplicados por cults_id y nombre
+      const { data: existentes } = await supabase.from('productos').select('nombre, cults_id, imagen_url')
+      const cultsIdsExistentes = new Set((existentes || []).map(p => p.cults_id).filter(Boolean))
+      const nombresExistentes  = new Set((existentes || []).map(p => p.nombre.toLowerCase().trim()))
+
+      // Traer TODAS las páginas de Cults3D
+      let todosLosDiseños = []
+      let offset = 0
+      const limit = 50
+      let hayMas = true
+      progEl.style.display = 'block'
+
+      while (hayMas) {
+        progTxt.textContent = `Obteniendo diseños... (${todosLosDiseños.length} hasta ahora)`
+        progFill.style.width = '30%'
+
+        const query = `{
+          myself {
+            creationsBatch(limit: ${limit}, offset: ${offset}) {
+              results {
+                slug
+                name(locale: ES)
+                description(locale: ES)
+                illustrationImageUrl
+                downloadsCount
+                shortUrl
+                price(currency: USD) { cents }
+              }
             }
           }
+        }`
+
+        let pagina
+        try {
+          const resp = await supabase.functions.invoke('cults-proxy', { body: { nick, apiKey, query } })
+          if (resp.error) throw new Error(resp.error.message)
+          const json = resp.data
+          if (json.errors) throw new Error(json.errors[0].message)
+          pagina = json.data.myself.creationsBatch.results
+        } catch (err) {
+          errEl.textContent = 'Error al conectar con Cults3D: ' + err.message
+          btn.textContent = '⟳ Sincronizar todos los diseños'; btn.disabled = false
+          progEl.style.display = 'none'
+          return
         }
-      }`
 
-      let cultsDesigns
-      try {
-        const resp = await supabase.functions.invoke('cults-proxy', {
-          body: { nick, apiKey, query }
-        })
-        if (resp.error) throw new Error(resp.error.message)
-        const json = resp.data
-        if (json.errors) throw new Error(json.errors[0].message)
-        cultsDesigns = json.data.myself.creationsBatch.results
-      } catch (err) {
-        errEl.textContent = 'Error al conectar con Cults3D: ' + err.message
-        btn.textContent = 'Importar diseños nuevos'; btn.disabled = false
-        return
+        if (!pagina || pagina.length === 0) { hayMas = false; break }
+        todosLosDiseños = todosLosDiseños.concat(pagina)
+        if (pagina.length < limit) { hayMas = false } else { offset += limit }
       }
 
-      if (!cultsDesigns || cultsDesigns.length === 0) {
+      if (todosLosDiseños.length === 0) {
         errEl.textContent = 'No se encontraron diseños en tu cuenta de Cults3D.'
-        btn.textContent = 'Importar diseños nuevos'; btn.disabled = false
+        btn.textContent = '⟳ Sincronizar todos los diseños'; btn.disabled = false
+        progEl.style.display = 'none'
         return
       }
 
-      // Cargar productos existentes (por nombre) para evitar duplicados
-      const { data: existentes } = await supabase.from('productos').select('nombre')
-      const nombresExistentes = new Set((existentes || []).map(p => p.nombre.toLowerCase().trim()))
-
-      btn.textContent = 'Importando...'
-      let nuevos = 0
+      // Importar solo los nuevos
+      btn.textContent = `Importando ${todosLosDiseños.length} diseños...`
+      let nuevos = 0, duplicados = 0
       const resultadosHTML = []
 
-      for (const d of cultsDesigns) {
+      for (let i = 0; i < todosLosDiseños.length; i++) {
+        const d = todosLosDiseños[i]
         const nombre = d.name || 'Sin nombre'
-        const yaExiste = nombresExistentes.has(nombre.toLowerCase().trim())
+        const cultsId = d.slug || null
+
+        // Detectar duplicado por cults_id (más confiable) o por nombre
+        const yaExistePorId     = cultsId && cultsIdsExistentes.has(cultsId)
+        const yaExistePorNombre = nombresExistentes.has(nombre.toLowerCase().trim())
+        const yaExiste = yaExistePorId || yaExistePorNombre
+
+        progFill.style.width = `${30 + Math.round((i / todosLosDiseños.length) * 65)}%`
+        progTxt.textContent = `Procesando ${i + 1} de ${todosLosDiseños.length}: ${nombre}`
 
         if (!yaExiste) {
-          const precio = d.price ? (d.price.cents / 100).toFixed(2) : '0.00'
+          const precio = d.price ? (d.price.cents / 100) : 0
+          const esGratis = precio === 0
+          const categoria = detectarCategoria(nombre)
+          const descripcion = d.description || null
+
           await supabase.from('productos').insert([{
             nombre,
-            descripcion: `Diseño importado desde Cults3D. Ver en: ${d.shortUrl}`,
-            precio: parseFloat(precio),
+            descripcion,
+            precio,
             imagen_url: d.illustrationImageUrl || null,
-            categoria: 'otros'
+            categoria,
+            cults_url: d.shortUrl || null,
+            cults_id: cultsId,
+            descargas: d.downloadsCount || 0,
+            es_gratis: esGratis
           }])
           nuevos++
+          cultsIdsExistentes.add(cultsId)
+          nombresExistentes.add(nombre.toLowerCase().trim())
+        } else {
+          // Actualizar datos que pueden cambiar: precio, descargas
+          if (cultsId) {
+            const precio = d.price ? (d.price.cents / 100) : 0
+            await supabase.from('productos')
+              .update({
+                precio,
+                descargas: d.downloadsCount || 0,
+                es_gratis: precio === 0,
+                cults_url: d.shortUrl || null,
+              })
+              .eq('cults_id', cultsId)
+          }
+          duplicados++
         }
 
         resultadosHTML.push(`
@@ -1269,19 +1466,21 @@
             ${d.illustrationImageUrl ? `<img class="cults-item__img" src="${d.illustrationImageUrl}" alt="${nombre}"/>` : '<div class="cults-item__img"></div>'}
             <span class="cults-item__nombre">${nombre}</span>
             <span class="cults-item__status ${yaExiste ? 'cults-item__status--existe' : 'cults-item__status--nuevo'}">
-              ${yaExiste ? 'Ya existe' : '✓ Importado'}
+              ${yaExiste ? '↻ Actualizado' : '✓ Nuevo'}
             </span>
           </div>`)
       }
 
-      // Mostrar resultado
+      progFill.style.width = '100%'
+      progTxt.textContent = '¡Sincronización completa!'
+
       document.getElementById('cultsInfoTexto').textContent =
-        `${cultsDesigns.length} diseños encontrados en Cults3D · ${nuevos} importados como nuevos · ${cultsDesigns.length - nuevos} ya existían`
+        `${todosLosDiseños.length} diseños en Cults3D · ${nuevos} nuevos importados · ${duplicados} actualizados`
       infoEl.style.display = 'block'
       listaEl.innerHTML = resultadosHTML.join('')
       resEl.style.display = 'block'
 
-      btn.textContent = 'Importar diseños nuevos'; btn.disabled = false
+      btn.textContent = '⟳ Sincronizar todos los diseños'; btn.disabled = false
       if (nuevos > 0) await cargarProductos()
     })
 
