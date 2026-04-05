@@ -362,9 +362,17 @@
       </div>
       <p class="form-error" id="ytError"></p>
     </div>
-    <div class="yt-grid" id="ytGrid">
-      <p class="cargando">Cargando videos...</p>
+    <!-- Carrusel -->
+    <div class="yt-carousel" id="ytCarousel">
+      <button class="yt-carousel__btn yt-carousel__btn--prev" id="ytPrev">&#8249;</button>
+      <button class="yt-carousel__btn yt-carousel__btn--next" id="ytNext">&#8250;</button>
+      <div class="yt-carousel__track-wrap">
+        <div class="yt-carousel__track" id="ytTrack">
+          <p class="cargando" style="padding:2rem">Cargando videos...</p>
+        </div>
+      </div>
     </div>
+    <div class="yt-carousel__dots" id="ytDots"></div>
   </section>
 
   <!-- SUGERENCIAS -->
@@ -514,7 +522,7 @@
     let filtroPrecios   = 'todos'
     let ordenActual     = 'llegada'
     let paginaProductos  = 1
-    const POR_PAGINA     = 40
+    const POR_PAGINA     = 20
     let busqueda = ''
     let productos = []
     let perfilId = null
@@ -954,24 +962,91 @@
         </article>`
       }).join('')
 
-      // Botón "Ver más"
+      // Botón "Ver más" — muestra 100 más en cada click
       if (hayMas) {
         divProductos.insertAdjacentHTML('beforeend', `
-          <div class="ver-mas-wrap" id="verMasWrap">
+          <div class="ver-mas-wrap" id="verMasWrap" style="grid-column:1/-1">
             <button class="btn-ver-mas" id="btnVerMas">
               Ver más
               <span class="ver-mas-count">${visibles.length} de ${total}</span>
             </button>
           </div>`)
-        document.getElementById('btnVerMas').addEventListener('click', () => {
+        const handleVerMas = () => {
+          // Quitar botón actual
+          const wrap = document.getElementById('verMasWrap')
+          if (wrap) wrap.remove()
+          // Calcular rango de nuevos items a agregar (hasta 100 más)
+          const yaVisibles = paginaProductos * POR_PAGINA
+          const VER_MAS_CANTIDAD = 100
           paginaProductos++
-          renderProductos(false)
-          // Scroll suave al nuevo contenido
-          setTimeout(() => {
-            const wrap = document.getElementById('verMasWrap')
-            if (wrap) wrap.scrollIntoView({ behavior: 'smooth', block: 'center' })
-          }, 50)
-        })
+          const nuevosTotal = Math.min(filtrados.length, yaVisibles + VER_MAS_CANTIDAD)
+          const nuevos = filtrados.slice(yaVisibles, nuevosTotal)
+          const hayMasAun = filtrados.length > nuevosTotal
+          // Agregar nuevas cards con animación
+          nuevos.forEach((p, idx) => {
+            const i = yaVisibles + idx
+            const precio = Number(p.precio)
+            const precioTexto = precio === 0 ? 'Gratis' : `$${precio.toFixed(2)} USD`
+            const esGratis = precio === 0
+            const art = document.createElement('article')
+            art.className = 'card card--reveal'
+            art.dataset.id  = p.id
+            art.dataset.cat = p.categoria
+            art.style.cursor = 'pointer'
+            art.style.animationDelay = `${(idx % 20) * 30}ms`
+            art.setAttribute('onclick', `window.abrirDetalle('${p.id}')`)
+            art.innerHTML = `
+              <span class="card__drag-handle" title="Arrastrá para reordenar">⠿</span>
+              <div class="card__img-wrap">
+                ${p.imagen_url
+                  ? (p.imagen_url.match(/\.mp4(\?|$)/i)
+                    ? `<video src="${p.imagen_url}" class="card__img card__video" muted loop playsinline preload="metadata" onmouseenter="this.play()" onmouseleave="this.pause();this.currentTime=0"></video>`
+                    : `<img src="${p.imagen_url}" alt="${p.nombre}" class="card__img"/>`)
+                  : `<div class="card__placeholder">3D</div>`}
+                <span class="card__num">${String(i+1).padStart(2,'0')}</span>
+                <span class="card__badge">${labelCategoria(p.categoria)}</span>
+                ${esGratis ? `<span class="card__badge-gratis">Gratis</span>` : ''}
+                <div class="card__overlay">
+                  <p class="card__nombre-overlay">${p.nombre}</p>
+                  <p class="card__precio-overlay">${precioTexto}</p>
+                  ${p.descargas ? `<p class="card__descargas-overlay">↓ ${Number(p.descargas).toLocaleString()}</p>` : ''}
+                </div>
+                ${esAdmin ? `
+                  <div class="card__admin-btns" onclick="event.stopPropagation()">
+                    <button class="card__admin-btn" onclick="window.editarProducto('${p.id}')">Editar</button>
+                    <button class="card__admin-btn card__admin-btn--danger" onclick="window.eliminarProducto('${p.id}')">Eliminar</button>
+                  </div>` : ''}
+              </div>
+              <div class="card__body">
+                <h3 class="card__nombre">${p.nombre}</h3>
+                <div class="card__footer">
+                  <span class="card__precio ${esGratis ? 'card__precio--gratis' : ''}">${precioTexto}</span>
+                  <div class="card__acciones" onclick="event.stopPropagation()">
+                    ${p.cults_url ? `<a href="${p.cults_url}" target="_blank" class="card__accion-btn card__accion-btn--cults card__accion-btn--descarga" title="Descargar en Cults3D" onclick="event.stopPropagation()">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" width="14" height="14"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                    </a>` : ''}
+                    <button class="card__accion-btn ${favoritos.includes(String(p.id)) ? 'activo' : ''}" onclick="window.toggleFavorito('${p.id}')" title="Favorito">
+                      <svg viewBox="0 0 24 24" fill="${favoritos.includes(String(p.id)) ? 'currentColor' : 'none'}" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+                    </button>
+                  </div>
+                </div>
+              </div>`
+            divProductos.appendChild(art)
+          })
+          // Nuevo botón si aún quedan más
+          if (hayMasAun) {
+            divProductos.insertAdjacentHTML('beforeend', `
+              <div class="ver-mas-wrap" id="verMasWrap" style="grid-column:1/-1">
+                <button class="btn-ver-mas" id="btnVerMas">
+                  Ver más
+                  <span class="ver-mas-count">${nuevosTotal} de ${filtrados.length}</span>
+                </button>
+              </div>`)
+            document.getElementById('btnVerMas').addEventListener('click', handleVerMas)
+          }
+          if (esAdmin) initDragDrop()
+        }
+        document.getElementById('btnVerMas').addEventListener('click', handleVerMas)
       }
 
       if (esAdmin) initDragDrop()
@@ -1810,7 +1885,7 @@
     }
 
     // ══════════════════════════════════════════
-    //  YOUTUBE VIDEOS
+    //  YOUTUBE — CARRUSEL + REORDENAR
     // ══════════════════════════════════════════
     function ytIdFromUrl(url) {
       url = url.trim()
@@ -1827,22 +1902,216 @@
       return null
     }
 
+    let ytVideos = []
+    let ytIndex  = 0
+    let ytTimer  = null
+
     async function cargarYoutube() {
-      const grid = document.getElementById('ytGrid')
-      const { data, error } = await supabase.from('youtube_videos').select('*').order('created_at', { ascending: false })
+      // Intentar con order por 'orden', con fallback si falla
+      let data, error
+      ;({ data, error } = await supabase.from('youtube_videos').select('*').order('orden', { ascending: true, nullsFirst: false }))
+      if (error) {
+        // Fallback: sin orden específico
+        ;({ data, error } = await supabase.from('youtube_videos').select('*'))
+      }
       if (error || !data || data.length === 0) {
-        grid.innerHTML = '<p class="cargando">No hay videos cargados aún.</p>'
+        document.getElementById('ytTrack').innerHTML = '<p class="cargando" style="padding:2rem;width:100%">No hay videos cargados aún.</p>'
+        document.getElementById('ytDots').innerHTML = ''
         return
       }
-      grid.innerHTML = data.map(v => `
-        <div class="yt-card" data-id="${v.id}">
-          ${esAdmin ? `<button class="yt-card__del" onclick="window.eliminarYt('${v.id}')" title="Eliminar">✕</button>` : ''}
-          <a href="https://www.youtube.com/watch?v=${v.yt_id}" target="_blank" rel="noopener" class="yt-card__thumb">
-            <img src="https://img.youtube.com/vi/${v.yt_id}/mqdefault.jpg" alt="${v.titulo || 'Video'}" loading="lazy"/>
-            <div class="yt-card__play"><svg viewBox="0 0 24 24" fill="currentColor" width="32" height="32"><path d="M8 5v14l11-7z"/></svg></div>
-          </a>
-          <p class="yt-card__titulo">${v.titulo || 'Ver en YouTube'}</p>
-        </div>`).join('')
+      ytVideos = data
+      ytIndex  = 0
+      renderYtCarousel()
+    }
+
+    // ── Variables del carrusel YT ──
+    let ytCurrentIndex = 0
+
+    function renderYtCarousel() {
+      const track  = document.getElementById('ytTrack')
+      const dotsEl = document.getElementById('ytDots')
+      if (!track) return
+
+      const N = ytVideos.length
+      if (N === 0) return
+
+      // ── Calcular ancho del slide según viewport ──
+      function slideWidth() {
+        const carousel = document.getElementById('ytCarousel')
+        const vw = carousel ? carousel.offsetWidth : window.innerWidth
+        if (vw < 480)  return Math.round(vw * 0.78)
+        if (vw < 768)  return Math.round(vw * 0.65)
+        return Math.min(560, Math.round(vw * 0.52))
+      }
+
+      // ── Construir HTML de un slide dado un video y su índice real ──
+      function slideHTML(v, realIdx) {
+        return `<div class="yt-slide" data-real="${realIdx}" data-ytid="${v.yt_id}" data-id="${v.id}">
+          ${esAdmin ? `
+            <div class="yt-slide__admin" onclick="event.stopPropagation()">
+              <button onclick="window.ytMover('${v.id}',-1)" title="Subir">↑</button>
+              <button onclick="window.ytMover('${v.id}', 1)" title="Bajar">↓</button>
+              <button onclick="window.eliminarYt('${v.id}')" title="Eliminar">✕</button>
+            </div>` : ''}
+          <div class="yt-slide__thumb">
+            <img src="https://img.youtube.com/vi/${v.yt_id}/hqdefault.jpg" alt="${v.titulo || 'Video'}" loading="lazy" onerror="if(!this.dataset.fb){this.dataset.fb=1;this.src='https://img.youtube.com/vi/${v.yt_id}/mqdefault.jpg';}else{this.onerror=null;}" />
+            <div class="yt-slide__play"><svg viewBox="0 0 24 24" fill="currentColor" width="48" height="48"><path d="M8 5v14l11-7z"/></svg></div>
+          </div>
+          <p class="yt-slide__titulo">${v.titulo || 'Ver en YouTube'}</p>
+        </div>`
+      }
+
+      // ── Técnica de cilindro infinito:
+      //    Clonar N slides al inicio y N slides al final del array real.
+      //    El track tiene 3*N slides. El "cursor" real vive en la zona central [N .. 2N-1].
+      //    Cuando la animación termina y estamos en zona clon, hacemos un jump silencioso
+      //    al equivalente en la zona central.
+      const clones = CLONES => ytVideos.map((v, i) => slideHTML(v, i)).join('')
+      track.innerHTML =
+        clones() +   // clones del final (posición 0..N-1 del track)
+        clones() +   // originales (posición N..2N-1 del track)
+        clones()     // clones del inicio (posición 2N..3N-1 del track)
+
+      // Índice en el track (zona central = offset N)
+      let trackIdx = N + ytCurrentIndex   // arrancamos en la zona central
+
+      function applyWidths() {
+        const sw = slideWidth()
+        track.querySelectorAll('.yt-slide').forEach(s => { s.style.width = sw + 'px' })
+      }
+      applyWidths()
+
+      let transitioning = false
+
+      function positionAt(tIdx, animate) {
+        const sw   = slideWidth()
+        const gap  = 19
+        const carW = document.getElementById('ytCarousel').offsetWidth
+        const offset = tIdx * (sw + gap) - (carW - sw) / 2
+        track.style.transition = animate ? 'transform 0.45s cubic-bezier(0.25,0.46,0.45,0.94)' : 'none'
+        track.style.transform  = `translateX(${-offset}px)`
+      }
+
+      function updateActive() {
+        const slides = track.querySelectorAll('.yt-slide')
+        slides.forEach((s, i) => s.classList.toggle('activo', i === trackIdx))
+        // Dots apuntan al índice real
+        if (dotsEl) dotsEl.querySelectorAll('.yt-dot').forEach((d, i) =>
+          d.classList.toggle('activo', i === ytCurrentIndex))
+      }
+
+      function goTo(delta) {
+        if (transitioning) return
+        if (N <= 1) return
+        transitioning = true
+
+        trackIdx += delta
+        ytCurrentIndex = ((trackIdx - N) % N + N) % N
+
+        updateActive()
+        positionAt(trackIdx, true)
+
+        // Usar setTimeout en lugar de transitionend para evitar
+        // que eventos de hijos (slides con scale) disparen el jump antes de tiempo
+        setTimeout(() => {
+          transitioning = false
+          if (trackIdx < N) {
+            trackIdx += N
+            positionAt(trackIdx, false)
+          } else if (trackIdx >= 2 * N) {
+            trackIdx -= N
+            positionAt(trackIdx, false)
+          }
+        }, 460)
+      }
+
+      function jumpTo(realIdx) {
+        // Navegar a un índice real desde los dots o click en slide lateral
+        const delta = realIdx - ytCurrentIndex
+        // Tomar el camino más corto en el cilindro
+        if (Math.abs(delta) <= N / 2) {
+          goTo(delta)
+        } else {
+          goTo(delta > 0 ? delta - N : delta + N)
+        }
+      }
+
+      // ── Dots ──
+      if (dotsEl) {
+        dotsEl.innerHTML = ytVideos.map((_, i) =>
+          `<button class="yt-dot${i === ytCurrentIndex ? ' activo' : ''}" data-i="${i}"></button>`).join('')
+        dotsEl.querySelectorAll('.yt-dot').forEach(d =>
+          d.addEventListener('click', () => jumpTo(+d.dataset.i)))
+      }
+
+      // ── Click en slides ──
+      track.querySelectorAll('.yt-slide').forEach((s, tIdx) => {
+        s.addEventListener('click', (e) => {
+          if (e.target.closest('.yt-slide__admin')) return
+          if (tIdx === trackIdx) {
+            // Slide activo → abrir YouTube
+            window.open('https://www.youtube.com/watch?v=' + s.dataset.ytid, '_blank', 'noopener')
+          } else {
+            // Slide lateral → navegar hacia él
+            goTo(tIdx - trackIdx)
+          }
+        })
+      })
+
+      // ── Botones prev / next ──
+      const oldPrev = document.getElementById('ytPrev')
+      const oldNext = document.getElementById('ytNext')
+      if (oldPrev && oldNext) {
+        const btnPrev = oldPrev.cloneNode(true)
+        const btnNext = oldNext.cloneNode(true)
+        oldPrev.parentNode.replaceChild(btnPrev, oldPrev)
+        oldNext.parentNode.replaceChild(btnNext, oldNext)
+        btnPrev.addEventListener('click', () => goTo(-1))
+        btnNext.addEventListener('click', () => goTo(+1))
+      }
+
+      // ── Swipe táctil ──
+      let touchX = 0, touchY = 0, touchMoved = false
+      const carousel = document.getElementById('ytCarousel')
+      carousel.addEventListener('touchstart', e => {
+        touchX = e.touches[0].clientX
+        touchY = e.touches[0].clientY
+        touchMoved = false
+      }, { passive: true })
+      carousel.addEventListener('touchmove', e => { touchMoved = true }, { passive: true })
+      carousel.addEventListener('touchend', e => {
+        if (!touchMoved) return
+        const dx = e.changedTouches[0].clientX - touchX
+        const dy = e.changedTouches[0].clientY - touchY
+        if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 40)
+          goTo(dx < 0 ? 1 : -1)
+      }, { passive: true })
+
+      // ── Resize ──
+      window.addEventListener('resize', () => {
+        applyWidths()
+        positionAt(trackIdx, false)
+      }, { passive: true })
+
+      // ── Posición inicial sin animación ──
+      updateActive()
+      requestAnimationFrame(() => positionAt(trackIdx, false))
+    }
+
+    function ytGoTo() {}
+    function initYtCarousel() {}
+
+    window.ytMover = async (id, dir) => {
+      const idx = ytVideos.findIndex(v => String(v.id) === String(id))
+      if (idx < 0) return
+      const newIdx = idx + dir
+      if (newIdx < 0 || newIdx >= ytVideos.length) return
+      ;[ytVideos[idx], ytVideos[newIdx]] = [ytVideos[newIdx], ytVideos[idx]]
+      for (let i = 0; i < ytVideos.length; i++) {
+        await supabase.from('youtube_videos').update({ orden: i }).eq('id', ytVideos[i].id)
+      }
+      ytIndex = newIdx
+      renderYtCarousel()
     }
 
     window.eliminarYt = async (id) => {
@@ -1865,10 +2134,11 @@
       const ytId = ytIdFromUrl(urlVal)
       if (!ytId) { errEl.textContent = 'URL de YouTube inválida. Pegá el link completo del video.'; return }
       btn.disabled = true; btn.textContent = 'Guardando...'
-      const { error } = await supabase.from('youtube_videos').insert([{ yt_id: ytId, titulo: tituloVal || null }])
+      const nuevoOrden = ytVideos.length
+      const { error } = await supabase.from('youtube_videos').insert([{ yt_id: ytId, titulo: tituloVal || null, orden: nuevoOrden }])
       btn.disabled = false; btn.textContent = '+ Agregar video'
       if (error) { errEl.textContent = 'Error al guardar: ' + error.message; return }
-      document.getElementById('ytUrlInput').value = ''
+      document.getElementById('ytUrlInput').value  = ''
       document.getElementById('ytTituloInput').value = ''
       await cargarYoutube()
     })
