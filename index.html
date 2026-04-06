@@ -18,7 +18,7 @@
         <span class="header__search-icon">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
         </span>
-        <input type="text" id="buscador" class="buscador" placeholder="Buscar diseños..."/>
+        <input type="search" id="buscador" class="buscador" placeholder="Buscar diseños..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" readonly onfocus="this.removeAttribute('readonly')"/>
       </div>
       <nav class="nav">
         <a href="#catalogo" class="nav__link">Catálogo</a>
@@ -31,7 +31,10 @@
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
           <span class="nav__badge" id="badgeFavoritos">0</span>
         </button>
-        <button class="nav__link nav__admin-btn" id="btnLoginToggle">Admin</button>
+        <button class="nav__icon-btn" id="btnUserLogin" title="Iniciar sesión">
+          <svg id="userLoginIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          <span id="userAvatarNav" style="display:none;width:28px;height:28px;border-radius:50%;overflow:hidden;border:1.5px solid var(--cyan);vertical-align:middle"><img id="userAvatarNavImg" style="width:100%;height:100%;object-fit:cover"/></span>
+        </button>
       </nav>
     </div>
   </header>
@@ -134,22 +137,95 @@
     </div>
   </div>
 
-  <!-- MODAL LOGIN -->
-  <div class="modal-overlay" id="modalLogin">
+  <!-- MODAL USUARIO: LOGIN / REGISTRO -->
+  <div class="modal-overlay" id="modalUsuario">
     <div class="modal">
-      <button class="modal__close" id="btnCerrarModal">✕</button>
-      <h2 class="modal__title">Acceso Admin</h2>
-      <p class="modal__sub">Solo para el administrador de Rabbit3D</p>
-      <div class="form-group">
-        <label class="form-label">Email</label>
-        <input type="email" id="adminEmail" class="form-input" placeholder="tu@email.com"/>
+      <button class="modal__close" id="btnCerrarUsuario">✕</button>
+      <h2 class="modal__title">Bienvenido a Rabbit3D</h2>
+      <p class="modal__sub">Iniciá sesión o creá tu cuenta gratuita</p>
+      <div class="user-tabs">
+        <button class="user-tab activo" id="tabLogin">Iniciar sesión</button>
+        <button class="user-tab" id="tabRegistro">Crear cuenta</button>
+      </div>
+      <!-- Panel login -->
+      <div id="panelLogin">
+        <div class="form-group">
+          <label class="form-label">Email</label>
+          <input type="email" id="userEmail" class="form-input" placeholder="tu@email.com" autocomplete="email"/>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Contraseña</label>
+          <input type="password" id="userPass" class="form-input" placeholder="••••••••" autocomplete="current-password"/>
+        </div>
+        <p class="form-error" id="userLoginError"></p>
+        <button class="btn btn--primary btn--full" id="btnUserLoginSubmit">Iniciar sesión</button>
+        <p class="user-modal-hint">¿No tenés cuenta? <button class="link-btn" id="btnIrRegistro">Registrate gratis</button></p>
+      </div>
+      <!-- Panel registro -->
+      <div id="panelRegistro" style="display:none">
+        <div class="form-group">
+          <label class="form-label">Nombre <span style="color:var(--cyan)">*</span></label>
+          <input type="text" id="regNombre" class="form-input" placeholder="Ej: Martín" autocomplete="name"/>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Email <span style="color:var(--cyan)">*</span></label>
+          <input type="email" id="regEmail" class="form-input" placeholder="tu@email.com" autocomplete="email"/>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Contraseña <span style="color:var(--cyan)">*</span></label>
+          <input type="password" id="regPass" class="form-input" placeholder="Mínimo 6 caracteres" autocomplete="new-password"/>
+        </div>
+        <p style="font-size:0.72rem;color:var(--muted);margin-bottom:0.75rem">Foto, descripción y redes sociales las podés completar después desde tu perfil.</p>
+        <p class="form-error" id="userRegError"></p>
+        <button class="btn btn--primary btn--full" id="btnUserRegSubmit">Crear cuenta</button>
+        <p class="user-modal-hint">¿Ya tenés cuenta? <button class="link-btn" id="btnIrLogin">Iniciá sesión</button></p>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL PERFIL USUARIO -->
+  <div class="modal-overlay" id="modalPerfilUsuario">
+    <div class="modal modal-perfil-usuario">
+      <button class="modal__close" id="btnCerrarPerfilUsuario">✕</button>
+      <h2 class="modal__title">Mi perfil</h2>
+      <div class="user-perfil-avatar-wrap">
+        <div class="user-perfil-avatar" id="userPerfilAvatar">
+          <img id="userPerfilAvatarImg" style="display:none;width:100%;height:100%;object-fit:cover;border-radius:50%;"/>
+          <span id="userPerfilAvatarTxt">?</span>
+          <div class="user-perfil-avatar-overlay" id="userPerfilAvatarOverlay">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+          </div>
+          <input type="file" id="userFotoFile" accept="image/*" style="display:none"/>
+        </div>
+        <p class="user-perfil-email" id="userPerfilEmail"></p>
+        <span class="user-rol-badge" id="userPerfilRolBadge" style="display:none">✦ Administrador</span>
       </div>
       <div class="form-group">
-        <label class="form-label">Contraseña</label>
-        <input type="password" id="adminPass" class="form-input" placeholder="••••••••"/>
+        <label class="form-label">Nombre</label>
+        <input type="text" id="userPerfilNombre" class="form-input" placeholder="Tu nombre"/>
       </div>
-      <p class="form-error" id="loginError"></p>
-      <button class="btn btn--primary btn--full" id="btnLogin">Iniciar sesión</button>
+      <div class="form-group">
+        <label class="form-label">Descripción</label>
+        <textarea id="userPerfilDesc" class="form-input form-textarea" placeholder="Contá un poco sobre vos..."></textarea>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Instagram (link completo)</label>
+        <input type="text" id="userPerfilInstagram" class="form-input" placeholder="https://instagram.com/tuusuario"/>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Telegram (link completo)</label>
+        <input type="text" id="userPerfilTelegram" class="form-input" placeholder="https://t.me/tuusuario"/>
+      </div>
+      <div class="form-group">
+        <label class="form-label">TikTok (link completo)</label>
+        <input type="text" id="userPerfilTiktok" class="form-input" placeholder="https://tiktok.com/@tuusuario"/>
+      </div>
+      <p class="form-error" id="userPerfilError"></p>
+      <p class="form-success" id="userPerfilExito" style="display:none">¡Perfil guardado!</p>
+      <div style="display:flex;gap:0.6rem;flex-wrap:wrap">
+        <button class="btn btn--primary" id="btnGuardarPerfilUsuario">Guardar cambios</button>
+        <button class="btn btn--sm btn--danger" id="btnCerrarSesionUsuario">Cerrar sesión</button>
+      </div>
     </div>
   </div>
 
@@ -302,7 +378,6 @@
       <button class="btn btn--sm btn--cults" id="btnSincronizarCults">⟳ Sincronizar Cults3D</button>
       <button class="btn btn--sm btn--eliminar-masivo" id="btnEliminarMasivo">🗑 Eliminar seleccionados</button>
       <button class="btn btn--sm" id="btnAdminYt">▶ Gestionar videos YT</button>
-      <button class="btn btn--sm" id="btnGestionarTemas" style="display:none">✦ Temáticas</button>
       <button class="btn btn--sm btn--danger" id="btnLogout">Cerrar sesión</button>
     </div>
 
@@ -316,18 +391,6 @@
       <button class="filtro-precio activo" data-precio="todos">Todos los precios</button>
       <button class="filtro-precio" data-precio="gratis">Gratis</button>
       <button class="filtro-precio" data-precio="pago">De pago</button>
-      <span class="filtros-sep">|</span>
-      <div class="filtro-tema-wrap">
-        <button class="filtro-tema-btn" id="btnTemaDropdown">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13"><path d="M4 6h16M4 12h8m-8 6h16"/></svg>
-          <span id="btnTemaLabel">Temáticas</span>
-          <svg class="filtro-tema-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="12" height="12"><polyline points="6 9 12 15 18 9"/></svg>
-        </button>
-        <div class="filtro-tema-dropdown" id="temaDropdown">
-          <button class="tema-option tema-option--all activo" data-tema="">Todas</button>
-          <div id="temasLista"></div>
-        </div>
-      </div>
       <span class="filtros-sep">|</span>
       <div class="filtro-orden-wrap">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13"><path d="M3 6h18M7 12h10M11 18h2"/></svg>
@@ -467,31 +530,6 @@
     <p>© 2025 <strong>Rabbit3D</strong> · Diseños para impresión 3D · General Pico, La Pampa</p>
   </footer>
 
-  <!-- MODAL TEMÁTICAS -->
-  <div class="modal-overlay" id="modalTematicas">
-    <div class="modal modal-tematicas">
-      <button class="modal__close" id="btnCerrarTematicas">✕</button>
-      <h2 class="modal__title">Gestionar temáticas</h2>
-      <p class="modal__sub">Creá, editá o eliminá temáticas del catálogo</p>
-      <div class="form-group">
-        <label class="form-label">Nombre</label>
-        <input type="text" id="temaNombre" class="form-input" placeholder="Ej: Pokémon"/>
-      </div>
-      <div class="form-group">
-        <label class="form-label">Palabras clave (separadas por coma)</label>
-        <input type="text" id="temaPalabras" class="form-input" placeholder="Ej: pokemon, pokemón, pokemons"/>
-        <p style="font-size:0.72rem;color:var(--muted);margin-top:0.3rem">Se buscan en nombre y descripción, sin distinguir mayúsculas.</p>
-      </div>
-      <p class="form-error" id="temaError"></p>
-      <div style="display:flex;gap:0.6rem;flex-wrap:wrap">
-        <button class="btn btn--primary" id="btnGuardarTema">Guardar temática</button>
-        <button class="btn btn--sm" id="btnCancelarEditTema" style="display:none">Cancelar edición</button>
-      </div>
-      <input type="hidden" id="temaEditId"/>
-      <div class="temas-lista" id="temasAdminLista"></div>
-    </div>
-  </div>
-
   <!-- MODAL CULTS3D -->
   <div class="modal-overlay" id="modalCults">
     <div class="modal modal-cults">
@@ -548,6 +586,30 @@
     </div>
   </div>
 
+  <script>
+    // Fallback de miniaturas YouTube: maxres → hq → mq → sd
+    window.ytThumbFallback = function(img) {
+      // hqdefault falló — intentar calidades menores
+      var ytid = img.dataset.ytid
+      if (!ytid) {
+        var m = (img.src || '').match(/\/vi\/([a-zA-Z0-9_-]{11})\//)
+        ytid = m ? m[1] : null
+      }
+      if (!ytid) { img.onerror = null; return }
+
+      var attempt = parseInt(img.dataset.attempt || '0')
+      // hqdefault ya fue el src inicial, así que empezamos desde mqdefault
+      var qualities = ['mqdefault', 'sddefault', 'default', '0']
+      if (attempt < qualities.length) {
+        img.dataset.attempt = String(attempt + 1)
+        img.onerror = function() { window.ytThumbFallback(this) }
+        img.src = 'https://img.youtube.com/vi/' + ytid + '/' + qualities[attempt] + '.jpg'
+      } else {
+        img.onerror = null
+        img.style.display = 'none'
+      }
+    }
+  </script>
   <script type="module">
     import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
 
@@ -560,10 +622,8 @@
     let filtroPrecios   = 'todos'
     let ordenActual     = 'llegada'
     let paginaProductos  = 1
-    const POR_PAGINA     = 100
+    const POR_PAGINA     = 20
     let busqueda = ''
-    let temaActual   = ''
-    let tematicas    = []
     let productos = []
     let perfilId = null
     let perfilData = null
@@ -638,10 +698,10 @@
 
     const divProductos  = document.getElementById('productos')
     const adminBar      = document.getElementById('adminBar')
-    const modalLogin    = document.getElementById('modalLogin')
+    // modalLogin eliminado — auth unificada
     const modalProducto = document.getElementById('modalProducto')
     const modalPerfil   = document.getElementById('modalPerfil')
-    const loginError    = document.getElementById('loginError')
+    // loginError eliminado — auth unificada
     const productoError = document.getElementById('productoError')
     const perfilError   = document.getElementById('perfilError')
     const statTotal     = document.getElementById('statTotal')
@@ -894,15 +954,9 @@
     async function cargarProductos() {
       divProductos.innerHTML = '<p class="cargando">Cargando diseños...</p>'
 
-      // Intentar con order('orden'). Si falla (columna inexistente o RLS),
-      // hacer fallback a order('id') para no quedar en blanco.
-      let data, error
-      ;({ data, error } = await supabase.from('productos').select('*').order('orden', { ascending: true, nullsFirst: false }))
-
-      if (error) {
-        // Fallback: ordenar por id (funciona aunque no exista columna "orden")
-        ;({ data, error } = await supabase.from('productos').select('*').order('id', { ascending: true }))
-      }
+      // Ordenar solo por id en la query (evita errores si 'orden' no existe o no tiene índice)
+      // El orden visual se aplica después en JS con el campo orden
+      const { data, error } = await supabase.from('productos').select('*').order('id', { ascending: true })
 
       if (error) {
         divProductos.innerHTML = '<p class="cargando">Error al cargar productos. Verificá las políticas de acceso en Supabase.</p>'
@@ -931,11 +985,7 @@
       if (filtroPrecios === 'pago')   filtrados = filtrados.filter(p => p.precio && Number(p.precio) > 0)
       if (busqueda.trim()) {
         const q = busqueda.toLowerCase()
-        filtrados = filtrados.filter(p => p.nombre.toLowerCase().includes(q))
-      }
-      if (temaActual) {
-        const t = tematicas.find(x => String(x.id) === temaActual)
-        if (t) filtrados = filtrados.filter(p => matchTema(p, t.palabras))
+        filtrados = filtrados.filter(p => p.nombre && p.nombre.toLowerCase().includes(q))
       }
 
       // Ordenamiento: por defecto orden de llegada (id), o por descargas
@@ -1165,7 +1215,7 @@
         await supabase.from('productos').update({ orden: u.orden }).eq('id', u.id)
       }
       // Recargar sin mover la posición visual (el orden ya está en la BD)
-      const { data } = await supabase.from('productos').select('*').order('orden', { ascending: true, nullsFirst: false })
+      const { data } = await supabase.from('productos').select('*').order('orden', { ascending: true })
       productos = (data || []).sort((a, b) => {
         const oa = a.orden ?? 999999
         const ob = b.orden ?? 999999
@@ -1176,9 +1226,24 @@
     }
 
     document.getElementById('buscador').addEventListener('input', e => {
-      busqueda = e.target.value
+      const val = e.target.value
+      // Ignorar si el valor parece un email (autocomplete del navegador)
+      if (val.includes('@') && val.includes('.') && !val.includes(' ')) {
+        e.target.value = ''
+        busqueda = ''
+      } else {
+        busqueda = val
+      }
       paginaProductos = 1
       renderProductos()
+    })
+    // También limpiar en focus por si el autocomplete llena después
+    document.getElementById('buscador').addEventListener('focus', e => {
+      if (e.target.value.includes('@')) {
+        e.target.value = ''
+        busqueda = ''
+        renderProductos()
+      }
     })
     document.getElementById('selectOrden').addEventListener('change', e => {
       ordenActual = e.target.value
@@ -1205,44 +1270,303 @@
     })
 
     // ══════════════════════════════════════════
-    //  LOGIN / LOGOUT
+    //  ACTIVAR / DESACTIVAR MODO ADMIN
     // ══════════════════════════════════════════
-    document.getElementById('btnLoginToggle').addEventListener('click', () => modalLogin.classList.add('activo'))
-    document.getElementById('btnCerrarModal').addEventListener('click', () => {
-      modalLogin.classList.remove('activo')
-      loginError.textContent = ''
-    })
-    document.getElementById('btnLogin').addEventListener('click', async () => {
-      const email = document.getElementById('adminEmail').value
-      const pass  = document.getElementById('adminPass').value
-      loginError.textContent = ''
-      const { error } = await supabase.auth.signInWithPassword({ email, password: pass })
-      if (error) { loginError.textContent = 'Email o contraseña incorrectos.'; return }
+    function activarAdmin() {
       esAdmin = true
-      modalLogin.classList.remove('activo')
       adminBar.classList.add('activo')
-      document.getElementById('btnLoginToggle').textContent = '✓ Admin'
       document.getElementById('sugAdminAcciones').style.display = 'block'
-      document.getElementById('btnGestionarTemas').style.display = 'inline-block'
       actualizarAvatarAdmin()
-      renderProductos()
-      cargarSugerencias()
-      cargarYoutube()
-    })
-    document.getElementById('btnLogout').addEventListener('click', async () => {
-      await supabase.auth.signOut()
+      // Re-renderizar solo si hay productos cargados (no sobreescribir con array vacío)
+      if (productos && productos.length > 0) {
+        renderProductos()
+      }
+    }
+
+    function desactivarAdmin() {
       esAdmin = false
       adminBar.classList.remove('activo')
-      document.getElementById('btnLoginToggle').textContent = 'Admin'
       document.getElementById('productos').classList.remove('drag-mode')
       document.getElementById('ytAdminBar').style.display = 'none'
       document.getElementById('sugAdminAcciones').style.display = 'none'
-      document.getElementById('btnGestionarTemas').style.display = 'none'
       actualizarAvatarAdmin()
-      renderProductos()
+      // Solo re-renderizar si los productos ya están cargados
+      if (productos.length > 0) renderProductos()
       cargarYoutube()
       cargarSugerencias()
+    }
+
+    // Logout desde la admin bar
+    document.getElementById('btnLogout').addEventListener('click', async () => {
+      if (!confirm('¿Cerrar sesión?')) return
+      await supabase.auth.signOut()
+      usuarioActual = null
+      perfilUsuario = null
+      desactivarAdmin()
+      actualizarNavUsuario()
     })
+
+    // ══════════════════════════════════════════
+    //  USUARIO (login / registro / perfil)
+    // ══════════════════════════════════════════
+    let usuarioActual = null
+    let perfilUsuario = null
+
+    document.getElementById('btnUserLogin').addEventListener('click', () => {
+      if (usuarioActual) {
+        abrirPerfilUsuario()
+      } else {
+        resetUserModal('login')
+        document.getElementById('modalUsuario').classList.add('activo')
+      }
+    })
+    document.getElementById('btnCerrarUsuario').addEventListener('click', () =>
+      document.getElementById('modalUsuario').classList.remove('activo'))
+    document.getElementById('btnCerrarPerfilUsuario').addEventListener('click', () =>
+      document.getElementById('modalPerfilUsuario').classList.remove('activo'))
+
+    function resetUserModal(tab) {
+      const isLogin = tab !== 'registro'
+      document.getElementById('tabLogin').classList.toggle('activo', isLogin)
+      document.getElementById('tabRegistro').classList.toggle('activo', !isLogin)
+      document.getElementById('panelLogin').style.display   = isLogin ? 'block' : 'none'
+      document.getElementById('panelRegistro').style.display = isLogin ? 'none' : 'block'
+      document.getElementById('userLoginError').textContent = ''
+      document.getElementById('userRegError').textContent   = ''
+      ;['userEmail','userPass','regEmail','regPass','regNombre'].forEach(id => {
+        const el = document.getElementById(id); if (el) el.value = ''
+      })
+    }
+    document.getElementById('tabLogin').addEventListener('click', () => resetUserModal('login'))
+    document.getElementById('tabRegistro').addEventListener('click', () => resetUserModal('registro'))
+    document.getElementById('btnIrRegistro').addEventListener('click', () => resetUserModal('registro'))
+    document.getElementById('btnIrLogin').addEventListener('click', () => resetUserModal('login'))
+
+    // ── Login — detecta rol automáticamente ──
+    document.getElementById('btnUserLoginSubmit').addEventListener('click', async () => {
+      const email = document.getElementById('userEmail').value.trim()
+      const pass  = document.getElementById('userPass').value
+      const errEl = document.getElementById('userLoginError')
+      errEl.textContent = ''
+      if (!email || !pass) { errEl.textContent = 'Completá email y contraseña.'; return }
+      const btn = document.getElementById('btnUserLoginSubmit')
+      btn.disabled = true; btn.textContent = 'Ingresando...'
+      const { data, error } = await supabase.auth.signInWithPassword({ email, password: pass })
+      btn.disabled = false; btn.textContent = 'Iniciar sesión'
+      if (error) { errEl.textContent = 'Email o contraseña incorrectos.'; return }
+      usuarioActual = data.user
+      // Cerrar modal sin propagar el evento de click
+      const modalU = document.getElementById('modalUsuario')
+      modalU.classList.remove('activo')
+      // Limpiar buscador por si el navegador lo llenó con el email
+      const buscadorEl = document.getElementById('buscador')
+      if (buscadorEl && buscadorEl.value.includes('@')) {
+        buscadorEl.value = ''
+        busqueda = ''
+      }
+      await cargarPerfilUsuario()
+      if (perfilUsuario?.rol === 'admin') {
+        activarAdmin()
+      } else {
+        // Usuario normal: asegurar que los productos siguen visibles
+        if (productos.length > 0) renderProductos()
+      }
+      actualizarNavUsuario()
+    })
+
+    // ── Registro ──
+    document.getElementById('btnUserRegSubmit').addEventListener('click', async () => {
+      const nombre = document.getElementById('regNombre').value.trim()
+      const email  = document.getElementById('regEmail').value.trim()
+      const pass   = document.getElementById('regPass').value
+      const errEl  = document.getElementById('userRegError')
+      errEl.textContent = ''
+      if (!email || !pass) { errEl.textContent = 'Completá email y contraseña.'; return }
+      if (pass.length < 6) { errEl.textContent = 'La contraseña debe tener al menos 6 caracteres.'; return }
+      const btn = document.getElementById('btnUserRegSubmit')
+      btn.disabled = true; btn.textContent = 'Creando cuenta...'
+      const { data, error } = await supabase.auth.signUp({ email, password: pass })
+      btn.disabled = false; btn.textContent = 'Crear cuenta'
+      if (error) { errEl.textContent = 'Error: ' + error.message; return }
+      usuarioActual = data.user
+      if (usuarioActual) {
+        // Upsert base siempre, campos extra si la tabla los tiene
+        await supabase.from('profiles').upsert([{
+          id: usuarioActual.id, email, rol: 'user'
+        }], { onConflict: 'id' })
+        // Intentar guardar nombre — puede fallar si la columna no existe
+        await supabase.from('profiles').update({
+          nombre: nombre || email.split('@')[0]
+        }).eq('id', usuarioActual.id)
+        await cargarPerfilUsuario()
+      }
+      document.getElementById('modalUsuario').classList.remove('activo')
+      await abrirPerfilUsuario()
+      const exitoEl = document.getElementById('userPerfilExito')
+      exitoEl.textContent = '¡Cuenta creada! Revisá tu email para confirmar tu cuenta.'
+      exitoEl.style.display = 'block'
+      actualizarNavUsuario()
+    })
+
+    async function cargarPerfilUsuario() {
+      if (!usuarioActual) return
+      try {
+        // Usar tabla 'profiles' directamente (id = auth user uuid, tiene columna rol)
+        const { data, error } = await supabase
+          .from('profiles').select('*').eq('id', usuarioActual.id).limit(1)
+        if (error) {
+          console.warn('No se pudo cargar perfil:', error.message)
+          perfilUsuario = { id: usuarioActual.id, rol: 'user' }
+        } else {
+          perfilUsuario = data?.[0] || { id: usuarioActual.id, rol: 'user' }
+        }
+      } catch(e) {
+        perfilUsuario = { id: usuarioActual.id, rol: 'user' }
+      }
+    }
+
+    function actualizarNavUsuario() {
+      const btn        = document.getElementById('btnUserLogin')
+      const iconSvg    = document.getElementById('userLoginIcon')
+      const avatarSpan = document.getElementById('userAvatarNav')
+      const avatarImg  = document.getElementById('userAvatarNavImg')
+      if (usuarioActual) {
+        if (perfilUsuario?.foto_url) {
+          avatarImg.src = perfilUsuario.foto_url
+          avatarSpan.style.display = 'inline-block'
+          if (iconSvg) iconSvg.style.display = 'none'
+        } else {
+          avatarSpan.style.display = 'none'
+          if (iconSvg) iconSvg.style.display = 'block'
+        }
+        btn.title = perfilUsuario?.nombre || usuarioActual.email
+      } else {
+        avatarSpan.style.display = 'none'
+        if (iconSvg) iconSvg.style.display = 'block'
+        btn.title = 'Iniciar sesión'
+      }
+    }
+
+    async function abrirPerfilUsuario() {
+      if (!usuarioActual) return
+      await cargarPerfilUsuario()
+      const p = perfilUsuario || {}
+      document.getElementById('userPerfilEmail').textContent  = usuarioActual.email
+      document.getElementById('userPerfilNombre').value       = p.nombre || ''
+      document.getElementById('userPerfilDesc').value         = p.descripcion || ''
+      document.getElementById('userPerfilInstagram').value    = p.instagram || ''
+      document.getElementById('userPerfilTelegram').value     = p.telegram || ''
+      document.getElementById('userPerfilTiktok').value       = p.tiktok || ''
+      document.getElementById('userPerfilError').textContent  = ''
+      document.getElementById('userPerfilExito').style.display = 'none'
+      const avatarImg = document.getElementById('userPerfilAvatarImg')
+      const avatarTxt = document.getElementById('userPerfilAvatarTxt')
+      if (p.foto_url) {
+        avatarImg.src = p.foto_url; avatarImg.style.display = 'block'; avatarTxt.style.display = 'none'
+      } else {
+        avatarImg.style.display = 'none'; avatarTxt.style.display = 'block'
+        avatarTxt.textContent = (p.nombre || usuarioActual.email)[0].toUpperCase()
+      }
+      const badge = document.getElementById('userPerfilRolBadge')
+      if (badge) badge.style.display = perfilUsuario?.rol === 'admin' ? 'inline-block' : 'none'
+      document.getElementById('modalPerfilUsuario').classList.add('activo')
+    }
+
+    document.getElementById('userPerfilAvatar').addEventListener('click', () => {
+      if (!usuarioActual) return
+      document.getElementById('userFotoFile').click()
+    })
+    document.getElementById('userFotoFile').addEventListener('change', async (e) => {
+      const file = e.target.files[0]
+      if (!file || !usuarioActual) return
+      const overlay = document.getElementById('userPerfilAvatarOverlay')
+      overlay.innerHTML = '<span style="font-size:0.65rem;color:var(--text)">Subiendo...</span>'
+      const ext = file.name.split('.').pop()
+      const fileName = `user_${usuarioActual.id}_${Date.now()}.${ext}`
+      const { error: upErr } = await supabase.storage.from('media').upload(fileName, file, { upsert: true })
+      overlay.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>'
+      if (upErr) { document.getElementById('userPerfilError').textContent = 'Error al subir imagen.'; return }
+      const { data: urlData } = supabase.storage.from('media').getPublicUrl(fileName)
+      const url = urlData.publicUrl
+      document.getElementById('userPerfilAvatarImg').src = url
+      document.getElementById('userPerfilAvatarImg').style.display = 'block'
+      document.getElementById('userPerfilAvatarTxt').style.display = 'none'
+      // Intentar guardar foto_url; si la columna no existe en profiles, silenciar error
+      const { error: fotoErr } = await supabase.from('profiles').upsert([{
+        id: usuarioActual.id, email: usuarioActual.email, foto_url: url, rol: perfilUsuario?.rol || 'user'
+      }], { onConflict: 'id' })
+      if (fotoErr) console.warn('foto_url no guardada en BD:', fotoErr.message)
+      if (perfilUsuario) perfilUsuario.foto_url = url
+      else perfilUsuario = { id: usuarioActual.id, email: usuarioActual.email, foto_url: url }
+      actualizarNavUsuario()
+    })
+
+    document.getElementById('btnGuardarPerfilUsuario').addEventListener('click', async () => {
+      if (!usuarioActual) return
+      const errEl   = document.getElementById('userPerfilError')
+      const exitoEl = document.getElementById('userPerfilExito')
+      const btn     = document.getElementById('btnGuardarPerfilUsuario')
+      errEl.textContent = ''; exitoEl.style.display = 'none'
+      btn.disabled = true; btn.textContent = 'Guardando...'
+      // Campos base que SÍ existen en profiles
+      const datosBase = {
+        id:    usuarioActual.id,
+        email: usuarioActual.email,
+        rol:   perfilUsuario?.rol || 'user'
+      }
+      // Campos extra (nombre, foto, redes) — se guardan si la tabla los tiene
+      const datosExtra = {
+        nombre:      document.getElementById('userPerfilNombre').value.trim() || null,
+        descripcion: document.getElementById('userPerfilDesc').value.trim() || null,
+        instagram:   document.getElementById('userPerfilInstagram').value.trim() || null,
+        telegram:    document.getElementById('userPerfilTelegram').value.trim() || null,
+        tiktok:      document.getElementById('userPerfilTiktok').value.trim() || null,
+        foto_url:    perfilUsuario?.foto_url || null,
+      }
+      const datos = { ...datosBase, ...datosExtra }
+      const { error } = await supabase.from('profiles').upsert([datos], { onConflict: 'id' })
+      btn.disabled = false; btn.textContent = 'Guardar cambios'
+      if (error) {
+        // Si falla por columnas que no existen, intentar solo con campos base
+        const { error: errorBase } = await supabase.from('profiles').upsert([datosBase], { onConflict: 'id' })
+        if (errorBase) { errEl.textContent = 'Error al guardar: ' + errorBase.message; return }
+        // Guardar datos extra solo en memoria local (no en BD)
+        console.warn('Algunos campos extra no se pudieron guardar en BD:', error.message)
+      }
+      perfilUsuario = { ...perfilUsuario, ...datos }
+      exitoEl.textContent = '¡Perfil guardado!'; exitoEl.style.display = 'block'
+      setTimeout(() => { exitoEl.style.display = 'none' }, 3000)
+      actualizarNavUsuario()
+    })
+
+    document.getElementById('btnCerrarSesionUsuario').addEventListener('click', async () => {
+      if (!confirm('¿Cerrar sesión?')) return
+      await supabase.auth.signOut()
+      usuarioActual = null; perfilUsuario = null
+      document.getElementById('modalPerfilUsuario').classList.remove('activo')
+      if (esAdmin) desactivarAdmin()
+      actualizarNavUsuario()
+    })
+
+    // ── Restaurar sesión al cargar — detecta rol ──
+    async function verificarSesionUsuario() {
+      try {
+        const { data } = await supabase.auth.getSession()
+        if (data?.session?.user) {
+          usuarioActual = data.session.user
+          // Limpiar buscador por si el autocomplete del navegador lo llenó con el email
+          const buscEl = document.getElementById('buscador')
+          if (buscEl && buscEl.value.includes('@')) { buscEl.value = ''; busqueda = '' }
+          await cargarPerfilUsuario()
+          if (perfilUsuario?.rol === 'admin') {
+            activarAdmin()
+          }
+          actualizarNavUsuario()
+        }
+      } catch(e) {
+        console.warn('[Rabbit3D] Error verificando sesión:', e.message)
+      }
+    }
 
     // ══════════════════════════════════════════
     //  CREAR / EDITAR PRODUCTO
@@ -1955,7 +2279,7 @@
     async function cargarYoutube() {
       // Intentar con order por 'orden', con fallback si falla
       let data, error
-      ;({ data, error } = await supabase.from('youtube_videos').select('*').order('orden', { ascending: true, nullsFirst: false }))
+      ;({ data, error } = await supabase.from('youtube_videos').select('*').order('orden', { ascending: true }))
       if (error) {
         // Fallback: sin orden específico
         ;({ data, error } = await supabase.from('youtube_videos').select('*'))
@@ -2000,7 +2324,10 @@
               <button onclick="window.eliminarYt('${v.id}')" title="Eliminar">✕</button>
             </div>` : ''}
           <div class="yt-slide__thumb">
-            <img src="https://img.youtube.com/vi/${v.yt_id}/hqdefault.jpg" alt="${v.titulo || 'Video'}" loading="lazy" onerror="this.src='https://img.youtube.com/vi/${v.yt_id}/hqdefault.jpg'"/>
+            <img src="https://img.youtube.com/vi/${v.yt_id}/hqdefault.jpg"
+              alt="${v.titulo || 'Video'}"
+              data-ytid="${v.yt_id}"
+            />
             <div class="yt-slide__play"><svg viewBox="0 0 24 24" fill="currentColor" width="48" height="48"><path d="M8 5v14l11-7z"/></svg></div>
           </div>
           <p class="yt-slide__titulo">${v.titulo || 'Ver en YouTube'}</p>
@@ -2017,6 +2344,11 @@
         clones() +   // clones del final (posición 0..N-1 del track)
         clones() +   // originales (posición N..2N-1 del track)
         clones()     // clones del inicio (posición 2N..3N-1 del track)
+
+      // Asignar fallback a todos los imgs (incluyendo clones)
+      track.querySelectorAll('img[data-ytid]').forEach(function(img) {
+        img.onerror = function() { window.ytThumbFallback(this) }
+      })
 
       // Índice en el track (zona central = offset N)
       let trackIdx = N + ytCurrentIndex   // arrancamos en la zona central
@@ -2243,226 +2575,45 @@
       await cargarSugerencias()
     })
 
-    // ══════════════════════════════════════════
-    //  TEMÁTICAS
-    // ══════════════════════════════════════════
-    const TEMAS_DEFAULT = [
-      { id: 'pokemon',    nombre: 'Pokémon',       palabras: 'pokemon,pokemón,pokemons' },
-      { id: 'starwars',   nombre: 'Star Wars',     palabras: 'star,wars,mandalorian' },
-      { id: 'lilo',       nombre: 'Lilo y Stitch', palabras: 'lilo,stitch' },
-      { id: 'dragonball', nombre: 'Dragon Ball',   palabras: 'dragon,ball,goku' },
-      { id: 'mario',      nombre: 'Mario Bros',    palabras: 'mario,bros,luigi' },
-    ]
-
-    function matchTema(prod, palabras) {
-      const hay = ((prod.nombre || '') + ' ' + (prod.descripcion || '')).toLowerCase()
-      return palabras.split(',').map(p => p.trim().toLowerCase()).some(p => p && hay.includes(p))
-    }
-
-    async function cargarTematicas() {
-      let data = null
-      try { const r = await supabase.from('tematicas').select('*').order('nombre'); data = r.data } catch(e) {}
-      tematicas = (data && data.length > 0) ? data : TEMAS_DEFAULT
-      renderTemaDropdown()
-    }
-
-    function renderTemaDropdown() {
-      const lista = document.getElementById('temasLista')
-      if (!lista) return
-      lista.innerHTML = tematicas.map(t =>
-        `<button class="tema-option${temaActual === String(t.id) ? ' activo' : ''}" data-tema="${t.id}">${t.nombre}</button>`
-      ).join('')
-      lista.querySelectorAll('.tema-option').forEach(b => b.addEventListener('click', () => seleccionarTema(b.dataset.tema)))
-      const allBtn = document.querySelector('.tema-option--all')
-      if (allBtn) { allBtn.classList.toggle('activo', !temaActual); allBtn.addEventListener('click', () => seleccionarTema('')) }
-    }
-
-    function seleccionarTema(id) {
-      temaActual = id
-      const t = tematicas.find(x => String(x.id) === id)
-      document.getElementById('btnTemaLabel').textContent = t ? t.nombre : 'Temáticas'
-      document.getElementById('btnTemaDropdown').classList.toggle('activo', !!id)
-      document.getElementById('temaDropdown').classList.remove('abierto')
-      document.querySelectorAll('.tema-option').forEach(b => b.classList.toggle('activo', b.dataset.tema === id))
-      const allBtn = document.querySelector('.tema-option--all')
-      if (allBtn) allBtn.classList.toggle('activo', !id)
-      paginaProductos = 1
-      renderProductos()
-    }
-
-    document.getElementById('btnTemaDropdown').addEventListener('click', e => {
-      e.stopPropagation()
-      document.getElementById('temaDropdown').classList.toggle('abierto')
-    })
-    document.addEventListener('click', () => document.getElementById('temaDropdown')?.classList.remove('abierto'))
-    document.getElementById('temaDropdown').addEventListener('click', e => e.stopPropagation())
-
-    // Admin modal
-    document.getElementById('btnGestionarTemas').addEventListener('click', () => {
-      document.getElementById('temaNombre').value = ''
-      document.getElementById('temaPalabras').value = ''
-      document.getElementById('temaEditId').value = ''
-      document.getElementById('temaError').textContent = ''
-      document.getElementById('btnGuardarTema').textContent = 'Guardar temática'
-      document.getElementById('btnCancelarEditTema').style.display = 'none'
-      renderTemasAdminLista()
-      document.getElementById('modalTematicas').classList.add('activo')
-    })
-    document.getElementById('btnCerrarTematicas').addEventListener('click', () =>
-      document.getElementById('modalTematicas').classList.remove('activo'))
-
-    function renderTemasAdminLista() {
-      const lista = document.getElementById('temasAdminLista')
-      if (!lista) return
-      lista.innerHTML = tematicas.length === 0
-        ? '<p class="cargando" style="margin-top:1rem">No hay temáticas creadas.</p>'
-        : tematicas.map(t => `
-          <div class="tema-admin-item">
-            <div class="tema-admin-info">
-              <span class="tema-admin-nombre">${t.nombre}</span>
-              <span class="tema-admin-palabras">${t.palabras}</span>
-            </div>
-            <div class="tema-admin-btns">
-              <button class="btn btn--sm" onclick="window.editarTema('${t.id}')">Editar</button>
-              <button class="btn btn--sm btn--danger" onclick="window.eliminarTema('${t.id}')">✕</button>
-            </div>
-          </div>`).join('')
-    }
-
-    window.editarTema = (id) => {
-      const t = tematicas.find(x => String(x.id) === String(id))
-      if (!t) return
-      document.getElementById('temaNombre').value   = t.nombre
-      document.getElementById('temaPalabras').value = t.palabras
-      document.getElementById('temaEditId').value   = String(t.id)
-      document.getElementById('btnGuardarTema').textContent = 'Actualizar temática'
-      document.getElementById('btnCancelarEditTema').style.display = 'inline-block'
-      document.getElementById('temaError').textContent = ''
-      document.getElementById('temaNombre').focus()
-    }
-
-    document.getElementById('btnCancelarEditTema').addEventListener('click', () => {
-      document.getElementById('temaNombre').value = ''
-      document.getElementById('temaPalabras').value = ''
-      document.getElementById('temaEditId').value = ''
-      document.getElementById('btnGuardarTema').textContent = 'Guardar temática'
-      document.getElementById('btnCancelarEditTema').style.display = 'none'
-    })
-
-    document.getElementById('btnGuardarTema').addEventListener('click', async () => {
-      const nombre   = document.getElementById('temaNombre').value.trim()
-      const palabras = document.getElementById('temaPalabras').value.trim()
-      const editId   = document.getElementById('temaEditId').value
-      const errEl    = document.getElementById('temaError')
-      errEl.textContent = ''
-      if (!nombre)   { errEl.textContent = 'Ingresá un nombre.'; return }
-      if (!palabras) { errEl.textContent = 'Ingresá al menos una palabra clave.'; return }
-
-      try {
-        if (editId) {
-          await supabase.from('tematicas').update({ nombre, palabras }).eq('id', editId)
-          const idx = tematicas.findIndex(t => String(t.id) === editId)
-          if (idx > -1) tematicas[idx] = { ...tematicas[idx], nombre, palabras }
-        } else {
-          const { data, error } = await supabase.from('tematicas').insert([{ nombre, palabras }]).select()
-          if (data?.[0]) tematicas.push(data[0])
-          else tematicas.push({ id: nombre.toLowerCase().replace(/[^a-z0-9]/g,'') + Date.now(), nombre, palabras })
-        }
-      } catch(e) {
-        if (editId) {
-          const idx = tematicas.findIndex(t => String(t.id) === editId)
-          if (idx > -1) tematicas[idx] = { ...tematicas[idx], nombre, palabras }
-        } else {
-          tematicas.push({ id: nombre.toLowerCase().replace(/[^a-z0-9]/g,'') + Date.now(), nombre, palabras })
-        }
-      }
-
-      document.getElementById('temaNombre').value = ''
-      document.getElementById('temaPalabras').value = ''
-      document.getElementById('temaEditId').value = ''
-      document.getElementById('btnGuardarTema').textContent = 'Guardar temática'
-      document.getElementById('btnCancelarEditTema').style.display = 'none'
-      renderTemaDropdown()
-      renderTemasAdminLista()
-    })
-
-    window.eliminarTema = async (id) => {
-      if (!confirm('¿Eliminar esta temática?')) return
-      try { await supabase.from('tematicas').delete().eq('id', id) } catch(e) {}
-      tematicas = tematicas.filter(t => String(t.id) !== String(id))
-      if (temaActual === String(id)) seleccionarTema('')
-      renderTemaDropdown()
-      renderTemasAdminLista()
-    }
-
     // INICIO
+    console.info('[Rabbit3D] Supabase URL:', SUPABASE_URL)
+    // Limpiar buscador — prevenir autocomplete de Chrome
+    ;(function limpiarBuscador() {
+      const b = document.getElementById('buscador')
+      if (!b) return
+      b.value = ''
+      busqueda = ''
+      // Chrome aplica autocomplete de forma asíncrona, limpiar en varios momentos
+      ;[0, 100, 300, 600, 1000, 2000].forEach(function(ms) {
+        setTimeout(function() {
+          const el = document.getElementById('buscador')
+          if (el && el.value && el.value.includes('@')) {
+            el.value = ''
+            busqueda = ''
+            if (typeof renderProductos === 'function' && productos.length > 0) renderProductos()
+          }
+        }, ms)
+      })
+    })()
     actualizarBadges()
+
+    // Cargar todo en paralelo excepto productos+sesión que van secuenciales
     cargarPerfil()
     cargarDisenador()
-    cargarProductos()
     cargarMedia()
-    cargarYoutube()
     cargarSugerencias()
-    cargarTematicas()
-    console.info('[Rabbit3D] Supabase URL:', SUPABASE_URL)
+    cargarYoutube()
+
+    // Productos primero, después sesión — evita que activarAdmin() pise productos vacíos
+    ;(async () => {
+      console.info('[Rabbit3D] Cargando productos...')
+      await cargarProductos()
+      console.info('[Rabbit3D] Productos cargados:', productos.length)
+      await verificarSesionUsuario()
+      console.info('[Rabbit3D] Sesión verificada, esAdmin:', esAdmin)
+    })()
   </script>
 
   <!-- CARRUSEL JS (vacío, ahora es dinámico) -->
-
-<script>
-let limiteInicial = 20;
-let incremento = 100;
-let limiteActual = limiteInicial;
-let categoriaActual = "todos";
-
-async function cargarProductos() {
-  const { data, error } = await supabase
-    .from("productos")
-    .select("*")
-    .order("orden", { ascending: true })
-    .limit(limiteActual);
-
-  if (error) {
-    console.error(error);
-    return;
-  }
-
-  renderProductos(data);
-
-  const btn = document.getElementById("btnVerMas");
-  if (!btn) return;
-
-  if (categoriaActual === "todos" && data.length >= limiteActual) {
-    btn.style.display = "block";
-  } else {
-    btn.style.display = "none";
-  }
-}
-
-function cambiarFiltro(categoria) {
-  categoriaActual = categoria;
-
-  if (categoria === "todos") {
-    limiteActual = limiteInicial;
-  } else {
-    limiteActual = 1000;
-  }
-
-  cargarProductos();
-}
-
-document.addEventListener("DOMContentLoaded", () => {
-  const btn = document.getElementById("btnVerMas");
-  if (btn) {
-    btn.addEventListener("click", () => {
-      if (categoriaActual === "todos") {
-        limiteActual += incremento;
-        cargarProductos();
-      }
-    });
-  }
-});
-</script>
-
 </body>
 </html>

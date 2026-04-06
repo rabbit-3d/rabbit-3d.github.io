@@ -1314,3 +1314,52 @@ a { text-decoration: none; color: inherit; }
   white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
 }
 .tema-admin-btns { display: flex; gap: 0.4rem; flex-shrink: 0; }
+
+/* ══════════════════════════════════════════
+   USUARIO — TABS LOGIN/REGISTRO
+══════════════════════════════════════════ */
+.user-tabs {
+  display: flex; gap: 0; border-bottom: 1px solid var(--border);
+  margin-bottom: 1.2rem;
+}
+.user-tab {
+  flex: 1; padding: 0.6rem 1rem;
+  font-family: var(--font-head); font-size: 0.56rem; font-weight: 700;
+  letter-spacing: 0.1em; text-transform: uppercase;
+  background: none; border: none; border-bottom: 2px solid transparent;
+  color: var(--muted); cursor: pointer; transition: all 0.2s;
+  margin-bottom: -1px;
+}
+.user-tab:hover { color: var(--text); }
+.user-tab.activo { color: var(--cyan); border-bottom-color: var(--cyan); }
+
+/* ══════════════════════════════════════════
+   MODAL PERFIL USUARIO
+══════════════════════════════════════════ */
+.modal-perfil-usuario { max-width: 440px; max-height: 90vh; overflow-y: auto; }
+.user-perfil-avatar-wrap {
+  display: flex; flex-direction: column; align-items: center; gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+.user-perfil-avatar {
+  width: 82px; height: 82px; border-radius: 50%;
+  background: var(--bg3); border: 2px solid var(--border);
+  position: relative; cursor: pointer; overflow: hidden;
+  display: flex; align-items: center; justify-content: center;
+  transition: border-color 0.2s;
+}
+.user-perfil-avatar:hover { border-color: var(--cyan-mid); }
+.user-perfil-avatar:hover .user-perfil-avatar-overlay { opacity: 1; }
+.user-perfil-avatar-overlay {
+  position: absolute; inset: 0;
+  background: rgba(0,0,0,0.52);
+  display: flex; align-items: center; justify-content: center;
+  opacity: 0; transition: opacity 0.2s; color: #fff;
+}
+#userPerfilAvatarTxt {
+  font-family: var(--font-head); font-size: 1.5rem; font-weight: 900;
+  color: var(--cyan);
+}
+.user-perfil-email {
+  font-size: 0.75rem; color: var(--muted); margin: 0;
+}
