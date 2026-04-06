@@ -1251,3 +1251,66 @@ a { text-decoration: none; color: inherit; }
   /* yt-slide width mobile handled by JS */
   .top-card { width: 140px; }
 }
+
+/* ══════════════════════════════════════════
+   FILTRO TEMÁTICAS
+══════════════════════════════════════════ */
+.filtro-tema-wrap { position: relative; display: flex; align-items: center; }
+.filtro-tema-btn {
+  display: flex; align-items: center; gap: 0.4rem;
+  font-family: var(--font-head); font-size: 0.56rem; font-weight: 700;
+  letter-spacing: 0.1em; text-transform: uppercase;
+  padding: 0.38rem 0.9rem; border: 1px solid var(--border);
+  background: transparent; color: var(--muted); border-radius: 30px;
+  cursor: pointer; transition: all 0.2s; white-space: nowrap;
+}
+.filtro-tema-btn:hover { border-color: var(--cyan-mid); color: var(--text); }
+.filtro-tema-btn.activo { border-color: var(--cyan); color: var(--cyan); background: var(--cyan-dim); }
+.filtro-tema-arrow { transition: transform 0.2s; flex-shrink: 0; }
+.filtro-tema-dropdown {
+  position: absolute; top: calc(100% + 0.5rem); left: 0;
+  background: var(--bg2); border: 1px solid var(--border);
+  border-radius: 10px; padding: 0.4rem; min-width: 180px;
+  z-index: 50; display: none; flex-direction: column; gap: 0.1rem;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.45);
+}
+.filtro-tema-dropdown.abierto { display: flex; }
+.tema-option {
+  display: block; width: 100%; text-align: left;
+  font-family: var(--font-head); font-size: 0.54rem; font-weight: 700;
+  letter-spacing: 0.06em; text-transform: uppercase;
+  padding: 0.5rem 0.75rem; border-radius: 7px;
+  background: transparent; border: none; color: var(--muted);
+  cursor: pointer; transition: background 0.15s, color 0.15s;
+}
+.tema-option:hover { background: var(--cyan-dim); color: var(--text); }
+.tema-option.activo { color: var(--cyan); background: var(--cyan-dim); }
+.tema-option--all {
+  border-bottom: 1px solid var(--border-sub);
+  margin-bottom: 0.25rem; padding-bottom: 0.6rem;
+}
+
+/* ══════════════════════════════════════════
+   MODAL TEMÁTICAS (ADMIN)
+══════════════════════════════════════════ */
+.modal-tematicas { max-width: 480px; max-height: 88vh; overflow-y: auto; }
+.temas-lista {
+  display: flex; flex-direction: column; gap: 0.5rem;
+  margin-top: 1.2rem; padding-top: 1rem;
+  border-top: 1px solid var(--border-sub);
+}
+.tema-admin-item {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 0.75rem; background: var(--bg3); border: 1px solid var(--border);
+  border-radius: 8px; padding: 0.65rem 0.85rem;
+}
+.tema-admin-info { display: flex; flex-direction: column; gap: 0.15rem; flex: 1; min-width: 0; }
+.tema-admin-nombre {
+  font-family: var(--font-head); font-size: 0.58rem; font-weight: 700;
+  color: var(--text); letter-spacing: 0.06em;
+}
+.tema-admin-palabras {
+  font-size: 0.7rem; color: var(--muted);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.tema-admin-btns { display: flex; gap: 0.4rem; flex-shrink: 0; }
