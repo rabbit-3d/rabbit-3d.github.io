@@ -2000,7 +2000,7 @@
               <button onclick="window.eliminarYt('${v.id}')" title="Eliminar">✕</button>
             </div>` : ''}
           <div class="yt-slide__thumb">
-            <img src="https://img.youtube.com/vi/${v.yt_id}/maxresdefault.jpg" alt="${v.titulo || 'Video'}" loading="lazy" onerror="this.src='https://img.youtube.com/vi/${v.yt_id}/hqdefault.jpg'"/>
+            <img src="https://img.youtube.com/vi/${v.yt_id}/hqdefault.jpg" alt="${v.titulo || 'Video'}" loading="lazy" onerror="this.src='https://img.youtube.com/vi/${v.yt_id}/hqdefault.jpg'"/>
             <div class="yt-slide__play"><svg viewBox="0 0 24 24" fill="currentColor" width="48" height="48"><path d="M8 5v14l11-7z"/></svg></div>
           </div>
           <p class="yt-slide__titulo">${v.titulo || 'Ver en YouTube'}</p>
@@ -2408,5 +2408,61 @@
   </script>
 
   <!-- CARRUSEL JS (vacío, ahora es dinámico) -->
+
+<script>
+let limiteInicial = 20;
+let incremento = 100;
+let limiteActual = limiteInicial;
+let categoriaActual = "todos";
+
+async function cargarProductos() {
+  const { data, error } = await supabase
+    .from("productos")
+    .select("*")
+    .order("orden", { ascending: true })
+    .limit(limiteActual);
+
+  if (error) {
+    console.error(error);
+    return;
+  }
+
+  renderProductos(data);
+
+  const btn = document.getElementById("btnVerMas");
+  if (!btn) return;
+
+  if (categoriaActual === "todos" && data.length >= limiteActual) {
+    btn.style.display = "block";
+  } else {
+    btn.style.display = "none";
+  }
+}
+
+function cambiarFiltro(categoria) {
+  categoriaActual = categoria;
+
+  if (categoria === "todos") {
+    limiteActual = limiteInicial;
+  } else {
+    limiteActual = 1000;
+  }
+
+  cargarProductos();
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  const btn = document.getElementById("btnVerMas");
+  if (btn) {
+    btn.addEventListener("click", () => {
+      if (categoriaActual === "todos") {
+        limiteActual += incremento;
+        cargarProductos();
+      }
+    });
+  }
+});
+</script>
+
 </body>
 </html>
