@@ -35,7 +35,33 @@
           <svg id="userLoginIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
           <span id="userAvatarNav" style="display:none;width:28px;height:28px;border-radius:50%;overflow:hidden;border:1.5px solid var(--cyan);vertical-align:middle"><img id="userAvatarNavImg" style="width:100%;height:100%;object-fit:cover"/></span>
         </button>
+        <button class="nav__hamburger" id="btnHamburguesa" aria-label="Menú">
+          <span></span><span></span><span></span>
+        </button>
       </nav>
+
+  <!-- MENÚ MOBILE -->
+  <div class="mobile-menu" id="mobileMenu">
+    <div class="mobile-menu__inner">
+      <a href="#catalogo" class="mobile-menu__link" id="mm-catalogo">Catálogo</a>
+      <a href="#sobre-mi" class="mobile-menu__link" id="mm-sobre">Sobre mí</a>
+      <a href="#top-designs" class="mobile-menu__link" id="mm-top">Top Diseños</a>
+      <a href="#youtube" class="mobile-menu__link" id="mm-yt">Videos</a>
+      <a href="#sugerencias" class="mobile-menu__link" id="mm-sug">Sugerencias</a>
+      <a href="#contacto" class="mobile-menu__link" id="mm-contacto">Contacto</a>
+      <div class="mobile-menu__divider"></div>
+      <button class="mobile-menu__user" id="mm-btnUser">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        <span id="mm-userLabel">Iniciar sesión</span>
+      </button>
+      <button class="mobile-menu__fav" id="mm-btnFav">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+        Favoritos
+        <span class="mobile-menu__badge" id="mm-badgeFav">0</span>
+      </button>
+    </div>
+  </div>
+  <div class="mobile-menu__overlay" id="mobileMenuOverlay"></div>
     </div>
   </header>
 
@@ -2574,6 +2600,71 @@
       await supabase.from('sugerencias').delete().neq('id', 0)
       await cargarSugerencias()
     })
+
+    // ══════════════════════════════════════════
+    //  MENÚ HAMBURGUESA MOBILE
+    // ══════════════════════════════════════════
+    const btnHamburguesa    = document.getElementById('btnHamburguesa')
+    const mobileMenu        = document.getElementById('mobileMenu')
+    const mobileMenuOverlay = document.getElementById('mobileMenuOverlay')
+
+    function abrirMenu() {
+      mobileMenu.classList.add('activo')
+      mobileMenuOverlay.classList.add('activo')
+      btnHamburguesa.classList.add('activo')
+      document.body.style.overflow = 'hidden'
+    }
+    function cerrarMenu() {
+      mobileMenu.classList.remove('activo')
+      mobileMenuOverlay.classList.remove('activo')
+      btnHamburguesa.classList.remove('activo')
+      document.body.style.overflow = ''
+    }
+
+    btnHamburguesa.addEventListener('click', () => {
+      mobileMenu.classList.contains('activo') ? cerrarMenu() : abrirMenu()
+    })
+    mobileMenuOverlay.addEventListener('click', cerrarMenu)
+
+    // Cerrar al hacer click en cualquier link del menú
+    document.querySelectorAll('.mobile-menu__link').forEach(link => {
+      link.addEventListener('click', cerrarMenu)
+    })
+
+    // Botón usuario en menú mobile
+    document.getElementById('mm-btnUser').addEventListener('click', () => {
+      cerrarMenu()
+      document.getElementById('btnUserLogin').click()
+    })
+
+    // Botón favoritos en menú mobile
+    document.getElementById('mm-btnFav').addEventListener('click', () => {
+      cerrarMenu()
+      document.getElementById('btnFavoritos').click()
+    })
+
+    // Sincronizar badge de favoritos con el menú mobile
+    const _actualizarBadgesOrig = actualizarBadges
+    actualizarBadges = function() {
+      _actualizarBadgesOrig()
+      const mmBadge = document.getElementById('mm-badgeFav')
+      if (mmBadge) {
+        mmBadge.textContent = favoritos.length
+        mmBadge.style.display = favoritos.length > 0 ? 'inline-flex' : 'none'
+      }
+    }
+
+    // Sincronizar label de usuario en menú mobile
+    const _actualizarNavOrig = actualizarNavUsuario
+    actualizarNavUsuario = function() {
+      _actualizarNavOrig()
+      const label = document.getElementById('mm-userLabel')
+      if (label) {
+        label.textContent = usuarioActual
+          ? (perfilUsuario?.nombre || usuarioActual.email)
+          : 'Iniciar sesión'
+      }
+    }
 
     // INICIO
     console.info('[Rabbit3D] Supabase URL:', SUPABASE_URL)
