@@ -18,13 +18,25 @@
         <span class="header__search-icon">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
         </span>
-        <input type="search" id="buscador" class="buscador" placeholder="Buscar diseños..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" readonly onfocus="this.removeAttribute('readonly')"/>
+        <!-- Inputs trampa para engañar al autocomplete de Chrome -->
+        <input type="text" style="display:none" aria-hidden="true"/>
+        <input type="password" style="display:none" aria-hidden="true"/>
+        <input type="text" id="buscador" class="buscador" placeholder="Buscar diseños..."
+          autocomplete="off"
+          autocorrect="off"
+          autocapitalize="off"
+          spellcheck="false"
+          aria-autocomplete="none"
+          role="searchbox"
+          name="buscar_disenios_rabbit3d"
+        />
       </div>
       <nav class="nav">
         <a href="#catalogo" class="nav__link">Catálogo</a>
         <a href="#sobre-mi" class="nav__link">Sobre mí</a>
         <a href="#top-designs" class="nav__link">Top Diseños</a>
         <a href="#youtube" class="nav__link">Videos</a>
+        <a href="#makers" class="nav__link">Comunidad</a>
         <a href="#sugerencias" class="nav__link">Sugerencias</a>
         <a href="#contacto" class="nav__link">Contacto</a>
         <button class="nav__icon-btn" id="btnFavoritos" title="Favoritos">
@@ -47,6 +59,7 @@
       <a href="#sobre-mi" class="mobile-menu__link" id="mm-sobre">Sobre mí</a>
       <a href="#top-designs" class="mobile-menu__link" id="mm-top">Top Diseños</a>
       <a href="#youtube" class="mobile-menu__link" id="mm-yt">Videos</a>
+      <a href="#makers" class="mobile-menu__link" id="mm-makers">Comunidad</a>
       <a href="#sugerencias" class="mobile-menu__link" id="mm-sug">Sugerencias</a>
       <a href="#contacto" class="mobile-menu__link" id="mm-contacto">Contacto</a>
       <div class="mobile-menu__divider"></div>
@@ -251,6 +264,52 @@
       <div style="display:flex;gap:0.6rem;flex-wrap:wrap">
         <button class="btn btn--primary" id="btnGuardarPerfilUsuario">Guardar cambios</button>
         <button class="btn btn--sm btn--danger" id="btnCerrarSesionUsuario">Cerrar sesión</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL MAKER -->
+  <div class="modal-overlay" id="modalMaker">
+    <div class="modal modal-maker">
+      <button class="modal__close" id="btnCerrarMaker">✕</button>
+      <h2 class="modal__title" id="makerModalTitulo">Mi perfil Maker</h2>
+      <p class="modal__sub">Mostrá tus proyectos a la comunidad</p>
+
+      <!-- Avatar -->
+      <div class="maker-modal-avatar-wrap">
+        <div class="maker-modal-avatar" id="makerModalAvatar">
+          <img id="makerModalAvatarImg" style="display:none;width:100%;height:100%;object-fit:cover;border-radius:50%"/>
+          <span id="makerModalAvatarTxt">?</span>
+          <div class="maker-modal-avatar-overlay">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+          </div>
+          <input type="file" id="makerAvatarFile" accept="image/*" style="display:none"/>
+        </div>
+        <p style="font-size:0.72rem;color:var(--muted);margin-top:0.4rem">Clic para cambiar foto</p>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Descripción <span style="color:var(--muted);font-size:0.7rem">(opcional)</span></label>
+        <textarea id="makerDesc" class="form-input form-textarea" placeholder="Contá qué tipo de cosas imprimís, tu experiencia..."></textarea>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Instagram <span style="color:var(--muted);font-size:0.7rem">(link completo)</span></label>
+        <input type="text" id="makerInstagram" class="form-input" placeholder="https://instagram.com/tuusuario"/>
+      </div>
+
+      <!-- Proyectos -->
+      <div class="form-group">
+        <label class="form-label">Fotos de proyectos <span style="color:var(--muted);font-size:0.7rem">(hasta 6)</span></label>
+        <div class="maker-proyectos-grid" id="makerProyectosGrid">
+          <!-- Se rellena dinámicamente -->
+        </div>
+      </div>
+
+      <p class="form-error" id="makerError"></p>
+      <p class="form-success" id="makerExito" style="display:none">¡Perfil guardado!</p>
+      <div style="display:flex;gap:0.6rem;flex-wrap:wrap;margin-top:0.5rem">
+        <button class="btn btn--primary" id="btnGuardarMaker">Guardar perfil</button>
+        <button class="btn btn--sm btn--danger" id="btnEliminarMaker" style="display:none">Eliminar mi perfil</button>
       </div>
     </div>
   </div>
@@ -475,6 +534,21 @@
       </div>
     </div>
     <div class="yt-carousel__dots" id="ytDots"></div>
+  </section>
+
+
+  <!-- MAKERS DE LA COMUNIDAD -->
+  <section class="makers-section" id="makers">
+    <div class="section__header">
+      <h2 class="section__title">Makers de la Comunidad</h2>
+      <p class="section__sub">Usuarios que imprimen con diseños de Rabbit3D — ¡mostrá tus proyectos!</p>
+    </div>
+    <div class="makers-cta" id="makersCta" style="display:none">
+      <!-- Se rellena dinámicamente según si el usuario ya tiene perfil o no -->
+    </div>
+    <div class="makers-grid" id="makersGrid">
+      <p class="cargando">Cargando comunidad...</p>
+    </div>
   </section>
 
   <!-- SUGERENCIAS -->
@@ -1398,6 +1472,7 @@
         if (productos.length > 0) renderProductos()
       }
       actualizarNavUsuario()
+      cargarMakers()
     })
 
     // ── Registro ──
@@ -1572,6 +1647,7 @@
       document.getElementById('modalPerfilUsuario').classList.remove('activo')
       if (esAdmin) desactivarAdmin()
       actualizarNavUsuario()
+      cargarMakers()
     })
 
     // ── Restaurar sesión al cargar — detecta rol ──
@@ -2601,6 +2677,234 @@
       await cargarSugerencias()
     })
 
+
+    // ══════════════════════════════════════════
+    //  MAKERS DE LA COMUNIDAD
+    // ══════════════════════════════════════════
+    let makersData    = []
+    let miMaker       = null
+    let makerProyectos = []   // array de hasta 6 URLs
+
+    async function cargarMakers() {
+      const { data, error } = await supabase
+        .from('makers').select('*').order('created_at', { ascending: false })
+      if (error) {
+        console.warn('[Rabbit3D] Error cargando makers:', error.message)
+        // Aun con error, mostrar el CTA para que el usuario pueda unirse
+        makersData = []
+      } else {
+        makersData = data || []
+      }
+      renderMakers()
+    }
+
+    function renderMakers() {
+      const grid = document.getElementById('makersGrid')
+      const cta  = document.getElementById('makersCta')
+
+      // CTA: mostrar según estado del usuario
+      if (usuarioActual) {
+        const yaTiene = makersData.find(m => m.user_id === usuarioActual.id)
+        if (yaTiene) {
+          cta.innerHTML = `<button class="btn btn--primary makers-cta__btn" id="btnEditarMaker">✏️ Editar mi perfil Maker</button>`
+          cta.style.display = 'flex'
+          document.getElementById('btnEditarMaker').addEventListener('click', () => abrirModalMaker(yaTiene))
+        } else {
+          cta.innerHTML = `<button class="btn btn--primary makers-cta__btn" id="btnUnirMaker">✦ Unirme a la comunidad</button>
+            <p style="font-size:0.78rem;color:var(--muted);text-align:center">Mostrá tus proyectos impresos con diseños de Rabbit3D</p>`
+          cta.style.display = 'flex'
+          document.getElementById('btnUnirMaker').addEventListener('click', () => abrirModalMaker(null))
+        }
+      } else {
+        cta.innerHTML = `<p class="makers-cta__login"><a href="#" id="btnMakerLogin" style="color:var(--cyan);text-decoration:underline">Iniciá sesión</a> para mostrar tus proyectos a la comunidad</p>`
+        cta.style.display = 'flex'
+        document.getElementById('btnMakerLogin')?.addEventListener('click', e => {
+          e.preventDefault()
+          resetUserModal('login')
+          document.getElementById('modalUsuario').classList.add('activo')
+        })
+      }
+
+      // Grid de makers
+      if (makersData.length === 0) {
+        grid.innerHTML = '<p class="cargando" style="text-align:center;padding:2rem 0">Aún no hay makers en la comunidad. ¡Sé el primero!</p>'
+        return
+      }
+
+      grid.innerHTML = makersData.map(m => {
+        const nombre   = m.nombre || 'Maker'
+        const avatar   = m.foto_url
+          ? `<img src="${m.foto_url}" alt="${nombre}" style="width:100%;height:100%;object-fit:cover;border-radius:50%"/>`
+          : `<span style="font-family:var(--font-head);font-size:1.4rem;font-weight:700;color:var(--cyan)">${nombre[0].toUpperCase()}</span>`
+        const proyectos = (m.proyectos || []).slice(0, 6)
+        const proyGrid  = proyectos.length > 0
+          ? `<div class="maker-card__proyectos">
+              ${proyectos.map(url => `<div class="maker-card__proyecto"><img src="${url}" alt="proyecto" loading="lazy"/></div>`).join('')}
+             </div>`
+          : ''
+        const igBtn = m.instagram
+          ? `<a href="${m.instagram}" target="_blank" rel="noopener" class="maker-card__ig">
+              <svg viewBox="0 0 24 24" fill="currentColor" width="14" height="14"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 1.366.062 2.633.334 3.608 1.308.975.975 1.246 2.242 1.308 3.608.058 1.266.07 1.646.07 4.85s-.012 3.584-.07 4.85c-.062 1.366-.334 2.633-1.308 3.608-.975.975-2.242 1.246-3.608 1.308-1.266.058-1.646.07-4.85.07s-3.584-.012-4.85-.07c-1.366-.062-2.633-.334-3.608-1.308-.975-.975-1.246-2.242-1.308-3.608C2.175 15.584 2.163 15.204 2.163 12s.012-3.584.07-4.85c.062-1.366.334-2.633 1.308-3.608.975-.975 2.242-1.246 3.608-1.308C8.416 2.175 8.796 2.163 12 2.163zm0-2.163C8.741 0 8.333.014 7.053.072 5.775.13 4.602.402 3.635 1.368 2.668 2.335 2.396 3.508 2.338 4.786 2.28 6.066 2.163 6.474 2.163 12c0 5.526.117 5.934.175 7.214.058 1.278.33 2.451 1.297 3.418.967.967 2.14 1.239 3.418 1.297C8.333 23.986 8.741 24 12 24s3.667-.014 4.947-.072c1.278-.058 2.451-.33 3.418-1.297.967-.967 1.239-2.14 1.297-3.418.058-1.28.072-1.688.072-7.214 0-5.526-.014-5.934-.072-7.214-.058-1.278-.33-2.451-1.297-3.418C19.398.402 18.225.13 16.947.072 15.667.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 1 0 0 12.324 6.162 6.162 0 0 0 0-12.324zm0 10.162a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm6.406-11.845a1.44 1.44 0 1 0 0 2.881 1.44 1.44 0 0 0 0-2.881z"/></svg>
+              Seguir en Instagram
+             </a>`
+          : ''
+        return `
+        <div class="maker-card">
+          ${esAdmin ? `<button class="maker-card__admin-del" onclick="window.adminEliminarMaker('${m.id}')" title="Eliminar perfil">✕</button>` : ''}
+          <div class="maker-card__header">
+            <div class="maker-card__avatar">${avatar}</div>
+            <div class="maker-card__info">
+              <p class="maker-card__nombre">${nombre}</p>
+              ${m.descripcion ? `<p class="maker-card__desc">${m.descripcion}</p>` : ''}
+              ${igBtn}
+            </div>
+          </div>
+          ${proyGrid}
+        </div>`
+      }).join('')
+    }
+
+    window.adminEliminarMaker = async (id) => {
+      if (!confirm('¿Eliminar este perfil maker?')) return
+      const { error } = await supabase.from('makers').delete().eq('id', id)
+      if (error) { alert('Error al eliminar: ' + error.message); return }
+      await cargarMakers()
+    }
+
+    function abrirModalMaker(maker) {
+      miMaker       = maker
+      makerProyectos = maker?.proyectos ? [...maker.proyectos] : []
+
+      document.getElementById('makerModalTitulo').textContent = maker ? 'Editar mi perfil Maker' : 'Unirme a la comunidad'
+      document.getElementById('makerDesc').value      = maker?.descripcion || ''
+      document.getElementById('makerInstagram').value = maker?.instagram   || ''
+      document.getElementById('makerError').textContent     = ''
+      document.getElementById('makerExito').style.display   = 'none'
+      document.getElementById('btnEliminarMaker').style.display = maker ? 'inline-block' : 'none'
+
+      // Avatar
+      const img = document.getElementById('makerModalAvatarImg')
+      const txt = document.getElementById('makerModalAvatarTxt')
+      const fotoUrl = maker?.foto_url || perfilUsuario?.foto_url || null
+      const nombre  = maker?.nombre   || perfilUsuario?.nombre   || usuarioActual?.email || '?'
+      if (fotoUrl) {
+        img.src = fotoUrl; img.style.display = 'block'; txt.style.display = 'none'
+      } else {
+        img.style.display = 'none'; txt.style.display = 'block'
+        txt.textContent = nombre[0].toUpperCase()
+      }
+
+      renderMakerProyectosGrid()
+      document.getElementById('modalMaker').classList.add('activo')
+    }
+
+    function renderMakerProyectosGrid() {
+      const grid = document.getElementById('makerProyectosGrid')
+      const slots = []
+      for (let i = 0; i < 6; i++) {
+        const url = makerProyectos[i] || null
+        if (url) {
+          slots.push(`
+            <div class="maker-proyecto-slot maker-proyecto-slot--filled" data-idx="${i}">
+              <img src="${url}" alt="proyecto ${i+1}"/>
+              <button class="maker-proyecto-del" onclick="window.makerDelProyecto(${i})" title="Eliminar">✕</button>
+            </div>`)
+        } else if (makerProyectos.length < 6) {
+          slots.push(`
+            <div class="maker-proyecto-slot maker-proyecto-slot--add" onclick="window.makerAddProyecto()">
+              <span>+</span>
+            </div>`)
+          break  // solo un slot vacío a la vez
+        }
+      }
+      grid.innerHTML = slots.join('')
+    }
+
+    window.makerDelProyecto = (idx) => {
+      makerProyectos.splice(idx, 1)
+      renderMakerProyectosGrid()
+    }
+
+    window.makerAddProyecto = () => {
+      const input = document.createElement('input')
+      input.type   = 'file'
+      input.accept = 'image/*'
+      input.onchange = async (e) => {
+        const file = e.target.files[0]
+        if (!file || !usuarioActual) return
+        const errEl = document.getElementById('makerError')
+        errEl.textContent = 'Subiendo imagen...'
+        const ext      = file.name.split('.').pop()
+        const fileName = `maker_${usuarioActual.id}_${Date.now()}.${ext}`
+        const { error: upErr } = await supabase.storage.from('media').upload(fileName, file, { upsert: true })
+        if (upErr) { errEl.textContent = 'Error al subir: ' + upErr.message; return }
+        const { data: urlData } = supabase.storage.from('media').getPublicUrl(fileName)
+        makerProyectos.push(urlData.publicUrl)
+        errEl.textContent = ''
+        renderMakerProyectosGrid()
+      }
+      input.click()
+    }
+
+    // Avatar upload
+    document.getElementById('makerModalAvatar').addEventListener('click', () => {
+      document.getElementById('makerAvatarFile').click()
+    })
+    document.getElementById('makerAvatarFile').addEventListener('change', async (e) => {
+      const file = e.target.files[0]
+      if (!file || !usuarioActual) return
+      const ext      = file.name.split('.').pop()
+      const fileName = `maker_avatar_${usuarioActual.id}_${Date.now()}.${ext}`
+      const { error: upErr } = await supabase.storage.from('media').upload(fileName, file, { upsert: true })
+      if (upErr) return
+      const { data: urlData } = supabase.storage.from('media').getPublicUrl(fileName)
+      const url = urlData.publicUrl
+      document.getElementById('makerModalAvatarImg').src = url
+      document.getElementById('makerModalAvatarImg').style.display = 'block'
+      document.getElementById('makerModalAvatarTxt').style.display = 'none'
+      if (!miMaker) miMaker = {}
+      miMaker.foto_url = url
+    })
+
+    // Guardar maker
+    document.getElementById('btnGuardarMaker').addEventListener('click', async () => {
+      if (!usuarioActual) return
+      const errEl   = document.getElementById('makerError')
+      const exitoEl = document.getElementById('makerExito')
+      const btn     = document.getElementById('btnGuardarMaker')
+      errEl.textContent = ''; exitoEl.style.display = 'none'
+      btn.disabled = true; btn.textContent = 'Guardando...'
+
+      const datos = {
+        user_id:     usuarioActual.id,
+        nombre:      perfilUsuario?.nombre || usuarioActual.email.split('@')[0],
+        foto_url:    miMaker?.foto_url || perfilUsuario?.foto_url || null,
+        descripcion: document.getElementById('makerDesc').value.trim() || null,
+        instagram:   document.getElementById('makerInstagram').value.trim() || null,
+        proyectos:   makerProyectos.slice(0, 6)
+      }
+
+      const { error } = await supabase.from('makers').upsert([datos], { onConflict: 'user_id' })
+      btn.disabled = false; btn.textContent = 'Guardar perfil'
+      if (error) { errEl.textContent = 'Error al guardar: ' + error.message; return }
+
+      exitoEl.style.display = 'block'
+      setTimeout(() => { exitoEl.style.display = 'none' }, 2500)
+      await cargarMakers()
+    })
+
+    // Eliminar maker
+    document.getElementById('btnEliminarMaker').addEventListener('click', async () => {
+      if (!confirm('¿Eliminar tu perfil de la comunidad?')) return
+      await supabase.from('makers').delete().eq('user_id', usuarioActual.id)
+      document.getElementById('modalMaker').classList.remove('activo')
+      await cargarMakers()
+    })
+
+    document.getElementById('btnCerrarMaker').addEventListener('click', () => {
+      document.getElementById('modalMaker').classList.remove('activo')
+    })
+
     // ══════════════════════════════════════════
     //  MENÚ HAMBURGUESA MOBILE
     // ══════════════════════════════════════════
@@ -2695,13 +2999,15 @@
     cargarSugerencias()
     cargarYoutube()
 
-    // Productos primero, después sesión — evita que activarAdmin() pise productos vacíos
+    // Productos primero, después sesión y makers — orden importa para el CTA
     ;(async () => {
       console.info('[Rabbit3D] Cargando productos...')
       await cargarProductos()
       console.info('[Rabbit3D] Productos cargados:', productos.length)
       await verificarSesionUsuario()
       console.info('[Rabbit3D] Sesión verificada, esAdmin:', esAdmin)
+      // Cargar makers DESPUÉS de verificar sesión — así sabe si el usuario está logueado
+      await cargarMakers()
     })()
   </script>
 
