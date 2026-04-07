@@ -21,6 +21,34 @@
   --radius:     10px;
 }
 
+
+/* NumFix removido — se usa font-feature-settings */
+
+/* Normalizar métricas de Orbitron en todos los elementos que la usan */
+.font-head,
+[class*="card__nombre"],
+[class*="card__num"],
+[class*="card__badge"],
+[class*="card__precio"],
+[class*="top-card__"],
+[class*="nav__"],
+[class*="btn"],
+[class*="filtro"],
+[class*="section__title"],
+[class*="stat__"],
+[class*="hero__title"],
+[class*="modal__title"],
+[class*="detalle__"],
+[class*="maker-card__nombre"],
+[class*="yt-slide__titulo"] {
+  font-variant-numeric: tabular-nums lining-nums;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Aplicar globalmente a todo texto con Orbitron */
+* { font-variant-numeric: tabular-nums; }
+
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 html { scroll-behavior: smooth; }
 body {
@@ -446,6 +474,8 @@ a { text-decoration: none; color: inherit; }
   color: var(--text); white-space: nowrap; overflow: hidden;
   text-overflow: ellipsis; margin-bottom: 0.18rem;
   text-transform: uppercase; letter-spacing: 0.04em;
+  font-variant-numeric: tabular-nums;
+  line-height: 1.2;
 }
 .card__desc {
   font-size: 0.73rem; color: var(--muted);
@@ -1133,6 +1163,8 @@ a { text-decoration: none; color: inherit; }
   font-family: var(--font-head); font-size: 0.66rem; font-weight: 700;
   color: var(--text); letter-spacing: 0.04em; text-transform: uppercase;
   white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 0.18rem;
+  font-variant-numeric: tabular-nums;
+  line-height: 1.2;
 }
 .top-card__precio { font-family: var(--font-head); font-size: 0.76rem; font-weight: 900; color: var(--cyan); margin-bottom: 0.15rem; }
 .top-card__descargas { display: flex; align-items: center; gap: 0.3rem; font-size: 0.68rem; color: var(--muted); }
@@ -1936,4 +1968,10 @@ a { text-decoration: none; color: inherit; }
 }
 .user-modal-hint {
   margin-top: 1rem;
+}
+
+/* ── Forzar lining figures (números alineados con mayúsculas) en toda la página ── */
+* {
+  font-feature-settings: "lnum" 1, "tnum" 1;
+  font-variant-numeric: lining-nums tabular-nums;
 }
