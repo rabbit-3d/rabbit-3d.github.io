@@ -55,14 +55,37 @@
 
   <!-- MENÚ MOBILE -->
   <div class="mobile-menu" id="mobileMenu">
+    <div class="mobile-menu__header">
+      <span class="mobile-menu__title">Menú</span>
+      <button class="mobile-menu__close-btn" id="btnCerrarMenu" aria-label="Cerrar menú">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="20" height="20"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
     <div class="mobile-menu__inner">
-      <a href="#catalogo" class="mobile-menu__link" id="mm-catalogo">Catálogo</a>
-      <a href="#sobre-mi" class="mobile-menu__link" id="mm-sobre">Sobre mí</a>
-      <a href="#top-designs" class="mobile-menu__link" id="mm-top">Top Diseños</a>
-      <a href="#youtube" class="mobile-menu__link" id="mm-yt">Videos</a>
-      <a href="#makers" class="mobile-menu__link" id="mm-makers">Comunidad</a>
-      <a href="#sugerencias" class="mobile-menu__link" id="mm-sug">Sugerencias</a>
-      <a href="#contacto" class="mobile-menu__link" id="mm-contacto">Contacto</a>
+      <a href="#catalogo" class="mobile-menu__link" id="mm-catalogo">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+        Catálogo
+      </a>
+      <a href="#top-designs" class="mobile-menu__link" id="mm-top">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
+        Top Diseños
+      </a>
+      <a href="#youtube" class="mobile-menu__link" id="mm-yt">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg>
+        Videos
+      </a>
+      <a href="#makers" class="mobile-menu__link" id="mm-makers">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        Comunidad
+      </a>
+      <a href="#sobre-mi" class="mobile-menu__link" id="mm-sobre">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        Sobre mí
+      </a>
+      <a href="#sugerencias" class="mobile-menu__link" id="mm-sug">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+        Sugerencias
+      </a>
       <div class="mobile-menu__divider"></div>
       <button class="mobile-menu__user" id="mm-btnUser">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
@@ -632,7 +655,7 @@
   <section class="makers-section" id="makers">
     <div class="section__header">
       <h2 class="section__title">Makers de la Comunidad</h2>
-      <p class="section__sub">Usuarios que imprimen con diseños de Rabbit3D — ¡mostrá tus proyectos!</p>
+      <p class="section__sub">Descubrí makers apasionados por la impresión 3D — seguílos y encontrá inspiración para tu próximo proyecto.</p>
     </div>
     <div class="makers-cta" id="makersCta" style="display:none">
       <!-- Se rellena dinámicamente según si el usuario ya tiene perfil o no -->
@@ -2997,7 +3020,7 @@
           document.getElementById('btnEditarMaker').addEventListener('click', () => abrirModalMaker(yaTiene, false))
         } else {
           cta.innerHTML = `<button class="btn btn--primary makers-cta__btn" id="btnUnirMaker">✦ Unirme a la comunidad</button>
-            <p style="font-size:0.78rem;color:var(--muted);text-align:center">Mostrá tus proyectos impresos con diseños de Rabbit3D</p>`
+            <p style="font-size:0.78rem;color:var(--muted);text-align:center">Mostrá tus proyectos a la comunidad</p>`
           cta.style.display = 'flex'
           document.getElementById('btnUnirMaker').addEventListener('click', () => abrirModalMaker(null, false))
         }
@@ -3437,6 +3460,7 @@
       mobileMenu.classList.contains('activo') ? cerrarMenu() : abrirMenu()
     })
     mobileMenuOverlay.addEventListener('click', cerrarMenu)
+    document.getElementById('btnCerrarMenu').addEventListener('click', cerrarMenu)
 
     // Cerrar al hacer click en cualquier link del menú
     document.querySelectorAll('.mobile-menu__link').forEach(link => {
