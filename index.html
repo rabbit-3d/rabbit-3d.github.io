@@ -79,6 +79,15 @@
     </div>
   </header>
 
+  <!-- CARTEL MAKERS PROMO -->
+  <div class="makers-promo" id="makersPromo">
+    <button class="makers-promo__close" id="makersPromoClose">✕</button>
+    <div class="makers-promo__icon">📸</div>
+    <p class="makers-promo__titulo">¡Mostrá tus impresiones!</p>
+    <p class="makers-promo__texto">Compartí tus proyectos con la comunidad Rabbit3D y sumá tu Instagram a la sección <strong>Makers</strong>.</p>
+    <a href="#makers" class="btn btn--primary makers-promo__btn" id="makersPromoBtn">Ver Comunidad Makers</a>
+  </div>
+
   <!-- MODAL FAVORITOS -->
   <div class="modal-overlay" id="modalFavoritos">
     <div class="modal modal-lista">
@@ -195,7 +204,7 @@
         </div>
         <div class="form-group">
           <label class="form-label">Contraseña</label>
-          <input type="password" id="userPass" class="form-input" placeholder="••••••••" autocomplete="current-password"/>
+          <input type="password" id="userPass" class="form-input" placeholder="••••••••" autocomplete="current-password" name="r3d_password"/>
         </div>
         <p class="form-error" id="userLoginError"></p>
         <button class="btn btn--primary btn--full" id="btnUserLoginSubmit">Iniciar sesión</button>
@@ -213,7 +222,7 @@
         </div>
         <div class="form-group">
           <label class="form-label">Contraseña <span style="color:var(--cyan)">*</span></label>
-          <input type="password" id="regPass" class="form-input" placeholder="Mínimo 6 caracteres" autocomplete="new-password"/>
+          <input type="password" id="regPass" class="form-input" placeholder="Mínimo 6 caracteres" autocomplete="new-password" name="r3d_new_password"/>
         </div>
         <p style="font-size:0.72rem;color:var(--muted);margin-bottom:0.75rem">Foto, descripción y redes sociales las podés completar después desde tu perfil.</p>
         <p class="form-error" id="userRegError"></p>
@@ -253,13 +262,10 @@
         <input type="text" id="userPerfilInstagram" class="form-input" placeholder="https://instagram.com/tuusuario"/>
       </div>
       <div class="form-group">
-        <label class="form-label">Telegram (link completo)</label>
-        <input type="text" id="userPerfilTelegram" class="form-input" placeholder="https://t.me/tuusuario"/>
-      </div>
-      <div class="form-group">
         <label class="form-label">TikTok (link completo)</label>
         <input type="text" id="userPerfilTiktok" class="form-input" placeholder="https://tiktok.com/@tuusuario"/>
       </div>
+      <input type="hidden" id="userPerfilTelegram" value=""/>
       <p class="form-error" id="userPerfilError"></p>
       <p class="form-success" id="userPerfilExito" style="display:none">¡Perfil guardado!</p>
       <div style="display:flex;gap:0.6rem;flex-wrap:wrap">
@@ -289,6 +295,22 @@
         <p style="font-size:0.72rem;color:var(--muted);margin-top:0.4rem">Clic para cambiar foto</p>
       </div>
 
+      <!-- Selector de usuario (solo admin) -->
+      <div class="form-group maker-admin-field" id="makerAdminUserField" style="display:none">
+        <label class="form-label">Email del usuario <span style="color:var(--cyan)">*</span></label>
+        <div style="position:relative">
+          <input type="text" id="makerAdminEmail" class="form-input" placeholder="Escribí el email del usuario..." autocomplete="off"/>
+          <div class="maker-email-suggestions" id="makerEmailSuggestions"></div>
+        </div>
+        <div class="maker-admin-user-preview" id="makerAdminUserPreview" style="display:none">
+          <div class="maker-admin-user-avatar" id="makerAdminAvatar"></div>
+          <div>
+            <p id="makerAdminNombre" style="font-size:0.8rem;font-weight:700;color:var(--text)"></p>
+            <p id="makerAdminEmailLabel" style="font-size:0.72rem;color:var(--muted)"></p>
+          </div>
+        </div>
+      </div>
+
       <div class="form-group">
         <label class="form-label">Descripción <span style="color:var(--muted);font-size:0.7rem">(opcional)</span></label>
         <textarea id="makerDesc" class="form-input form-textarea" placeholder="Contá qué tipo de cosas imprimís, tu experiencia..."></textarea>
@@ -311,6 +333,62 @@
       <div style="display:flex;gap:0.6rem;flex-wrap:wrap;margin-top:0.5rem">
         <button class="btn btn--primary" id="btnGuardarMaker">Guardar perfil</button>
         <button class="btn btn--sm btn--danger" id="btnEliminarMaker" style="display:none">Eliminar mi perfil</button>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- MODAL USUARIOS (solo admin) -->
+  <div class="modal-overlay" id="modalUsuarios">
+    <div class="modal modal-usuarios">
+      <button class="modal__close" id="btnCerrarUsuarios">✕</button>
+      <div class="modal-usuarios__header">
+        <h2 class="modal__title">👥 Usuarios registrados</h2>
+        <span class="modal-usuarios__count" id="usuariosCount">Cargando...</span>
+      </div>
+      <div class="modal-usuarios__search">
+        <input type="text" id="usuariosBuscador" class="form-input" placeholder="Buscar por nombre o email..." autocomplete="off"/>
+      </div>
+      <div class="modal-usuarios__lista" id="usuariosLista">
+        <p class="cargando">Cargando usuarios...</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL DETALLE USUARIO (solo admin) -->
+  <div class="modal-overlay" id="modalUsuarioDetalle">
+    <div class="modal modal-usuario-detalle">
+      <button class="modal__close" id="btnCerrarUsuarioDetalle">✕</button>
+      <div class="usuario-detalle__avatar-wrap">
+        <div class="usuario-detalle__avatar" id="udAvatar">
+          <img id="udAvatarImg" style="display:none;width:100%;height:100%;object-fit:cover;border-radius:50%"/>
+          <span id="udAvatarTxt">?</span>
+        </div>
+        <div>
+          <p class="usuario-detalle__nombre" id="udNombre">—</p>
+          <p class="usuario-detalle__email" id="udEmail">—</p>
+          <span class="usuario-detalle__rol" id="udRol">usuario</span>
+        </div>
+      </div>
+
+      <div class="usuario-detalle__secciones">
+        <!-- Datos del perfil -->
+        <div class="usuario-detalle__seccion">
+          <p class="usuario-detalle__sec-titulo">Perfil</p>
+          <div class="usuario-detalle__grid" id="udPerfil"></div>
+        </div>
+
+        <!-- Redes sociales -->
+        <div class="usuario-detalle__seccion" id="udRedesSec">
+          <p class="usuario-detalle__sec-titulo">Redes sociales</p>
+          <div class="usuario-detalle__redes" id="udRedes"></div>
+        </div>
+
+        <!-- Perfil Maker -->
+        <div class="usuario-detalle__seccion" id="udMakerSec" style="display:none">
+          <p class="usuario-detalle__sec-titulo">Perfil Maker</p>
+          <div id="udMaker"></div>
+        </div>
       </div>
     </div>
   </div>
@@ -463,6 +541,7 @@
       <button class="btn btn--sm btn--cults" id="btnSincronizarCults">⟳ Sincronizar Cults3D</button>
       <button class="btn btn--sm btn--eliminar-masivo" id="btnEliminarMasivo">🗑 Eliminar seleccionados</button>
       <button class="btn btn--sm" id="btnAdminYt">▶ Gestionar videos YT</button>
+      <button class="btn btn--sm" id="btnVerUsuarios">👥 Usuarios</button>
       <button class="btn btn--sm btn--danger" id="btnLogout">Cerrar sesión</button>
     </div>
 
@@ -2694,6 +2773,181 @@
     })
 
 
+
+    // ══════════════════════════════════════════
+    //  PANEL DE USUARIOS (solo admin)
+    // ══════════════════════════════════════════
+    let todosLosUsuarios = []
+    let usuarioDetalleActual = null
+
+    document.getElementById('btnVerUsuarios').addEventListener('click', async () => {
+      document.getElementById('modalUsuarios').classList.add('activo')
+      await cargarTodosLosUsuarios()
+    })
+    document.getElementById('btnCerrarUsuarios').addEventListener('click', () => {
+      document.getElementById('modalUsuarios').classList.remove('activo')
+    })
+    document.getElementById('btnCerrarUsuarioDetalle').addEventListener('click', () => {
+      document.getElementById('modalUsuarioDetalle').classList.remove('activo')
+    })
+
+    async function cargarTodosLosUsuarios() {
+      const lista = document.getElementById('usuariosLista')
+      const count = document.getElementById('usuariosCount')
+      lista.innerHTML = '<p class="cargando">Cargando...</p>'
+
+      // Cargar perfiles desde tabla profiles
+      const { data: perfiles, error } = await supabase
+        .from('profiles').select('*').order('email')
+
+      if (error) {
+        lista.innerHTML = `<p class="cargando" style="color:#d94060">Error al cargar: ${error.message}<br><small>Verificá las políticas RLS de la tabla profiles.</small></p>`
+        return
+      }
+
+      // Cruzar con makers para saber quién tiene perfil maker
+      // makersData ya está cargado globalmente
+      todosLosUsuarios = perfiles || []
+
+      // Agregar usuarios de makers que no tengan fila en profiles
+      makersData.forEach(m => {
+        const yaEsta = todosLosUsuarios.find(u => u.id === m.user_id)
+        if (!yaEsta) {
+          todosLosUsuarios.push({
+            id:    m.user_id,
+            email: m.nombre || 'Usuario Maker',
+            nombre: m.nombre,
+            foto_url: m.foto_url,
+            rol: 'user'
+          })
+        }
+      })
+
+      count.textContent = `${todosLosUsuarios.length} usuario${todosLosUsuarios.length !== 1 ? 's' : ''}`
+      renderUsuariosLista(todosLosUsuarios)
+
+      // Búsqueda en tiempo real
+      document.getElementById('usuariosBuscador').oninput = (e) => {
+        const q = e.target.value.toLowerCase()
+        const filtrados = todosLosUsuarios.filter(u =>
+          (u.email || '').toLowerCase().includes(q) ||
+          (u.nombre || '').toLowerCase().includes(q)
+        )
+        renderUsuariosLista(filtrados)
+      }
+    }
+
+    function renderUsuariosLista(usuarios) {
+      const lista = document.getElementById('usuariosLista')
+      if (usuarios.length === 0) {
+        lista.innerHTML = '<p class="cargando">No se encontraron usuarios.</p>'
+        return
+      }
+      lista.innerHTML = usuarios.map(u => {
+        const inicial = (u.nombre || u.email || '?')[0].toUpperCase()
+        const rolBadge = u.rol === 'admin'
+          ? '<span class="ud-rol-badge ud-rol-badge--admin">Admin</span>'
+          : '<span class="ud-rol-badge">Usuario</span>'
+        const tieneMaker = makersData.find(m => m.user_id === u.id)
+        return `
+        <div class="usuario-item" onclick="window.abrirUsuarioDetalle('${u.id}')">
+          <div class="usuario-item__avatar">
+            ${u.foto_url
+              ? `<img src="${u.foto_url}" style="width:100%;height:100%;object-fit:cover;border-radius:50%"/>`
+              : `<span>${inicial}</span>`}
+          </div>
+          <div class="usuario-item__info">
+            <p class="usuario-item__nombre">${u.nombre || 'Sin nombre'}</p>
+            <p class="usuario-item__email">${u.email || '—'}</p>
+          </div>
+          <div class="usuario-item__badges">
+            ${rolBadge}
+            ${tieneMaker ? '<span class="ud-rol-badge ud-rol-badge--maker">Maker</span>' : ''}
+            ${u.instagram ? `<span class="ud-ig-icon" title="Tiene Instagram">
+              <svg viewBox="0 0 24 24" fill="currentColor" width="14" height="14"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 1.366.062 2.633.334 3.608 1.308.975.975 1.246 2.242 1.308 3.608.058 1.266.07 1.646.07 4.85s-.012 3.584-.07 4.85c-.062 1.366-.334 2.633-1.308 3.608-.975.975-2.242 1.246-3.608 1.308-1.266.058-1.646.07-4.85.07s-3.584-.012-4.85-.07c-1.366-.062-2.633-.334-3.608-1.308-.975-.975-1.246-2.242-1.308-3.608C2.175 15.584 2.163 15.204 2.163 12s.012-3.584.07-4.85c.062-1.366.334-2.633 1.308-3.608.975-.975 2.242-1.246 3.608-1.308C8.416 2.175 8.796 2.163 12 2.163zm0-2.163C8.741 0 8.333.014 7.053.072 5.775.13 4.602.402 3.635 1.368 2.668 2.335 2.396 3.508 2.338 4.786 2.28 6.066 2.163 6.474 2.163 12c0 5.526.117 5.934.175 7.214.058 1.278.33 2.451 1.297 3.418.967.967 2.14 1.239 3.418 1.297C8.333 23.986 8.741 24 12 24s3.667-.014 4.947-.072c1.278-.058 2.451-.33 3.418-1.297.967-.967 1.239-2.14 1.297-3.418.058-1.28.072-1.688.072-7.214 0-5.526-.014-5.934-.072-7.214-.058-1.278-.33-2.451-1.297-3.418C19.398.402 18.225.13 16.947.072 15.667.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 1 0 0 12.324 6.162 6.162 0 0 0 0-12.324zm0 10.162a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm6.406-11.845a1.44 1.44 0 1 0 0 2.881 1.44 1.44 0 0 0 0-2.881z"/></svg>
+            </span>` : ''}
+          </div>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14" style="color:var(--muted);flex-shrink:0"><polyline points="9 18 15 12 9 6"/></svg>
+        </div>`
+      }).join('')
+    }
+
+    window.abrirUsuarioDetalle = async (uid) => {
+      const u = todosLosUsuarios.find(x => x.id === uid)
+      if (!u) return
+      usuarioDetalleActual = u
+
+      // Avatar
+      const avatarImg = document.getElementById('udAvatarImg')
+      const avatarTxt = document.getElementById('udAvatarTxt')
+      if (u.foto_url) {
+        avatarImg.src = u.foto_url; avatarImg.style.display = 'block'; avatarTxt.style.display = 'none'
+      } else {
+        avatarImg.style.display = 'none'; avatarTxt.style.display = 'block'
+        avatarTxt.textContent = (u.nombre || u.email || '?')[0].toUpperCase()
+      }
+
+      // Info básica
+      document.getElementById('udNombre').textContent = u.nombre || 'Sin nombre'
+      document.getElementById('udEmail').textContent  = u.email  || '—'
+      const rolEl = document.getElementById('udRol')
+      rolEl.textContent = u.rol === 'admin' ? '✦ Administrador' : 'Usuario'
+      rolEl.className = 'usuario-detalle__rol' + (u.rol === 'admin' ? ' admin' : '')
+
+      // Descripción del perfil
+      const desc = u.descripcion
+      document.getElementById('udPerfil').innerHTML = desc
+        ? `<div class="ud-campo">
+             <span class="ud-campo__label">Descripción</span>
+             <span class="ud-campo__value">${desc}</span>
+           </div>`
+        : '<p style="font-size:0.78rem;color:var(--muted)">Sin descripción cargada.</p>'
+
+      // Redes sociales — siempre mostrar la sección
+      const redes = []
+      if (u.instagram) redes.push(`<a href="${u.instagram}" target="_blank" class="ud-red ud-red--ig">
+        <svg viewBox="0 0 24 24" fill="currentColor" width="12" height="12"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 1.366.062 2.633.334 3.608 1.308.975.975 1.246 2.242 1.308 3.608.058 1.266.07 1.646.07 4.85s-.012 3.584-.07 4.85c-.062 1.366-.334 2.633-1.308 3.608-.975.975-2.242 1.246-3.608 1.308-1.266.058-1.646.07-4.85.07s-3.584-.012-4.85-.07c-1.366-.062-2.633-.334-3.608-1.308-.975-.975-1.246-2.242-1.308-3.608C2.175 15.584 2.163 15.204 2.163 12s.012-3.584.07-4.85c.062-1.366.334-2.633 1.308-3.608.975-.975 2.242-1.246 3.608-1.308C8.416 2.175 8.796 2.163 12 2.163zm0-2.163C8.741 0 8.333.014 7.053.072 5.775.13 4.602.402 3.635 1.368 2.668 2.335 2.396 3.508 2.338 4.786 2.28 6.066 2.163 6.474 2.163 12c0 5.526.117 5.934.175 7.214.058 1.278.33 2.451 1.297 3.418.967.967 2.14 1.239 3.418 1.297C8.333 23.986 8.741 24 12 24s3.667-.014 4.947-.072c1.278-.058 2.451-.33 3.418-1.297.967-.967 1.239-2.14 1.297-3.418.058-1.28.072-1.688.072-7.214 0-5.526-.014-5.934-.072-7.214-.058-1.278-.33-2.451-1.297-3.418C19.398.402 18.225.13 16.947.072 15.667.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 1 0 0 12.324 6.162 6.162 0 0 0 0-12.324zm0 10.162a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm6.406-11.845a1.44 1.44 0 1 0 0 2.881 1.44 1.44 0 0 0 0-2.881z"/></svg>
+        Instagram</a>`)
+      if (u.telegram)  redes.push(`<a href="${u.telegram}"  target="_blank" class="ud-red ud-red--tg">
+        <svg viewBox="0 0 24 24" fill="currentColor" width="12" height="12"><path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/></svg>
+        Telegram</a>`)
+      if (u.tiktok)    redes.push(`<a href="${u.tiktok}"    target="_blank" class="ud-red ud-red--tt">
+        <svg viewBox="0 0 24 24" fill="currentColor" width="12" height="12"><path d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93-.01 2.92.01 5.84-.02 8.75-.08 1.4-.54 2.79-1.35 3.94-1.31 1.92-3.58 3.17-5.91 3.21-1.43.08-2.86-.31-4.08-1.03-2.02-1.19-3.44-3.37-3.65-5.71-.02-.5-.03-1-.01-1.49.18-1.9 1.12-3.72 2.58-4.96 1.66-1.44 3.98-2.13 6.15-1.72.02 1.48-.04 2.96-.04 4.44-.99-.32-2.15-.23-3.02.37-.63.41-1.11 1.04-1.36 1.75-.21.51-.15 1.07-.14 1.61.24 1.64 1.82 3.02 3.5 2.87 1.12-.01 2.19-.66 2.77-1.61.19-.33.4-.67.41-1.06.1-1.79.06-3.57.07-5.36.01-4.03-.01-8.05.02-12.07z"/></svg>
+        TikTok</a>`)
+      document.getElementById('udRedesSec').style.display = 'block'
+      document.getElementById('udRedes').innerHTML = redes.length > 0
+        ? redes.join('')
+        : '<p style="font-size:0.78rem;color:var(--muted)">No tiene redes sociales cargadas.</p>'
+
+      // Perfil Maker — siempre mostrar sección
+      const maker = makersData.find(m => m.user_id === uid)
+      const makerSec = document.getElementById('udMakerSec')
+      makerSec.style.display = 'block'
+      if (maker) {
+        const proyFotos = (maker.proyectos || []).slice(0, 6)
+          .map(url => `<div class="ud-maker-foto"><img src="${url}" loading="lazy"/></div>`).join('')
+        document.getElementById('udMaker').innerHTML = `
+          ${maker.descripcion
+            ? `<div class="ud-campo" style="margin-bottom:0.75rem">
+                <span class="ud-campo__label">Descripción</span>
+                <span class="ud-campo__value">${maker.descripcion}</span>
+               </div>`
+            : '<p style="font-size:0.78rem;color:var(--muted);margin-bottom:0.5rem">Sin descripción maker.</p>'}
+          ${maker.instagram
+            ? `<a href="${maker.instagram}" target="_blank" class="ud-red ud-red--ig" style="margin-bottom:0.75rem;display:inline-flex;align-items:center;gap:0.4rem">Instagram Maker</a>`
+            : '<p style="font-size:0.78rem;color:var(--muted);margin-bottom:0.5rem">Sin Instagram maker.</p>'}
+          ${proyFotos
+            ? `<div class="ud-maker-fotos">${proyFotos}</div>`
+            : '<p style="font-size:0.78rem;color:var(--muted)">Sin fotos de proyectos.</p>'}
+        `
+      } else {
+        document.getElementById('udMaker').innerHTML =
+          '<p style="font-size:0.78rem;color:var(--muted)">Este usuario no tiene perfil Maker.</p>'
+      }
+
+      document.getElementById('modalUsuarioDetalle').classList.add('activo')
+    }
+
     // ══════════════════════════════════════════
     //  MAKERS DE LA COMUNIDAD
     // ══════════════════════════════════════════
@@ -2721,15 +2975,31 @@
       // CTA: mostrar según estado del usuario
       if (usuarioActual) {
         const yaTiene = makersData.find(m => m.user_id === usuarioActual.id)
-        if (yaTiene) {
+        if (esAdmin) {
+          // Admin: puede editar su perfil + crear perfiles para otros usuarios
+          const btnEditar = yaTiene
+            ? `<button class="btn btn--primary makers-cta__btn" id="btnEditarMaker">✏️ Editar mi perfil Maker</button>`
+            : `<button class="btn btn--primary makers-cta__btn" id="btnUnirMaker">✦ Unirme a la comunidad</button>`
+          cta.innerHTML = btnEditar +
+            `<button class="btn btn--sm" id="btnCrearMakerAdmin" style="background:var(--bg3);border:1px solid var(--cyan-mid);color:var(--cyan)">
+              ➕ Crear perfil para un usuario
+            </button>`
+          cta.style.display = 'flex'
+          if (yaTiene) {
+            document.getElementById('btnEditarMaker').addEventListener('click', () => abrirModalMaker(yaTiene, false))
+          } else {
+            document.getElementById('btnUnirMaker').addEventListener('click', () => abrirModalMaker(null, false))
+          }
+          document.getElementById('btnCrearMakerAdmin').addEventListener('click', () => abrirModalMaker(null, true))
+        } else if (yaTiene) {
           cta.innerHTML = `<button class="btn btn--primary makers-cta__btn" id="btnEditarMaker">✏️ Editar mi perfil Maker</button>`
           cta.style.display = 'flex'
-          document.getElementById('btnEditarMaker').addEventListener('click', () => abrirModalMaker(yaTiene))
+          document.getElementById('btnEditarMaker').addEventListener('click', () => abrirModalMaker(yaTiene, false))
         } else {
           cta.innerHTML = `<button class="btn btn--primary makers-cta__btn" id="btnUnirMaker">✦ Unirme a la comunidad</button>
             <p style="font-size:0.78rem;color:var(--muted);text-align:center">Mostrá tus proyectos impresos con diseños de Rabbit3D</p>`
           cta.style.display = 'flex'
-          document.getElementById('btnUnirMaker').addEventListener('click', () => abrirModalMaker(null))
+          document.getElementById('btnUnirMaker').addEventListener('click', () => abrirModalMaker(null, false))
         }
       } else {
         cta.innerHTML = `<p class="makers-cta__login"><a href="#" id="btnMakerLogin" style="color:var(--cyan);text-decoration:underline">Iniciá sesión</a> para mostrar tus proyectos a la comunidad</p>`
@@ -2787,31 +3057,126 @@
       await cargarMakers()
     }
 
-    function abrirModalMaker(maker) {
-      miMaker       = maker
+    let makerAdminTargetUser = null  // usuario target cuando admin crea perfil para otro
+
+    function abrirModalMaker(maker, modoAdmin = false) {
+      miMaker        = maker
       makerProyectos = maker?.proyectos ? [...maker.proyectos] : []
+      makerAdminTargetUser = null
 
-      document.getElementById('makerModalTitulo').textContent = maker ? 'Editar mi perfil Maker' : 'Unirme a la comunidad'
-      document.getElementById('makerDesc').value      = maker?.descripcion || ''
-      document.getElementById('makerInstagram').value = maker?.instagram   || ''
-      document.getElementById('makerError').textContent     = ''
-      document.getElementById('makerExito').style.display   = 'none'
-      document.getElementById('btnEliminarMaker').style.display = maker ? 'inline-block' : 'none'
+      const adminField = document.getElementById('makerAdminUserField')
+      const preview    = document.getElementById('makerAdminUserPreview')
 
-      // Avatar
-      const img = document.getElementById('makerModalAvatarImg')
-      const txt = document.getElementById('makerModalAvatarTxt')
-      const fotoUrl = maker?.foto_url || perfilUsuario?.foto_url || null
-      const nombre  = maker?.nombre   || perfilUsuario?.nombre   || usuarioActual?.email || '?'
-      if (fotoUrl) {
-        img.src = fotoUrl; img.style.display = 'block'; txt.style.display = 'none'
+      if (modoAdmin) {
+        // Modo admin: crear perfil para otro usuario
+        document.getElementById('makerModalTitulo').textContent = 'Crear perfil Maker para usuario'
+        adminField.style.display = 'block'
+        document.getElementById('makerAdminEmail').value = ''
+        preview.style.display = 'none'
+        document.getElementById('makerEmailSuggestions').innerHTML = ''
+        // Limpiar campos
+        document.getElementById('makerDesc').value = ''
+        document.getElementById('makerInstagram').value = ''
+        makerProyectos = []
+        // Ocultar avatar y botón eliminar
+        document.getElementById('makerModalAvatarImg').style.display = 'none'
+        document.getElementById('makerModalAvatarTxt').style.display = 'block'
+        document.getElementById('makerModalAvatarTxt').textContent = '?'
+        document.getElementById('btnEliminarMaker').style.display = 'none'
       } else {
-        img.style.display = 'none'; txt.style.display = 'block'
-        txt.textContent = nombre[0].toUpperCase()
+        // Modo normal: usuario edita su propio perfil
+        document.getElementById('makerModalTitulo').textContent = maker ? 'Editar mi perfil Maker' : 'Unirme a la comunidad'
+        adminField.style.display = 'none'
+        document.getElementById('makerDesc').value      = maker?.descripcion || ''
+        document.getElementById('makerInstagram').value = maker?.instagram   || ''
+        document.getElementById('btnEliminarMaker').style.display = maker ? 'inline-block' : 'none'
+        // Avatar
+        const img     = document.getElementById('makerModalAvatarImg')
+        const txt     = document.getElementById('makerModalAvatarTxt')
+        const fotoUrl = maker?.foto_url || perfilUsuario?.foto_url || null
+        const nombre  = maker?.nombre   || perfilUsuario?.nombre   || usuarioActual?.email || '?'
+        if (fotoUrl) { img.src = fotoUrl; img.style.display = 'block'; txt.style.display = 'none' }
+        else { img.style.display = 'none'; txt.style.display = 'block'; txt.textContent = nombre[0].toUpperCase() }
       }
 
+      document.getElementById('makerError').textContent   = ''
+      document.getElementById('makerExito').style.display = 'none'
       renderMakerProyectosGrid()
       document.getElementById('modalMaker').classList.add('activo')
+    }
+
+    // ── Autocompletado email admin ──
+    document.getElementById('makerAdminEmail').addEventListener('input', async (e) => {
+      const q = e.target.value.toLowerCase().trim()
+      const suggestions = document.getElementById('makerEmailSuggestions')
+      const preview     = document.getElementById('makerAdminUserPreview')
+      if (q.length < 2) { suggestions.innerHTML = ''; preview.style.display = 'none'; return }
+
+      // Filtrar usuarios registrados que coincidan
+      const matches = todosLosUsuarios.filter(u =>
+        (u.email || '').toLowerCase().includes(q) ||
+        (u.nombre || '').toLowerCase().includes(q)
+      ).slice(0, 5)
+
+      if (matches.length === 0) { suggestions.innerHTML = '<p class="maker-suggestion-empty">No se encontraron usuarios</p>'; return }
+
+      suggestions.innerHTML = matches.map(u => `
+        <div class="maker-suggestion-item" onclick="window.seleccionarUsuarioMaker('${u.id}')">
+          <div class="maker-suggestion-avatar">${u.foto_url
+            ? `<img src="${u.foto_url}" style="width:100%;height:100%;object-fit:cover;border-radius:50%"/>`
+            : `<span>${(u.nombre || u.email || '?')[0].toUpperCase()}</span>`}
+          </div>
+          <div>
+            <p style="font-size:0.78rem;font-weight:700;color:var(--text)">${u.nombre || 'Sin nombre'}</p>
+            <p style="font-size:0.7rem;color:var(--muted)">${u.email}</p>
+          </div>
+          ${makersData.find(m => m.user_id === u.id) ? '<span style="font-size:0.6rem;color:var(--cyan);margin-left:auto">Ya tiene maker</span>' : ''}
+        </div>`).join('')
+    })
+
+    window.seleccionarUsuarioMaker = (uid) => {
+      const u = todosLosUsuarios.find(x => x.id === uid)
+      if (!u) return
+      makerAdminTargetUser = u
+
+      // Ocultar sugerencias
+      document.getElementById('makerEmailSuggestions').innerHTML = ''
+      document.getElementById('makerAdminEmail').value = u.email
+
+      // Mostrar preview del usuario
+      const preview = document.getElementById('makerAdminUserPreview')
+      preview.style.display = 'flex'
+      const avatarEl = document.getElementById('makerAdminAvatar')
+      avatarEl.innerHTML = u.foto_url
+        ? `<img src="${u.foto_url}" style="width:100%;height:100%;object-fit:cover;border-radius:50%"/>`
+        : `<span>${(u.nombre || u.email)[0].toUpperCase()}</span>`
+      document.getElementById('makerAdminNombre').textContent    = u.nombre || 'Sin nombre'
+      document.getElementById('makerAdminEmailLabel').textContent = u.email
+
+      // Autocompletar con datos existentes del maker (si tiene)
+      const makerExistente = makersData.find(m => m.user_id === uid)
+      if (makerExistente) {
+        miMaker = makerExistente
+        makerProyectos = [...(makerExistente.proyectos || [])]
+        document.getElementById('makerDesc').value      = makerExistente.descripcion || ''
+        document.getElementById('makerInstagram').value = makerExistente.instagram   || ''
+        document.getElementById('btnEliminarMaker').style.display = 'inline-block'
+      } else {
+        miMaker = null
+        makerProyectos = []
+        // Autocompletar con datos del perfil del usuario
+        document.getElementById('makerDesc').value      = u.descripcion || ''
+        document.getElementById('makerInstagram').value = u.instagram   || ''
+        document.getElementById('btnEliminarMaker').style.display = 'none'
+      }
+
+      // Actualizar avatar del modal con foto del usuario
+      const img = document.getElementById('makerModalAvatarImg')
+      const txt = document.getElementById('makerModalAvatarTxt')
+      if (u.foto_url) { img.src = u.foto_url; img.style.display = 'block'; txt.style.display = 'none' }
+      else { img.style.display = 'none'; txt.style.display = 'block'; txt.textContent = (u.nombre || u.email)[0].toUpperCase() }
+
+      renderMakerProyectosGrid()
     }
 
     function renderMakerProyectosGrid() {
@@ -2900,20 +3265,49 @@
         proyectos:   makerProyectos.slice(0, 6)
       }
 
+      // Si admin está creando para otro usuario, usar ese user_id
+      if (makerAdminTargetUser) {
+        datos.user_id = makerAdminTargetUser.id
+        datos.nombre  = makerAdminTargetUser.nombre || makerAdminTargetUser.email.split('@')[0]
+        datos.foto_url = miMaker?.foto_url || makerAdminTargetUser.foto_url || null
+      }
+      if (!datos.user_id) { errEl.textContent = 'Seleccioná un usuario primero.'; btn.disabled = false; btn.textContent = 'Guardar perfil'; return }
+      const esNuevo = !miMaker?.id
       const { error } = await supabase.from('makers').upsert([datos], { onConflict: 'user_id' })
       btn.disabled = false; btn.textContent = 'Guardar perfil'
       if (error) { errEl.textContent = 'Error al guardar: ' + error.message; return }
+
+      // Notificar por email:
+      // - Si es perfil nuevo con Instagram (cualquier usuario)
+      // - Si el admin crea perfil para otro usuario
+      const emailDestino = makerAdminTargetUser ? makerAdminTargetUser.email : usuarioActual.email
+      const debeNotificar = (esNuevo && datos.instagram) || (esAdmin && makerAdminTargetUser)
+      if (debeNotificar) {
+        try {
+          await supabase.functions.invoke('notify-maker', {
+            body: {
+              nombre:       datos.nombre,
+              instagram:    datos.instagram || 'No cargado',
+              email:        emailDestino,
+              creadoPorAdmin: !!makerAdminTargetUser
+            }
+          })
+        } catch(e) { console.warn('Notificación no enviada:', e.message) }
+      }
 
       exitoEl.style.display = 'block'
       setTimeout(() => { exitoEl.style.display = 'none' }, 2500)
       await cargarMakers()
     })
 
-    // Eliminar maker
+    // Eliminar maker — funciona para el propio usuario Y para admin borrando perfil de otro
     document.getElementById('btnEliminarMaker').addEventListener('click', async () => {
-      if (!confirm('¿Eliminar tu perfil de la comunidad?')) return
-      await supabase.from('makers').delete().eq('user_id', usuarioActual.id)
+      const targetId = makerAdminTargetUser ? makerAdminTargetUser.id : usuarioActual.id
+      const targetNombre = makerAdminTargetUser ? (makerAdminTargetUser.nombre || makerAdminTargetUser.email) : 'tu perfil'
+      if (!confirm(`¿Eliminar el perfil maker de ${targetNombre}?`)) return
+      await supabase.from('makers').delete().eq('user_id', targetId)
       document.getElementById('modalMaker').classList.remove('activo')
+      makerAdminTargetUser = null
       await cargarMakers()
     })
 
@@ -2982,6 +3376,42 @@
     })
     document.addEventListener('click', () => document.getElementById('temaDropdown')?.classList.remove('abierto'))
     document.getElementById('temaDropdown').addEventListener('click', e => e.stopPropagation())
+
+
+    // ══════════════════════════════════════════
+    //  CARTEL PROMO MAKERS
+    // ══════════════════════════════════════════
+    function initMakersPromo() {
+      const promo = document.getElementById('makersPromo')
+      const closeBtn = document.getElementById('makersPromoClose')
+      const promoBtn = document.getElementById('makersPromoBtn')
+      if (!promo) return
+
+      // No mostrar si ya lo cerró o si ya tiene perfil maker
+      const cerrado = localStorage.getItem('r3d_promo_makers_cerrado')
+      if (cerrado) return
+
+      // Mostrar después de 8 segundos solo a usuarios logueados sin perfil maker
+      setTimeout(() => {
+        if (!usuarioActual) return
+        const yaTiene = makersData.find(m => m.user_id === usuarioActual.id)
+        if (yaTiene) return
+        promo.classList.add('activo')
+      }, 8000)
+
+      closeBtn.addEventListener('click', () => {
+        promo.classList.remove('activo')
+        // No volver a mostrar por 24 horas
+        localStorage.setItem('r3d_promo_makers_cerrado', Date.now())
+        setTimeout(() => localStorage.removeItem('r3d_promo_makers_cerrado'), 86400000)
+      })
+
+      promoBtn.addEventListener('click', () => {
+        promo.classList.remove('activo')
+        localStorage.setItem('r3d_promo_makers_cerrado', Date.now())
+        setTimeout(() => localStorage.removeItem('r3d_promo_makers_cerrado'), 86400000)
+      })
+    }
 
     // ══════════════════════════════════════════
     //  MENÚ HAMBURGUESA MOBILE
@@ -3086,6 +3516,7 @@
       console.info('[Rabbit3D] Sesión verificada, esAdmin:', esAdmin)
       // Cargar makers DESPUÉS de verificar sesión — así sabe si el usuario está logueado
       await cargarMakers()
+      initMakersPromo()
     })()
   </script>
 
