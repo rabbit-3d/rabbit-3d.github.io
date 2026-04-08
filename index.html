@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>La Madriguera – Diseños para Impresión 3D</title>
   <link rel="stylesheet" href="styles.css" />
-  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Syne:wght@300;400;500&family=Rajdhani:wght@400;600;700&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Syne:wght@300;400;500&family=Rajdhani:wght@400;600;700&family=Fredoka+One&family=Paytone+One&family=Righteous&family=Titan+One&family=Boogaloo&family=Lilita+One&family=Passion+One&family=Russo+One&family=Squada+One&family=Black+Ops+One&display=swap" rel="stylesheet"/>
 
 </head>
 <body>
@@ -22,23 +22,25 @@
         <!-- Inputs trampa para engañar al autocomplete de Chrome -->
         <input type="text" style="display:none" aria-hidden="true"/>
         <input type="password" style="display:none" aria-hidden="true"/>
-        <input type="text" id="buscador" class="buscador" placeholder="Buscar diseños..."
+        <input type="search" id="buscador" class="buscador" placeholder="Buscar diseños..."
           autocomplete="off"
           autocorrect="off"
           autocapitalize="off"
           spellcheck="false"
           aria-autocomplete="none"
           role="searchbox"
-          name="buscar_disenios_rabbit3d"
+          name="buscar_disenios_rabbit3d_x"
+          data-form-type="other"
+          data-lpignore="true"
         />
       </div>
       <nav class="nav">
         <a href="#catalogo" class="nav__link">Catálogo</a>
         <a href="#sobre-mi" class="nav__link">Sobre mí</a>
         <a href="#top-designs" class="nav__link">Top Diseños</a>
-        <a href="#youtube" class="nav__link">Videos</a>
+        <a href="#herramientas" class="nav__link">Herramientas</a>
         <a href="#makers" class="nav__link">Comunidad</a>
-        <a href="#herramienta-stl" class="nav__link">Imagen→STL</a>
+        <a href="#youtube" class="nav__link">Videos</a>
         <a href="#sugerencias" class="nav__link">Sugerencias</a>
         <a href="#contacto" class="nav__link">Contacto</a>
         <button class="nav__icon-btn" id="btnFavoritos" title="Favoritos">
@@ -71,21 +73,21 @@
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
         Top Diseños
       </a>
-      <a href="#youtube" class="mobile-menu__link" id="mm-yt">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg>
-        Videos
+      <a href="#herramientas" class="mobile-menu__link" id="mm-herramientas">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+        Herramientas
       </a>
       <a href="#makers" class="mobile-menu__link" id="mm-makers">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
         Comunidad
       </a>
+      <a href="#youtube" class="mobile-menu__link" id="mm-yt">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg>
+        Videos
+      </a>
       <a href="#sobre-mi" class="mobile-menu__link" id="mm-sobre">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
         Sobre mí
-      </a>
-      <a href="#herramienta-stl" class="mobile-menu__link" id="mm-stl">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
-        Imagen→STL
       </a>
       <a href="#sugerencias" class="mobile-menu__link" id="mm-sug">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
@@ -573,17 +575,61 @@
       <button class="btn btn--sm btn--danger" id="btnLogout">Cerrar sesión</button>
     </div>
 
+    <!-- Filtros mobile: select nativo (solo visible en celular) -->
+    <div class="filtros-mobile">
+      <select class="filtros-mobile__select" id="mobileCatSelect">
+        <option value="todos">Todos los diseños</option>
+        <option value="cuadros">Cuadros 2D</option>
+        <option value="llaveros">Llaveros</option>
+        <option value="cortantes">Cortantes</option>
+        <option value="otros">Otros</option>
+      </select>
+      <div style="display:flex;gap:0.4rem;align-items:center">
+        <div class="filtro-tema-wrap" style="flex:1">
+          <button class="filtro-tema-btn" id="btnTemaDropdownMobile" style="width:100%;justify-content:space-between">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="12" height="12"><path d="M4 6h16M4 12h16M4 18h7"/></svg>
+            <span id="btnTemaLabelMobile">Temáticas</span>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="10" height="10"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+          <div class="tema-dropdown" id="temaDropdownMobile"></div>
+        </div>
+        <div class="filtro-orden-wrap" style="flex:1">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13"><path d="M3 6h18M7 12h10M11 18h2"/></svg>
+          <select id="selectOrdenMobile" class="filtro-orden" style="flex:1">
+            <option value="llegada">Recientes</option>
+            <option value="descargas">Populares</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
     <div class="filtros">
-      <button class="filtro activo" data-cat="todos">Todos</button>
-      <button class="filtro" data-cat="cuadros">Cuadros 2D</button>
-      <button class="filtro" data-cat="llaveros">Llaveros</button>
-      <button class="filtro" data-cat="cortantes">Cortantes</button>
-      <button class="filtro" data-cat="otros">Otros</button>
+      <!-- Fila 1: categorías (scroll horizontal en mobile) -->
+      <div class="filtros-cats-row">
+        <button class="filtro activo" data-cat="todos">Todos</button>
+        <button class="filtro" data-cat="cuadros">Cuadros 2D</button>
+        <button class="filtro" data-cat="llaveros">Llaveros</button>
+        <button class="filtro" data-cat="cortantes">Cortantes</button>
+        <button class="filtro" data-cat="otros">Otros</button>
+      </div>
       <span class="filtros-sep">|</span>
-      <button class="filtro-precio activo" data-precio="todos">Todos los precios</button>
-      <button class="filtro-precio" data-precio="gratis">Gratis</button>
-      <button class="filtro-precio" data-precio="pago">De pago</button>
+      <!-- Fila 2: precio + orden (grid 2 cols en mobile) -->
+      <div class="filtros-row2">
+        <div class="filtros-precio-group">
+          <button class="filtro-precio activo" data-precio="todos">Todos</button>
+          <button class="filtro-precio" data-precio="gratis">Gratis</button>
+          <button class="filtro-precio" data-precio="pago">De pago</button>
+        </div>
+        <div class="filtro-orden-wrap">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13"><path d="M3 6h18M7 12h10M11 18h2"/></svg>
+          <select id="selectOrden" class="filtro-orden">
+            <option value="llegada">Orden de llegada</option>
+            <option value="descargas">Más descargados</option>
+          </select>
+        </div>
+      </div>
       <span class="filtros-sep">|</span>
+      <!-- Fila 3: temáticas (ancho completo) -->
       <div class="filtro-tema-wrap">
         <button class="filtro-tema-btn" id="btnTemaDropdown">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="12" height="12"><path d="M4 6h16M4 12h16M4 18h7"/></svg>
@@ -594,14 +640,6 @@
           <button class="tema-option tema-option--all activo" data-tema="">Todas</button>
           <div id="temasLista"></div>
         </div>
-      </div>
-      <span class="filtros-sep">|</span>
-      <div class="filtro-orden-wrap">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13"><path d="M3 6h18M7 12h10M11 18h2"/></svg>
-        <select id="selectOrden" class="filtro-orden">
-          <option value="llegada">Orden de llegada</option>
-          <option value="descargas">Más descargados</option>
-        </select>
       </div>
     </div>
 
@@ -628,7 +666,129 @@
     <div class="top-designs__dots" id="topDots"></div>
   </section>
 
-  <!-- YOUTUBE VIDEOS -->
+  <!-- HERRAMIENTAS -->
+  <section class="herramientas-section" id="herramientas">
+    <div class="section__header">
+      <h2 class="section__title">Herramientas</h2>
+      <p class="section__sub">Generadores gratuitos para impresión 3D — directo desde el navegador</p>
+    </div>
+    <div class="herramientas-grid">
+
+      <div class="herramienta-card" onclick="abrirHerramienta('modal-stl')">
+        <div class="herramienta-card__visual" id="hcard-visual-stl">
+          <div class="hcard-edit-overlay" id="hcard-edit-stl" style="display:none" onclick="event.stopPropagation(); herramientaEditImg('stl')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20"><path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"/><circle cx="12" cy="13" r="4"/></svg>
+            Cambiar imagen
+          </div>
+          <svg viewBox="0 0 400 200" xmlns="http://www.w3.org/2000/svg" width="100%" height="100%">
+            <!-- Background grid -->
+            <pattern id="grid1" width="20" height="20" patternUnits="userSpaceOnUse">
+              <path d="M 20 0 L 0 0 0 20" fill="none" stroke="#0c3545" stroke-width="0.5"/>
+            </pattern>
+            <rect width="400" height="200" fill="#001520"/>
+            <rect width="400" height="200" fill="url(#grid1)"/>
+            <!-- Image icon (left) -->
+            <rect x="30" y="50" width="110" height="100" rx="8" fill="#001825" stroke="#0c3545" stroke-width="1.5"/>
+            <rect x="48" y="68" width="74" height="54" rx="4" fill="#0c3545"/>
+            <!-- Charizard silhouette simplified -->
+            <ellipse cx="85" cy="95" rx="22" ry="16" fill="#159A9C" opacity="0.7"/>
+            <ellipse cx="75" cy="82" rx="10" ry="14" fill="#159A9C" opacity="0.7"/>
+            <path d="M95 78 Q108 65 118 72" stroke="#159A9C" stroke-width="6" fill="none" stroke-linecap="round" opacity="0.7"/>
+            <path d="M65 85 Q55 75 48 80" stroke="#159A9C" stroke-width="5" fill="none" stroke-linecap="round" opacity="0.7"/>
+            <!-- Arrow -->
+            <g transform="translate(160,90)">
+              <line x1="0" y1="10" x2="50" y2="10" stroke="#159A9C" stroke-width="2"/>
+              <polyline points="42,4 52,10 42,16" fill="none" stroke="#159A9C" stroke-width="2"/>
+            </g>
+            <!-- 3D model (right) — isometric box -->
+            <g transform="translate(230,50)">
+              <!-- top face -->
+              <polygon points="70,15 130,40 70,65 10,40" fill="#159A9C" opacity="0.25"/>
+              <polygon points="70,15 130,40 70,65 10,40" fill="none" stroke="#159A9C" stroke-width="1.5"/>
+              <!-- right face -->
+              <polygon points="130,40 130,95 70,120 70,65" fill="#159A9C" opacity="0.12"/>
+              <polygon points="130,40 130,95 70,120 70,65" fill="none" stroke="#159A9C" stroke-width="1.5"/>
+              <!-- left face -->
+              <polygon points="10,40 70,65 70,120 10,95" fill="#159A9C" opacity="0.18"/>
+              <polygon points="10,40 70,65 70,120 10,95" fill="none" stroke="#159A9C" stroke-width="1.5"/>
+              <!-- charizard shape on top -->
+              <ellipse cx="70" cy="42" rx="18" ry="10" fill="#159A9C" opacity="0.5"/>
+              <ellipse cx="62" cy="34" rx="8" ry="10" fill="#159A9C" opacity="0.5"/>
+            </g>
+            <!-- STL label -->
+            <text x="340" y="170" font-family="monospace" font-size="11" fill="#159A9C" opacity="0.6" text-anchor="middle">.STL</text>
+          </svg>
+        </div>
+        <div class="herramienta-card__info">
+          <div class="herramienta-card__top">
+            <span class="herramienta-card__badge">🧪 Beta</span>
+          </div>
+          <h3 class="herramienta-card__title">Imagen → STL</h3>
+          <p class="herramienta-card__desc">Subí cualquier silueta — logo, personaje, ícono — y la herramienta genera automáticamente un modelo 3D listo para laminar e imprimir.</p>
+          <button class="herramienta-card__btn">Abrir herramienta →</button>
+        </div>
+      </div>
+
+      <div class="herramienta-card" onclick="abrirHerramienta('modal-llavero')">
+        <div class="herramienta-card__visual" id="hcard-visual-llavero">
+          <div class="hcard-edit-overlay" id="hcard-edit-llavero" style="display:none" onclick="event.stopPropagation(); herramientaEditImg('llavero')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20"><path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"/><circle cx="12" cy="13" r="4"/></svg>
+            Cambiar imagen
+          </div>
+          <svg viewBox="0 0 400 200" xmlns="http://www.w3.org/2000/svg" width="100%" height="100%">
+            <pattern id="grid2" width="20" height="20" patternUnits="userSpaceOnUse">
+              <path d="M 20 0 L 0 0 0 20" fill="none" stroke="#0c3545" stroke-width="0.5"/>
+            </pattern>
+            <rect width="400" height="200" fill="#001520"/>
+            <rect width="400" height="200" fill="url(#grid2)"/>
+            <!-- Keychain base -->
+            <rect x="80" y="70" width="240" height="70" rx="16" fill="#001825" stroke="#159A9C" stroke-width="2"/>
+            <!-- Argolla -->
+            <circle cx="72" cy="105" r="18" fill="none" stroke="#159A9C" stroke-width="3"/>
+            <circle cx="72" cy="105" r="8" fill="none" stroke="#159A9C" stroke-width="1.5" opacity="0.5"/>
+            <!-- Text JUAN in bold -->
+            <text x="200" y="117" font-family="Arial Black, sans-serif" font-size="38" font-weight="900" fill="#DEEFE7" text-anchor="middle" letter-spacing="2">JUAN</text>
+            <!-- Depth lines (3D effect) -->
+            <rect x="80" y="140" width="240" height="6" rx="2" fill="#159A9C" opacity="0.15"/>
+            <line x1="80" y1="140" x2="80" y2="146" stroke="#159A9C" stroke-width="1" opacity="0.4"/>
+            <line x1="320" y1="140" x2="320" y2="146" stroke="#159A9C" stroke-width="1" opacity="0.4"/>
+            <!-- Fonts label -->
+            <text x="320" y="175" font-family="monospace" font-size="10" fill="#159A9C" opacity="0.5" text-anchor="middle">10 tipografías</text>
+            <!-- Small examples -->
+            <text x="110" y="55" font-family="Georgia, serif" font-size="11" fill="#159A9C" opacity="0.45" text-anchor="middle">Ana</text>
+            <text x="170" y="52" font-family="Impact, sans-serif" font-size="12" fill="#159A9C" opacity="0.45" text-anchor="middle">DIEGO</text>
+            <text x="250" y="55" font-family="Arial, sans-serif" font-size="11" fill="#159A9C" opacity="0.45" text-anchor="middle">Mateo</text>
+            <text x="330" y="53" font-family="monospace" font-size="10" fill="#159A9C" opacity="0.45" text-anchor="middle">César</text>
+          </svg>
+        </div>
+        <div class="herramienta-card__info">
+          <div class="herramienta-card__top">
+            <span class="herramienta-card__badge">🧪 Beta</span>
+          </div>
+          <h3 class="herramienta-card__title">Llaveros con nombre</h3>
+          <p class="herramienta-card__desc">Escribí un nombre, elegí tipografía y personalizá tamaños. Generá el STL del llavero completo — base y letras — listo para imprimir en dos colores.</p>
+          <button class="herramienta-card__btn">Abrir herramienta →</button>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- MAKERS DE LA COMUNIDAD -->
+  <section class="makers-section" id="makers">
+    <div class="section__header">
+      <h2 class="section__title">Makers de la Comunidad</h2>
+      <p class="section__sub">Descubrí makers apasionados por la impresión 3D — seguílos y encontrá inspiración para tu próximo proyecto.</p>
+    </div>
+    <div class="makers-cta" id="makersCta" style="display:none">
+      <!-- Se rellena dinámicamente según si el usuario ya tiene perfil o no -->
+    </div>
+    <div class="makers-grid" id="makersGrid">
+      <p class="cargando">Cargando comunidad...</p>
+    </div>
+  </section>
+
+    <!-- YOUTUBE VIDEOS -->
   <section class="yt-section" id="youtube">
     <div class="section__header">
       <h2 class="section__title">Videos de Impresión 3D</h2>
@@ -656,29 +816,20 @@
   </section>
 
 
-  <!-- MAKERS DE LA COMUNIDAD -->
-  <section class="makers-section" id="makers">
-    <div class="section__header">
-      <h2 class="section__title">Makers de la Comunidad</h2>
-      <p class="section__sub">Descubrí makers apasionados por la impresión 3D — seguílos y encontrá inspiración para tu próximo proyecto.</p>
-    </div>
-    <div class="makers-cta" id="makersCta" style="display:none">
-      <!-- Se rellena dinámicamente según si el usuario ya tiene perfil o no -->
-    </div>
-    <div class="makers-grid" id="makersGrid">
-      <p class="cargando">Cargando comunidad...</p>
-    </div>
-  </section>
-
-  <!-- HERRAMIENTA IMAGE → STL -->
-  <section class="stl-section" id="herramienta-stl">
-    <div class="section__header">
-      <h2 class="section__title">Convertí tu imagen en modelo 3D</h2>
-      <p class="section__sub">Subí una silueta y descargá el archivo STL listo para imprimir — sin software, directo desde el navegador</p>
-    <p class="stl-beta-notice">🧪 Herramienta en versión beta — en prueba activa con mejoras en camino</p>
-    </div>
-
-    <div class="stl-tool">
+  <!-- MODAL IMAGEN STL -->
+  <input type="file" id="hcard-file-input" accept="image/*" style="display:none"/>
+  <div class="modal-overlay herramienta-modal-overlay" id="modal-stl">
+    <div class="modal herramienta-modal">
+      <div class="herramienta-modal__header">
+        <h2 class="modal__title">Imagen → STL</h2>
+        <button class="modal__close" onclick="cerrarHerramienta('modal-stl')">✕</button>
+      </div>
+      <div class="herramienta-modal__body">
+        <div class="section__header" style="margin-bottom:1rem">
+          <p class="section__sub">Subí una silueta y descargá el archivo STL listo para imprimir — sin software, directo desde el navegador</p>
+          <p class="stl-beta-notice">🧪 Herramienta en versión beta — en prueba activa con mejoras en camino</p>
+        </div>
+<div class="stl-tool">
 
       <!-- PANEL IZQUIERDO: CONTROLES -->
       <div class="stl-panel stl-panel--left">
@@ -783,7 +934,151 @@
         </div>
       </div>
     </div>
-  </section>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL LLAVERO -->
+  <div class="modal-overlay herramienta-modal-overlay" id="modal-llavero">
+    <div class="modal herramienta-modal">
+      <div class="herramienta-modal__header">
+        <h2 class="modal__title">Llaveros con nombre</h2>
+        <button class="modal__close" onclick="cerrarHerramienta('modal-llavero')">✕</button>
+      </div>
+      <div class="herramienta-modal__body">
+        <div class="section__header" style="margin-bottom:1rem">
+          <p class="section__sub">Escribí un nombre, personalizá el diseño y descargá el STL listo para imprimir</p>
+          <p class="stl-beta-notice">🧪 Herramienta en versión beta — en prueba activa con mejoras en camino</p>
+        </div>
+<div class="stl-tool">
+      <!-- Panel izquierdo: controles -->
+      <div class="stl-panel stl-panel--left" style="padding:1.2rem">
+
+        <div class="stl-ctrl-group">
+          <p class="stl-ctrl-label">Nombre</p>
+          <input type="text" id="llNombre" class="form-input" placeholder="Ej: JUAN" maxlength="20"
+            style="font-size:1.1rem;letter-spacing:0.05em;"/>
+        </div>
+
+        <div class="stl-ctrl-group" style="margin-top:1rem">
+          <p class="stl-ctrl-label">Tipografía</p>
+          <select id="llFuente" class="form-input" style="font-size:0.88rem">
+            <option value="Fredoka One">Fredoka One — redondeada</option>
+            <option value="Paytone One">Paytone One — bold compacta</option>
+            <option value="Righteous">Righteous — geométrica</option>
+            <option value="Titan One">Titan One — display grande</option>
+            <option value="Boogaloo">Boogaloo — informal</option>
+            <option value="Lilita One">Lilita One — ultra bold</option>
+            <option value="Passion One">Passion One — condensada</option>
+            <option value="Russo One">Russo One — industrial</option>
+            <option value="Squada One">Squada One — cuadrada</option>
+            <option value="Black Ops One">Black Ops One — militar</option>
+          </select>
+        </div>
+
+        <div class="stl-controls" style="margin-top:1rem">
+
+          <div class="stl-ctrl-group">
+            <div class="stl-slider-row">
+              <span class="stl-slider-label"><span class="stl-tip-wrap">Grosor base (mm)<span class="stl-tip-circle" data-tip="Grosor de la placa de fondo del llavero.">?</span></span></span>
+              <span class="stl-slider-val" id="llValBaseH">2</span>
+            </div>
+            <input type="range" class="stl-range" id="llSlBaseH" min="1" max="5" value="2" step="0.5">
+          </div>
+
+          <div class="stl-ctrl-group">
+            <div class="stl-slider-row">
+              <span class="stl-slider-label"><span class="stl-tip-wrap">Grosor letras (mm)<span class="stl-tip-circle" data-tip="Cuánto sobresalen las letras por encima de la base.">?</span></span></span>
+              <span class="stl-slider-val" id="llValLetraZ">1</span>
+            </div>
+            <input type="range" class="stl-range" id="llSlLetraZ" min="0.5" max="4" value="1" step="0.5">
+          </div>
+
+          <div class="stl-ctrl-group">
+            <div class="stl-slider-row">
+              <span class="stl-slider-label"><span class="stl-tip-wrap">Padding alrededor (mm)<span class="stl-tip-circle" data-tip="Espacio entre las letras y el borde de la base.">?</span></span></span>
+              <span class="stl-slider-val" id="llValPad">4</span>
+            </div>
+            <input type="range" class="stl-range" id="llSlPad" min="2" max="12" value="4" step="1">
+          </div>
+
+          <div class="stl-ctrl-group">
+            <div class="stl-slider-row">
+              <span class="stl-slider-label"><span class="stl-tip-wrap">Diámetro argolla (mm)<span class="stl-tip-circle" data-tip="Diámetro del agujero donde va la argolla del llavero.">?</span></span></span>
+              <span class="stl-slider-val" id="llValArgolla">8</span>
+            </div>
+            <input type="range" class="stl-range" id="llSlArgolla" min="3" max="12" value="8" step="1">
+          </div>
+
+          <div class="stl-ctrl-group">
+            <div class="stl-slider-row">
+              <span class="stl-slider-label"><span class="stl-tip-wrap">Argolla — posición horizontal<span class="stl-tip-circle" data-tip="Mueve la argolla hacia la izquierda (lejos) o hacia la derecha (cerca del llavero).">?</span></span></span>
+              <span class="stl-slider-val" id="llValArgollaPos">15%</span>
+            </div>
+            <input type="range" class="stl-range" id="llSlArgollaPos" min="0" max="100" value="15" step="1">
+          </div>
+
+          <div class="stl-ctrl-group">
+            <div class="stl-slider-row">
+              <span class="stl-slider-label"><span class="stl-tip-wrap">Argolla — posición vertical<span class="stl-tip-circle" data-tip="Mueve la argolla hacia arriba o hacia abajo respecto al llavero.">?</span></span></span>
+              <span class="stl-slider-val" id="llValArgollaV">50%</span>
+            </div>
+            <input type="range" class="stl-range" id="llSlArgollaV" min="0" max="100" value="50" step="5">
+          </div>
+
+          <div class="stl-ctrl-group">
+            <div class="stl-slider-row">
+              <span class="stl-slider-label"><span class="stl-tip-wrap">Radio de esquinas (mm)<span class="stl-tip-circle" data-tip="Cuánto se redondean las esquinas de la base.">?</span></span></span>
+              <span class="stl-slider-val" id="llValRadio">3</span>
+            </div>
+            <input type="range" class="stl-range" id="llSlRadio" min="0" max="10" value="3" step="1">
+          </div>
+
+        </div>
+
+        <button class="btn btn--primary stl-btn-gen" id="llBtnGen" onclick="llGenerate()" style="margin-top:1.2rem">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="15" height="15"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          Generar y descargar STL
+        </button>
+      </div>
+
+      <!-- Panel derecho: preview -->
+      <div class="stl-panel stl-panel--right">
+        <p class="stl-panel-label">Vista previa</p>
+        <div class="stl-preview" id="llPreview" style="min-height:160px;align-items:center;justify-content:center;display:flex">
+          <span class="stl-preview__empty">El llavero aparecerá aquí<br>mientras escribís el nombre</span>
+        </div>
+
+        <div class="stl-info-grid" style="margin-top:1rem">
+          <div class="stl-info-card">
+            <span class="stl-info-card__label">Ancho total</span>
+            <span class="stl-info-card__val" id="llInfoW">—</span>
+          </div>
+          <div class="stl-info-card">
+            <span class="stl-info-card__label">Alto total</span>
+            <span class="stl-info-card__val" id="llInfoH">—</span>
+          </div>
+          <div class="stl-info-card">
+            <span class="stl-info-card__label">Triángulos</span>
+            <span class="stl-info-card__val" id="llInfoTris">—</span>
+          </div>
+          <div class="stl-info-card">
+            <span class="stl-info-card__label">Tamaño STL</span>
+            <span class="stl-info-card__val" id="llInfoSize">—</span>
+          </div>
+        </div>
+
+        <div class="stl-status" id="llStatus" style="margin-top:1rem">
+          <span class="stl-status__dot" id="llDot"></span>
+          <span id="llStatusText">Escribí un nombre para empezar</span>
+        </div>
+
+
+      </div>
+    </div>
+      </div>
+    </div>
+  </div>
 
   <!-- SUGERENCIAS -->
   <section class="sugerencias" id="sugerencias">
@@ -793,24 +1088,40 @@
     </div>
     <div class="sugerencias__wrap">
       <div class="sugerencias__form">
-        <div class="form-group">
-          <label class="form-label">Tu nombre (opcional)</label>
-          <input type="text" id="sugNombre" class="form-input" placeholder="Ej: Martín"/>
+        <!-- Bloqueado para no registrados -->
+        <div id="sugLoginGate" style="display:none">
+          <div class="sug-gate">
+            <div class="sug-gate__icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="32" height="32"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+            </div>
+            <h3 class="sug-gate__title">¿Tenés alguna idea?</h3>
+            <p class="sug-gate__desc">Iniciá sesión para compartir tus sugerencias y ayudar a mejorar La Madriguera.</p>
+            <button class="btn btn--primary" onclick="document.getElementById('btnUserLogin').click()">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="15" height="15" style="margin-right:6px"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
+              Iniciar sesión
+            </button>
+            <p class="sug-gate__hint">¿No tenés cuenta? Es gratis y rápido.</p>
+          </div>
         </div>
-        <div class="form-group">
-          <label class="form-label">Tu sugerencia o mejora</label>
-          <textarea id="sugTexto" class="form-input form-textarea" placeholder="Me gustaría que la página tuviera...&#10;Sería útil poder..."></textarea>
+        <!-- Formulario visible solo para usuarios logueados -->
+        <div id="sugFormWrap">
+          <div class="form-group">
+            <label class="form-label">Tu nombre (opcional)</label>
+            <input type="text" id="sugNombre" class="form-input" placeholder="Ej: Martín"/>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Tu sugerencia o mejora</label>
+            <textarea id="sugTexto" class="form-input form-textarea" placeholder="Me gustaría que la página tuviera...&#10;Sería útil poder..."></textarea>
+          </div>
+          <p class="form-error" id="sugError"></p>
+          <p class="form-success" id="sugExito" style="display:none">¡Gracias! Tu sugerencia fue enviada.</p>
+          <button class="btn btn--primary" id="btnEnviarSug">Enviar sugerencia</button>
         </div>
-        <p class="form-error" id="sugError"></p>
-        <p class="form-success" id="sugExito" style="display:none">¡Gracias! Tu sugerencia fue enviada.</p>
-        <button class="btn btn--primary" id="btnEnviarSug">Enviar sugerencia</button>
       </div>
       <div class="sugerencias__lista-wrap">
         <p class="sugerencias__lista-titulo">Últimas sugerencias</p>
         <div class="sugerencias__lista" id="sugLista"><p class="cargando">Cargando...</p></div>
-        <div id="sugAdminAcciones" style="display:none; margin-top:0.75rem;">
-          <button class="btn btn--sm btn--danger" id="btnLimpiarSug">🗑 Limpiar todas</button>
-        </div>
+        <div id="sugAdminAcciones" style="display:none"></div>
       </div>
     </div>
   </section>
@@ -1613,12 +1924,13 @@
     function activarAdmin() {
       esAdmin = true
       adminBar.classList.add('activo')
-      document.getElementById('sugAdminAcciones').style.display = 'block'
+      // sugAdminAcciones hidden — individual delete buttons shown inline
+      cargarSugerencias()
+      document.getElementById('hcard-edit-stl').style.display = 'flex'
+      document.getElementById('hcard-edit-llavero').style.display = 'flex'
+      ;['stl','llavero'].forEach(t=>{ const v=document.getElementById('hcard-visual-'+t); if(v&&v.querySelector('img')) v.style.cursor='grab' })
       actualizarAvatarAdmin()
-      // Re-renderizar solo si hay productos cargados (no sobreescribir con array vacío)
-      if (productos && productos.length > 0) {
-        renderProductos()
-      }
+      if (productos && productos.length > 0) renderProductos()
     }
 
     function desactivarAdmin() {
@@ -1626,9 +1938,11 @@
       adminBar.classList.remove('activo')
       document.getElementById('productos').classList.remove('drag-mode')
       document.getElementById('ytAdminBar').style.display = 'none'
-      document.getElementById('sugAdminAcciones').style.display = 'none'
+      // sugAdminAcciones already hidden
+      document.getElementById('hcard-edit-stl').style.display = 'none'
+      document.getElementById('hcard-edit-llavero').style.display = 'none'
+      ;['stl','llavero'].forEach(t=>{ const v=document.getElementById('hcard-visual-'+t); if(v) v.style.cursor='default' })
       actualizarAvatarAdmin()
-      // Solo re-renderizar si los productos ya están cargados
       if (productos.length > 0) renderProductos()
       cargarYoutube()
       cargarSugerencias()
@@ -1783,6 +2097,13 @@
         avatarSpan.style.display = 'none'
         if (iconSvg) iconSvg.style.display = 'block'
         btn.title = 'Iniciar sesión'
+      }
+      // Sugerencias: mostrar formulario solo a usuarios logueados
+      const gate = document.getElementById('sugLoginGate')
+      const form = document.getElementById('sugFormWrap')
+      if (gate && form) {
+        gate.style.display = usuarioActual ? 'none' : 'block'
+        form.style.display = usuarioActual ? 'block' : 'none'
       }
     }
 
@@ -2874,11 +3195,11 @@
       lista.innerHTML = data.map(s => {
         const fecha = new Date(s.created_at).toLocaleDateString('es-AR', { day: '2-digit', month: 'short', year: 'numeric' })
         return `
-        <div class="sug-item">
+        <div class="sug-item" id="sug-${s.id}">
           <div class="sug-item__header">
             <span class="sug-item__nombre">${s.nombre || 'Anónimo'}</span>
             <span class="sug-item__fecha">${fecha}</span>
-            ${esAdmin ? `<button class="sug-item__del" onclick="window.eliminarSug('${s.id}')" title="Eliminar">✕</button>` : ''}
+            <button class="sug-item__del" onclick="window.eliminarSug('${s.id}')" title="Eliminar sugerencia" style="display:${esAdmin?'inline-flex':'none'}">✕</button>
           </div>
           <p class="sug-item__texto">${s.texto}</p>
         </div>`
@@ -2886,11 +3207,19 @@
     }
 
     window.eliminarSug = async (id) => {
-      await supabase.from('sugerencias').delete().eq('id', id)
-      await cargarSugerencias()
+      if (!confirm('¿Eliminar esta sugerencia?')) return
+      const { error } = await supabase.from('sugerencias').delete().eq('id', id)
+      if (!error) {
+        const el = document.getElementById('sug-' + id)
+        if (el) el.remove()
+        // Si quedó vacío, mostrar mensaje
+        const lista = document.getElementById('sugLista')
+        if (!lista.querySelector('.sug-item')) lista.innerHTML = '<p class="cargando">Aún no hay sugerencias.</p>'
+      }
     }
 
     document.getElementById('btnEnviarSug').addEventListener('click', async () => {
+      if (!usuarioActual) { document.getElementById('sugError').textContent = 'Tenés que iniciar sesión para enviar sugerencias.'; return }
       const nombre  = document.getElementById('sugNombre').value.trim()
       const texto   = document.getElementById('sugTexto').value.trim()
       const errEl   = document.getElementById('sugError')
@@ -2906,12 +3235,6 @@
       document.getElementById('sugTexto').value  = ''
       exitoEl.style.display = 'block'
       setTimeout(() => { exitoEl.style.display = 'none' }, 4000)
-      await cargarSugerencias()
-    })
-
-    document.getElementById('btnLimpiarSug').addEventListener('click', async () => {
-      if (!confirm('¿Eliminar TODAS las sugerencias?')) return
-      await supabase.from('sugerencias').delete().neq('id', 0)
       await cargarSugerencias()
     })
 
@@ -3824,8 +4147,516 @@
       }
     })()
 
-    // INICIO
-    console.info('[Rabbit3D] Supabase URL:', SUPABASE_URL)
+
+    // ══════════════════════════════════════════
+    //  LLAVERO STL TOOL (v4 - rectangular base, X argolla)
+    ;(function initLlaveroTool() {
+
+      var LETRA_H = 12  // fixed letter height in mm
+
+      function getP() {
+        var ap=document.getElementById('llSlArgollaPos')
+        var av=document.getElementById('llSlArgollaV')
+        return {
+          nombre   : document.getElementById('llNombre').value.trim(),
+          fuente   : document.getElementById('llFuente').value,
+          letraH   : LETRA_H,
+          baseH    : parseFloat(document.getElementById('llSlBaseH').value),
+          letraZ   : parseFloat(document.getElementById('llSlLetraZ').value),
+          pad      : parseFloat(document.getElementById('llSlPad').value),
+          argolla  : parseFloat(document.getElementById('llSlArgolla').value),
+          argollaX : ap ? parseFloat(ap.value)/100 : 0,
+          argollaV : av ? parseFloat(av.value)/100 : 0.5,
+          radio    : parseFloat(document.getElementById('llSlRadio').value),
+        }
+      }
+
+      ;['llSlBaseH','llSlLetraZ','llSlPad','llSlArgolla','llSlArgollaPos','llSlArgollaV','llSlRadio'].forEach(function(id){
+        var el=document.getElementById(id), out=document.getElementById(id.replace('llSl','llVal'))
+        if(!el) return
+        el.addEventListener('input',function(){
+          if(out) out.textContent = (id==='llSlArgollaPos'||id==='llSlArgollaV') ? el.value+'%' : el.value
+          llDraw()
+        })
+      })
+      document.getElementById('llNombre').addEventListener('input', llDraw)
+      document.getElementById('llFuente').addEventListener('change', llDraw)
+
+      function setStatus(msg,state){
+        document.getElementById('llStatusText').textContent=msg
+        var d=document.getElementById('llDot')
+        d.className='stl-status__dot'+(state==='ok'?' stl-status__dot--ok':state==='err'?' stl-status__dot--err':state==='busy'?' stl-status__dot--busy':'')
+      }
+
+      function measureText(nom,fnt,fpx){
+        var tmp=document.createElement('canvas'),ctx=tmp.getContext('2d')
+        ctx.font='900 '+fpx+'px "'+fnt+'", sans-serif'
+        var m=ctx.measureText(nom)
+        return {
+          w   : Math.ceil(m.width),
+          asc : Math.ceil(m.actualBoundingBoxAscent  || fpx*0.78),
+          dsc : Math.ceil(m.actualBoundingBoxDescent || fpx*0.22),
+        }
+      }
+
+      // ── Preview ───────────────────────────────────────────────────────
+      function llDraw(){
+        var p=getP(), preview=document.getElementById('llPreview')
+        if(!p.nombre){
+          preview.innerHTML='<span class="stl-preview__empty">El llavero aparecerá aquí<br>mientras escribís el nombre</span>'
+          return
+        }
+        var PX=4, fpx=p.letraH*PX, padPx=Math.round(p.pad*PX)
+        var mt=measureText(p.nombre,p.fuente,fpx)
+        var argR=Math.round(p.argolla/2*PX)
+        var baseW=mt.w+padPx*2, baseH=mt.asc+mt.dsc+padPx*2
+
+        // Same formula as STL: X from base center, V mirrored
+        var argCenterXpx = Math.round((p.argollaX - 0.5) * baseW * 1.5 + baseW/2)  // px from base left
+        var argCY = Math.round((1 - p.argollaV) * baseH)
+        argCY = Math.max(argR, Math.min(baseH-argR, argCY))
+
+        // baseX: enough left margin if argolla goes left of base
+        var leftMargin = argR + 4
+        var baseX = Math.max(leftMargin, leftMargin - Math.min(0, argCenterXpx - argR - 4))
+        var ax = baseX + argCenterXpx
+        var ay = argCY
+
+        var W  = Math.max(baseX + baseW, ax + argR + 4)
+        var H  = Math.max(baseH, ay + argR + 4)
+        var yOff = Math.max(0, argR - ay + 2)
+        ay += yOff; H += yOff
+
+        var cv=document.createElement('canvas')
+        cv.width=W; cv.height=H
+        var ctx=cv.getContext('2d')
+        ctx.clearRect(0,0,W,H)
+
+        // Base rect
+        var br=Math.min(Math.round(p.radio*PX), baseW/2, baseH/2)
+        var bY=yOff
+        ctx.beginPath()
+        ctx.moveTo(baseX+br,bY)
+        ctx.lineTo(baseX+baseW-br,bY); ctx.quadraticCurveTo(baseX+baseW,bY,baseX+baseW,bY+br)
+        ctx.lineTo(baseX+baseW,bY+baseH-br); ctx.quadraticCurveTo(baseX+baseW,bY+baseH,baseX+baseW-br,bY+baseH)
+        ctx.lineTo(baseX+br,bY+baseH); ctx.quadraticCurveTo(baseX,bY+baseH,baseX,bY+baseH-br)
+        ctx.lineTo(baseX,bY+br); ctx.quadraticCurveTo(baseX,bY,baseX+br,bY)
+        ctx.closePath()
+        ctx.fillStyle='#001825'; ctx.fill()
+        ctx.strokeStyle='#159A9C'; ctx.lineWidth=1.5; ctx.stroke()
+
+        // Text
+        ctx.font='900 '+fpx+'px "'+p.fuente+'", sans-serif'
+        ctx.fillStyle='#DEEFE7'; ctx.textBaseline='alphabetic'
+        ctx.fillText(p.nombre, baseX+padPx, bY+padPx+mt.asc)
+
+        // Argolla ring — independent, just draws wherever it is
+        ctx.beginPath(); ctx.arc(ax,ay,argR,0,Math.PI*2)
+        ctx.strokeStyle='#159A9C'; ctx.lineWidth=1.5; ctx.stroke()
+        ctx.beginPath(); ctx.arc(ax,ay,Math.round(argR*0.45),0,Math.PI*2)
+        ctx.fillStyle='#0c2a3a'; ctx.fill()
+
+        cv.style.cssText='max-width:100%;max-height:220px;object-fit:contain;border-radius:6px;display:block;'
+        preview.innerHTML=''; preview.appendChild(cv)
+        document.getElementById('llInfoW').textContent=(baseW/PX).toFixed(1)+' mm'
+        document.getElementById('llInfoH').textContent=(baseH/PX).toFixed(1)+' mm'
+      }
+
+      // ── STL ───────────────────────────────────────────────────────────
+      window.llGenerate=function(){
+        var p=getP()
+        if(!p.nombre){setStatus('Escribi un nombre primero','err');return}
+        setStatus('Generando STL...','busy')
+        document.getElementById('llBtnGen').disabled=true
+
+        setTimeout(function(){
+          try{
+            var RES=8  // higher res for sharper text
+            var fpx=p.letraH*RES, padPx=Math.round(p.pad*RES)
+            var mt=measureText(p.nombre,p.fuente,fpx)
+
+            // Rasterize text at high res
+            var tW=mt.w+padPx*2, tH=mt.asc+mt.dsc+padPx*2
+            var cv=document.createElement('canvas'); cv.width=tW; cv.height=tH
+            var ctx=cv.getContext('2d')
+            ctx.font='900 '+fpx+'px "'+p.fuente+'", sans-serif'
+            ctx.fillStyle='#fff'; ctx.textBaseline='alphabetic'
+            ctx.fillText(p.nombre, padPx, padPx+mt.asc)
+            var d=ctx.getImageData(0,0,tW,tH).data
+            var textMap=new Uint8Array(tW*tH)
+            for(var i=0;i<tW*tH;i++) textMap[i]=d[i*4+3]>50?1:0
+
+            // Base map with ROUNDED CORNERS
+            var baseMap=new Uint8Array(tW*tH)
+            var radioPx=Math.round(p.radio*RES)
+            radioPx=Math.min(radioPx, Math.floor(tW/2), Math.floor(tH/2))
+            for(var y=0;y<tH;y++) for(var x=0;x<tW;x++){
+              var cx=Math.max(radioPx-x, x-(tW-1-radioPx), 0)
+              var cy=Math.max(radioPx-y, y-(tH-1-radioPx), 0)
+              // Include pixel if inside the rounded rect
+              baseMap[y*tW+x] = (cx===0 && cy===0) || (cx*cx+cy*cy <= radioPx*radioPx) ? 1 : 0
+            }
+
+            // Argolla on LEFT side of base
+            var argR=Math.round(p.argolla/2*RES)
+            // Base and text only — argolla generated separately as ring geometry
+            var W=tW, H=tH, offX=0
+
+            var fullBase=new Uint8Array(W*H)
+            var fullText=new Uint8Array(W*H)
+            for(var y=0;y<tH;y++) for(var x=0;x<tW;x++){
+              fullBase[y*W+x]=baseMap[y*tW+x]
+              fullText[y*W+x]=textMap[y*tW+x]
+            }
+            // Argolla ring position — coordinates in same space as base voxels
+            // Base occupies X: 0..baseWidthMM, Y: 0..baseHeightMM (after Y-mirror)
+            // X: 0%=far left of base, 50%=center, 100%=far right
+            // V: 0%=top (Y=0 after mirror = baseHeightMM), 50%=center, 100%=bottom
+            var baseWidthMM  = tW/RES
+            var baseHeightMM = tH/RES
+            var argCenterX = (p.argollaX - 0.5) * baseWidthMM * 1.5 + baseWidthMM/2
+            var argCenterY = (1 - p.argollaV) * baseHeightMM  // mirror Y to match voxel flip
+            var innerRmm = (p.argolla/2) * 0.45
+            var outerRmm = p.argolla/2
+            var ringThkZ  = p.baseH
+
+            var sc=1/RES, baseZ=p.baseH, letraZ=p.baseH+p.letraZ
+            var tris=[]
+
+            function pushTri(a,b,c){
+              var ux=b[0]-a[0],uy=b[1]-a[1],uz=b[2]-a[2]
+              var vx=c[0]-a[0],vy=c[1]-a[1],vz=c[2]-a[2]
+              var nx=uy*vz-uz*vy,ny=uz*vx-ux*vz,nz=ux*vy-uy*vx
+              var nl=Math.sqrt(nx*nx+ny*ny+nz*nz)||1
+              tris.push({n:[nx/nl,ny/nl,nz/nl],v:[a,b,c]})
+            }
+            function pq(a,b,c,d){pushTri(a,b,c);pushTri(a,c,d)}
+
+            // ── Ring geometry (independent object) ──────────────────────
+            var ringSegs=64
+            for(var si=0;si<ringSegs;si++){
+              var a0=(si/ringSegs)*Math.PI*2, a1=((si+1)/ringSegs)*Math.PI*2
+              var cos0=Math.cos(a0),sin0=Math.sin(a0),cos1=Math.cos(a1),sin1=Math.sin(a1)
+              var ox0=[argCenterX+outerRmm*cos0, argCenterY+outerRmm*sin0]
+              var ox1=[argCenterX+outerRmm*cos1, argCenterY+outerRmm*sin1]
+              var ix0=[argCenterX+innerRmm*cos0, argCenterY+innerRmm*sin0]
+              var ix1=[argCenterX+innerRmm*cos1, argCenterY+innerRmm*sin1]
+              var z0=0, z1=ringThkZ
+              // Top
+              pq([ox0[0],ox0[1],z1],[ox1[0],ox1[1],z1],[ix1[0],ix1[1],z1],[ix0[0],ix0[1],z1])
+              // Bottom
+              pq([ox0[0],ox0[1],z0],[ix0[0],ix0[1],z0],[ix1[0],ix1[1],z0],[ox1[0],ox1[1],z0])
+              // Outer wall
+              pq([ox0[0],ox0[1],z0],[ox1[0],ox1[1],z0],[ox1[0],ox1[1],z1],[ox0[0],ox0[1],z1])
+              // Inner wall
+              pq([ix1[0],ix1[1],z0],[ix0[0],ix0[1],z0],[ix0[0],ix0[1],z1],[ix1[0],ix1[1],z1])
+            }
+            function cb(x,y){return(x>=0&&x<W&&y>=0&&y<H)?fullBase[y*W+x]:0}
+            function ct(x,y){return(x>=0&&x<W&&y>=0&&y<H)?fullText[y*W+x]:0}
+
+            for(var y=0;y<H;y++) for(var x=0;x<W;x++){
+              if(!cb(x,y)) continue
+              var x0=x*sc, x1=(x+1)*sc
+              var y0=(H-y-1)*sc, y1=(H-y)*sc
+              if(!ct(x,y)) pq([x0,y0,baseZ],[x1,y0,baseZ],[x1,y1,baseZ],[x0,y1,baseZ])
+              pq([x0,y1,0],[x1,y1,0],[x1,y0,0],[x0,y0,0])
+              if(!cb(x,y-1)) pq([x0,y1,0],[x1,y1,0],[x1,y1,baseZ],[x0,y1,baseZ])
+              if(!cb(x,y+1)) pq([x0,y0,0],[x1,y0,0],[x1,y0,baseZ],[x0,y0,baseZ])
+              if(!cb(x-1,y)) pq([x0,y0,0],[x0,y1,0],[x0,y1,baseZ],[x0,y0,baseZ])
+              if(!cb(x+1,y)) pq([x1,y1,0],[x1,y0,0],[x1,y0,baseZ],[x1,y1,baseZ])
+            }
+            for(var y=0;y<H;y++) for(var x=0;x<W;x++){
+              if(!ct(x,y)||!cb(x,y)) continue
+              var x0=x*sc, x1=(x+1)*sc
+              var y0=(H-y-1)*sc, y1=(H-y)*sc
+              pq([x0,y0,letraZ],[x1,y0,letraZ],[x1,y1,letraZ],[x0,y1,letraZ])
+              if(!ct(x,y-1)) pq([x0,y1,baseZ],[x1,y1,baseZ],[x1,y1,letraZ],[x0,y1,letraZ])
+              if(!ct(x,y+1)) pq([x0,y0,baseZ],[x1,y0,baseZ],[x1,y0,letraZ],[x0,y0,letraZ])
+              if(!ct(x-1,y)) pq([x0,y0,baseZ],[x0,y1,baseZ],[x0,y1,letraZ],[x0,y0,letraZ])
+              if(!ct(x+1,y)) pq([x1,y1,baseZ],[x1,y0,baseZ],[x1,y0,letraZ],[x1,y1,letraZ])
+            }
+
+            var buf=new ArrayBuffer(80+4+tris.length*50)
+            var view=new DataView(buf)
+            view.setUint32(80,tris.length,true)
+            var off=84
+            for(var ti=0;ti<tris.length;ti++){
+              var t=tris[ti]
+              view.setFloat32(off,t.n[0],true);off+=4
+              view.setFloat32(off,t.n[1],true);off+=4
+              view.setFloat32(off,t.n[2],true);off+=4
+              for(var vi=0;vi<3;vi++){
+                view.setFloat32(off,t.v[vi][0],true);off+=4
+                view.setFloat32(off,t.v[vi][1],true);off+=4
+                view.setFloat32(off,t.v[vi][2],true);off+=4
+              }
+              view.setUint16(off,0,true);off+=2
+            }
+            var blob=new Blob([buf],{type:'application/octet-stream'})
+            var url=URL.createObjectURL(blob)
+            var a=document.createElement('a')
+            a.href=url; a.download='llavero_'+p.nombre.replace(/\s/g,'_')+'.stl'; a.click()
+            setTimeout(function(){URL.revokeObjectURL(url)},1000)
+            var kb=(buf.byteLength/1024).toFixed(1)
+            document.getElementById('llInfoTris').textContent=tris.length.toLocaleString()
+            document.getElementById('llInfoSize').textContent=kb+' KB'
+            setStatus('STL descargado','ok')
+          }catch(e){
+            setStatus('Error: '+e.message,'err'); console.error(e)
+          }
+          document.getElementById('llBtnGen').disabled=false
+        },80)
+      }
+
+      setTimeout(llDraw,800)
+    })()
+
+
+    // ── HERRAMIENTAS MODAL ──────────────────────────────────────────────
+    window.abrirHerramienta = function(id) {
+      document.getElementById(id).classList.add('activo')
+      document.body.style.overflow = 'hidden'
+    }
+    window.cerrarHerramienta = function(id) {
+      document.getElementById(id).classList.remove('activo')
+      document.body.style.overflow = ''
+    }
+    document.querySelectorAll('.herramienta-modal-overlay').forEach(function(el) {
+      el.addEventListener('click', function(e) {
+        if (e.target === el) cerrarHerramienta(el.id)
+      })
+    })
+
+        // ── HERRAMIENTAS — miniaturas editables por admin ────────────────────
+    let hcardEditTarget = null
+
+    window.herramientaEditImg = function(tool) {
+      hcardEditTarget = tool
+      document.getElementById('hcard-file-input').value = ''
+      document.getElementById('hcard-file-input').click()
+    }
+
+    document.getElementById('hcard-file-input').addEventListener('change', async (e) => {
+      const file = e.target.files[0]
+      if (!file || !hcardEditTarget) return
+      const overlay = document.getElementById('hcard-edit-' + hcardEditTarget)
+      overlay.textContent = 'Subiendo...'
+      try {
+        const ext  = file.name.split('.').pop()
+        const path = `herramientas/hcard-${hcardEditTarget}.${ext}`
+        const { error: upErr } = await supabase.storage.from('media').upload(path, file, { upsert: true })
+        if (upErr) throw upErr
+        const { data: urlData } = supabase.storage.from('media').getPublicUrl(path)
+        const cleanUrl = urlData.publicUrl  // sin timestamp — la URL del storage no cambia
+        herramientaSetImg(hcardEditTarget, cleanUrl + '?t=' + Date.now())
+        // Guardar en DB: primero borrar el registro viejo si existe, luego insertar
+        const tipoKey = 'hcard-' + hcardEditTarget
+        await supabase.from('media').delete().eq('tipo', tipoKey)
+        await supabase.from('media').insert([{ tipo: tipoKey, url: cleanUrl, nombre: path }])
+        overlay.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20"><path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"/><circle cx="12" cy="13" r="4"/></svg> Cambiar imagen'
+      } catch(err) {
+        console.error('Error subiendo miniatura:', err)
+        overlay.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20"><path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"/><circle cx="12" cy="13" r="4"/></svg> Error — intentá de nuevo'
+      }
+    })
+
+    function herramientaSetImg(tool, url) {
+      const visual = document.getElementById('hcard-visual-' + tool)
+      const overlay = document.getElementById('hcard-edit-' + tool)
+      // Replace SVG with img, keep overlay
+      const img = document.createElement('img')
+      img.src = url
+      img.style.cssText = 'width:100%;height:100%;object-fit:cover;display:block;'
+      img.onerror = () => {} // keep SVG if image fails
+      // Remove any existing img
+      visual.querySelectorAll('img').forEach(i => i.remove())
+      // Remove SVG
+      visual.querySelectorAll('svg').forEach(s => s.remove())
+      visual.insertBefore(img, overlay)
+    }
+
+    async function cargarHcardImgs() {
+      try {
+        const { data, error } = await supabase.from('media')
+          .select('tipo, url')
+          .in('tipo', ['hcard-stl','hcard-llavero','hcard-stl-pos','hcard-llavero-pos'])
+        if (error) { console.warn('cargarHcardImgs error:', error); return }
+        if (!data || !data.length) return
+        const posMap = {}
+        data.forEach(row => {
+          if (row.tipo && row.tipo.endsWith('-pos')) posMap[row.tipo.replace('-pos','')] = row.url
+        })
+        data.forEach(row => {
+          if (!row.tipo || row.tipo.endsWith('-pos')) return
+          const tool = row.tipo.replace('hcard-', '')
+          if (row.url) {
+            // Add cache-bust so browser doesn't serve stale version
+            herramientaSetImg(tool, row.url + '?v=' + Date.now())
+            const pos = posMap['hcard-' + tool]
+            if (pos) {
+              const img = document.querySelector('#hcard-visual-' + tool + ' img')
+              if (img) img.style.objectPosition = pos
+            }
+          }
+        })
+      } catch(e) { console.warn('hcard imgs:', e) }
+    }
+
+    // ── Drag to reposition image (admin only) ────────────────────────────
+    function initHcardDrag(tool) {
+      const visual = document.getElementById('hcard-visual-' + tool)
+      if (!visual) return
+      let dragging=false, startX=0, startY=0, posX=50, posY=50
+
+      // Load saved position
+      const img = visual.querySelector('img')
+      if (img && img.style.objectPosition) {
+        const parts = img.style.objectPosition.split(' ')
+        posX = parseFloat(parts[0]) || 50
+        posY = parseFloat(parts[1]) || 50
+      }
+
+      visual.addEventListener('mousedown', function(e) {
+        if (!esAdmin) return
+        const img = visual.querySelector('img')
+        if (!img) return
+        dragging=true; startX=e.clientX; startY=e.clientY
+        visual.style.cursor='grabbing'
+        e.preventDefault()
+      })
+
+      document.addEventListener('mousemove', function(e) {
+        if (!dragging) return
+        const img = visual.querySelector('#hcard-visual-'+tool+' img') || visual.querySelector('img')
+        if (!img) return
+        const dx = (e.clientX - startX) / visual.offsetWidth  * 100
+        const dy = (e.clientY - startY) / visual.offsetHeight * 100
+        posX = Math.max(0, Math.min(100, posX - dx))
+        posY = Math.max(0, Math.min(100, posY - dy))
+        startX = e.clientX; startY = e.clientY
+        img.style.objectPosition = posX.toFixed(1)+'% '+posY.toFixed(1)+'%'
+      })
+
+      document.addEventListener('mouseup', async function() {
+        if (!dragging) return
+        dragging=false
+        visual.style.cursor = esAdmin ? 'grab' : 'default'
+        // Save position
+        const img = visual.querySelector('img')
+        if (!img || !esAdmin) return
+        const pos = img.style.objectPosition
+        try {
+          const posKey='hcard-'+tool+'-pos'; await supabase.from('media').delete().eq('tipo',posKey); await supabase.from('media').insert([{tipo:posKey,url:pos,nombre:posKey}])
+        } catch(e) { console.warn('pos save:', e) }
+      })
+
+      // Touch support
+      visual.addEventListener('touchstart', function(e) {
+        if (!esAdmin) return
+        const t=e.touches[0]; startX=t.clientX; startY=t.clientY; dragging=true
+        e.preventDefault()
+      }, {passive:false})
+      visual.addEventListener('touchmove', function(e) {
+        if (!dragging) return
+        const img = visual.querySelector('img'); if (!img) return
+        const t=e.touches[0]
+        const dx=(t.clientX-startX)/visual.offsetWidth*100
+        const dy=(t.clientY-startY)/visual.offsetHeight*100
+        posX=Math.max(0,Math.min(100,posX-dx))
+        posY=Math.max(0,Math.min(100,posY-dy))
+        startX=t.clientX; startY=t.clientY
+        img.style.objectPosition=posX.toFixed(1)+'% '+posY.toFixed(1)+'%'
+        e.preventDefault()
+      }, {passive:false})
+      visual.addEventListener('touchend', async function() {
+        if (!dragging) return
+        dragging=false
+        const img=visual.querySelector('img'); if (!img||!esAdmin) return
+        try { const pk='hcard-'+tool+'-pos'; await supabase.from('media').delete().eq('tipo',pk); await supabase.from('media').insert([{tipo:pk,url:img.style.objectPosition,nombre:pk}]) } catch(e){}
+      })
+    }
+
+    // Init drag for both cards
+    ;['stl','llavero'].forEach(initHcardDrag)
+
+    // ── FILTROS MOBILE ──────────────────────────────────────────────────
+    ;(function initMobileFilters() {
+      var catSel    = document.getElementById('mobileCatSelect')
+      var ordenSel  = document.getElementById('selectOrdenMobile')
+
+      if (catSel) catSel.addEventListener('change', function() {
+        categoriaActual = this.value
+        // Sync desktop buttons
+        document.querySelectorAll('.filtro[data-cat]').forEach(function(b){
+          b.classList.toggle('activo', b.dataset.cat === categoriaActual)
+        })
+        paginaProductos = 1
+        renderProductos()
+      })
+
+      if (ordenSel) ordenSel.addEventListener('change', function() {
+        ordenActual = this.value
+        document.getElementById('selectOrden').value = this.value
+        paginaProductos = 1
+        renderProductos()
+      })
+
+      // Sync desktop -> mobile when desktop buttons clicked
+      document.querySelectorAll('.filtro[data-cat]').forEach(function(b) {
+        b.addEventListener('click', function() {
+          if (catSel) catSel.value = b.dataset.cat
+        })
+      })
+      document.getElementById('selectOrden').addEventListener('change', function() {
+        if (ordenSel) ordenSel.value = this.value
+      })
+
+      // Temáticas dropdown mobile — clone options from desktop after they load
+      function syncTemaMobile() {
+        var src  = document.getElementById('temaDropdown')
+        var dst  = document.getElementById('temaDropdownMobile')
+        var lblD = document.getElementById('btnTemaLabel')
+        var lblM = document.getElementById('btnTemaLabelMobile')
+        if (!src || !dst) return
+        dst.innerHTML = src.innerHTML
+        if (lblD && lblM) lblM.textContent = lblD.textContent
+        // Wire up clicks in mobile dropdown
+        dst.querySelectorAll('.tema-option').forEach(function(opt) {
+          opt.addEventListener('click', function() {
+            // Mirror to desktop
+            var tema = opt.dataset.tema
+            var desktopOpt = document.querySelector('.tema-option[data-tema="'+tema+'"]')
+            if (desktopOpt) desktopOpt.click()
+            dst.classList.remove('abierto')
+            if (lblM) lblM.textContent = tema ? opt.textContent : 'Temáticas'
+          })
+        })
+      }
+      // Sync after temas are loaded (slight delay)
+      setTimeout(syncTemaMobile, 2000)
+      // Also sync label when desktop tema changes
+      var desktopBtn = document.getElementById('btnTemaDropdown')
+      if (desktopBtn) desktopBtn.addEventListener('click', function() {
+        setTimeout(function() {
+          var lbl = document.getElementById('btnTemaLabel')
+          var lblM = document.getElementById('btnTemaLabelMobile')
+          if (lbl && lblM) lblM.textContent = lbl.textContent
+        }, 100)
+      })
+
+      // Mobile tema dropdown toggle
+      var mobileBtn = document.getElementById('btnTemaDropdownMobile')
+      var mobileDrop = document.getElementById('temaDropdownMobile')
+      if (mobileBtn && mobileDrop) {
+        mobileBtn.addEventListener('click', function(e) {
+          e.stopPropagation()
+          mobileDrop.classList.toggle('abierto')
+        })
+        document.addEventListener('click', function() { mobileDrop.classList.remove('abierto') })
+      }
+    })()
+
+    
     // Limpiar buscador — prevenir autocomplete de Chrome
     ;(function limpiarBuscador() {
       const b = document.getElementById('buscador')
@@ -3852,6 +4683,7 @@
     cargarMedia()
     cargarSugerencias()
     cargarYoutube()
+    cargarHcardImgs()
 
     // Productos primero, después sesión y makers — orden importa para el CTA
     ;(async () => {
