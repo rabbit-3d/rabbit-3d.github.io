@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Rabbit3D – Diseños para Impresión 3D</title>
+  <title>La Madriguera – Diseños para Impresión 3D</title>
   <link rel="stylesheet" href="styles.css" />
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Syne:wght@300;400;500&family=Rajdhani:wght@400;600;700&display=swap" rel="stylesheet"/>
 
@@ -38,6 +38,7 @@
         <a href="#top-designs" class="nav__link">Top Diseños</a>
         <a href="#youtube" class="nav__link">Videos</a>
         <a href="#makers" class="nav__link">Comunidad</a>
+        <a href="#herramienta-stl" class="nav__link">Imagen→STL</a>
         <a href="#sugerencias" class="nav__link">Sugerencias</a>
         <a href="#contacto" class="nav__link">Contacto</a>
         <button class="nav__icon-btn" id="btnFavoritos" title="Favoritos">
@@ -81,6 +82,10 @@
       <a href="#sobre-mi" class="mobile-menu__link" id="mm-sobre">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
         Sobre mí
+      </a>
+      <a href="#herramienta-stl" class="mobile-menu__link" id="mm-stl">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+        Imagen→STL
       </a>
       <a href="#sugerencias" class="mobile-menu__link" id="mm-sug">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
@@ -665,6 +670,121 @@
     </div>
   </section>
 
+  <!-- HERRAMIENTA IMAGE → STL -->
+  <section class="stl-section" id="herramienta-stl">
+    <div class="section__header">
+      <h2 class="section__title">Convertí tu imagen en modelo 3D</h2>
+      <p class="section__sub">Subí una silueta y descargá el archivo STL listo para imprimir — sin software, directo desde el navegador</p>
+    <p class="stl-beta-notice">🧪 Herramienta en versión beta — en prueba activa con mejoras en camino</p>
+    </div>
+
+    <div class="stl-tool">
+
+      <!-- PANEL IZQUIERDO: CONTROLES -->
+      <div class="stl-panel stl-panel--left">
+
+        <div class="stl-dropzone" id="stlDropzone">
+          <input type="file" id="stlFileInput" accept="image/*">
+          <div class="stl-dropzone__icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="28" height="28"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+          </div>
+          <p class="stl-dropzone__text">Subí tu imagen o arrastrá acá</p>
+          <p class="stl-dropzone__hint">PNG · JPG · Siluetas con buen contraste</p>
+        </div>
+
+        <div class="stl-controls">
+
+          <div class="stl-ctrl-group">
+            <p class="stl-ctrl-label"><span class="stl-tip-wrap">Figura oscura sobre fondo<span class="stl-tip-circle" data-tip="Elegí 'Claro' si tu imagen tiene fondo blanco/claro con silueta oscura. Elegí 'Oscuro' si el fondo es oscuro y la figura es clara.">?</span></span></p>
+            <div class="stl-toggle-row">
+              <button class="stl-tog stl-tog--active" id="stlTogDark" onclick="stlSetMode('dark')">Claro</button>
+              <button class="stl-tog" id="stlTogLight" onclick="stlSetMode('light')">Oscuro</button>
+            </div>
+          </div>
+
+          <div class="stl-ctrl-group">
+            <div class="stl-slider-row">
+              <span class="stl-slider-label"><span class="stl-tip-wrap">Umbral de detección<span class="stl-tip-circle" data-tip="Controla qué tan oscuro debe ser un píxel para formar parte del modelo. Subilo si detecta de más, bajalo si detecta de menos.">?</span></span></span>
+              <span class="stl-slider-val" id="stlValThresh">128</span>
+            </div>
+            <input type="range" class="stl-range" id="stlSlThresh" min="10" max="245" value="128" step="1">
+          </div>
+
+          <div class="stl-ctrl-group">
+            <div class="stl-slider-row">
+              <span class="stl-slider-label"><span class="stl-tip-wrap">Grosor del modelo (mm)<span class="stl-tip-circle" data-tip="Altura del modelo en milímetros. Un valor típico para cuadros decorativos es entre 3 y 6mm.">?</span></span></span>
+              <span class="stl-slider-val" id="stlValHeight">4</span>
+            </div>
+            <input type="range" class="stl-range" id="stlSlHeight" min="1" max="20" value="4" step="1">
+          </div>
+
+          <div class="stl-ctrl-group">
+            <div class="stl-slider-row">
+              <span class="stl-slider-label"><span class="stl-tip-wrap">Tamaño final (mm)<span class="stl-tip-circle" data-tip="Tamaño del lado mayor del modelo en milímetros. El otro eje se escala proporcional automáticamente.">?</span></span></span>
+              <span class="stl-slider-val" id="stlValSize">150</span>
+            </div>
+            <input type="range" class="stl-range" id="stlSlSize" min="30" max="300" value="150" step="5">
+          </div>
+
+          <div class="stl-ctrl-group">
+            <div class="stl-slider-row">
+              <span class="stl-slider-label"><span class="stl-tip-wrap">Suavizado de bordes<span class="stl-tip-circle" data-tip="Aplica un filtro que elimina píxeles sueltos y ruido en los bordes de la silueta. Útil para imágenes con bordes irregulares.">?</span></span></span>
+              <span class="stl-slider-val" id="stlValSmooth">1</span>
+            </div>
+            <input type="range" class="stl-range" id="stlSlSmooth" min="0" max="5" value="1" step="1">
+          </div>
+
+          <button class="btn btn--primary stl-btn-gen" id="stlBtnGen" disabled onclick="stlGenerate()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="15" height="15"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            Generar y descargar STL
+          </button>
+        </div>
+      </div>
+
+      <!-- PANEL DERECHO: PREVIEW + INFO -->
+      <div class="stl-panel stl-panel--right">
+        <p class="stl-panel-label">Vista previa del contorno detectado</p>
+        <div class="stl-preview" id="stlPreview">
+          <span class="stl-preview__empty">El contorno aparecerá aquí<br>una vez que subas tu imagen</span>
+        </div>
+
+        <div class="stl-info-grid">
+          <div class="stl-info-card">
+            <span class="stl-info-card__label">Triángulos</span>
+            <span class="stl-info-card__val" id="stlInfoTris">—</span>
+          </div>
+          <div class="stl-info-card">
+            <span class="stl-info-card__label">Tamaño STL</span>
+            <span class="stl-info-card__val" id="stlInfoSize">—</span>
+          </div>
+          <div class="stl-info-card">
+            <span class="stl-info-card__label">Resolución</span>
+            <span class="stl-info-card__val" id="stlInfoRes">—</span>
+          </div>
+          <div class="stl-info-card">
+            <span class="stl-info-card__label">Píxeles activos</span>
+            <span class="stl-info-card__val" id="stlInfoPx">—</span>
+          </div>
+        </div>
+
+        <div class="stl-status" id="stlStatus">
+          <span class="stl-status__dot" id="stlDot"></span>
+          <span id="stlStatusText">Esperando imagen...</span>
+        </div>
+
+        <div class="stl-tips">
+          <p class="stl-tips__title">Consejos para mejores resultados</p>
+          <ul class="stl-tips__list">
+            <li>Usá imágenes con fondo blanco/claro y silueta oscura</li>
+            <li>Ajustá el umbral si detecta de más o de menos</li>
+            <li>El suavizado reduce el ruido en bordes complejos</li>
+            <li>Funciona mejor con siluetas simples (logos, personajes, íconos)</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
   <!-- SUGERENCIAS -->
   <section class="sugerencias" id="sugerencias">
     <div class="section__header">
@@ -741,7 +861,7 @@
   </section>
 
   <footer class="footer">
-    <p>© 2025 <strong>Rabbit3D</strong> · Diseños para impresión 3D · General Pico, La Pampa</p>
+    <p>© 2025 <strong>La Madriguera</strong> · Diseños para impresión 3D · General Pico, La Pampa</p>
   </footer>
 
   <!-- MODAL CULTS3D -->
@@ -3501,6 +3621,208 @@
           : 'Iniciar sesión'
       }
     }
+    // IMAGE to STL TOOL
+    ;(function initSTLTool() {
+      var stlImgData=null, stlBinaryMap=[], stlMapW=0, stlMapH=0, stlMode='dark'
+
+      var stlDropzone =document.getElementById('stlDropzone')
+      var stlFileInput=document.getElementById('stlFileInput')
+      var stlPreview  =document.getElementById('stlPreview')
+      var stlBtnGen   =document.getElementById('stlBtnGen')
+
+      function setStatus(msg,state){
+        document.getElementById('stlStatusText').textContent=msg
+        var d=document.getElementById('stlDot')
+        d.className='stl-status__dot'
+          +(state==='ok'?' stl-status__dot--ok'
+          :state==='err'?' stl-status__dot--err'
+          :state==='busy'?' stl-status__dot--busy':'')
+      }
+
+      window.stlSetMode=function(m){
+        stlMode=m
+        document.getElementById('stlTogDark').className ='stl-tog'+(m==='dark' ?' stl-tog--active':'')
+        document.getElementById('stlTogLight').className='stl-tog'+(m==='light'?' stl-tog--active':'')
+        if(stlImgData) stlProcess()
+      }
+      window.stlSetModel=function(){}
+
+      ;['stlSlThresh','stlSlHeight','stlSlSize','stlSlSmooth'].forEach(function(id){
+        var el=document.getElementById(id)
+        var out=document.getElementById(id.replace('stlSl','stlVal'))
+        if(!el||!out) return
+        el.addEventListener('input',function(){
+          out.textContent=el.value
+          if(stlImgData&&(id==='stlSlThresh'||id==='stlSlSmooth')) stlProcess()
+        })
+      })
+
+      stlDropzone.addEventListener('dragover',function(e){e.preventDefault();stlDropzone.classList.add('stl-dropzone--drag')})
+      stlDropzone.addEventListener('dragleave',function(){stlDropzone.classList.remove('stl-dropzone--drag')})
+      stlDropzone.addEventListener('drop',function(e){
+        e.preventDefault();stlDropzone.classList.remove('stl-dropzone--drag')
+        if(e.dataTransfer.files[0]) stlLoad(e.dataTransfer.files[0])
+      })
+      stlFileInput.addEventListener('change',function(){if(stlFileInput.files[0]) stlLoad(stlFileInput.files[0])})
+
+      function stlLoad(file){
+        if(!file.type.startsWith('image/')){setStatus('Formato no valido.','err');return}
+        setStatus('Cargando imagen...','busy')
+        var reader=new FileReader()
+        reader.onload=function(e){
+          var img=new Image()
+          img.onload=function(){
+            var maxDim=512
+            var sc=Math.min(maxDim/img.width,maxDim/img.height,1)
+            stlMapW=Math.round(img.width*sc)
+            stlMapH=Math.round(img.height*sc)
+            var cv=document.createElement('canvas')
+            cv.width=stlMapW; cv.height=stlMapH
+            var ctx=cv.getContext('2d')
+            ctx.drawImage(img,0,0,stlMapW,stlMapH)
+            stlImgData=ctx.getImageData(0,0,stlMapW,stlMapH)
+            stlProcess()
+          }
+          img.src=e.target.result
+        }
+        reader.readAsDataURL(file)
+      }
+
+      function stlProcess(){
+        var thresh=parseInt(document.getElementById('stlSlThresh').value)
+        var smooth=parseInt(document.getElementById('stlSlSmooth').value)
+        var d=stlImgData.data, W=stlMapW, H=stlMapH
+        stlBinaryMap=new Uint8Array(W*H)
+        for(var i=0;i<W*H;i++){
+          var a=d[i*4+3]; if(a<50){stlBinaryMap[i]=0;continue}
+          var lum=0.299*d[i*4]+0.587*d[i*4+1]+0.114*d[i*4+2]
+          stlBinaryMap[i]=stlMode==='dark'?(lum<thresh?1:0):(lum>=thresh?1:0)
+        }
+        // Median filter para limpiar ruido
+        for(var p=0;p<smooth;p++){
+          var tmp=new Uint8Array(stlBinaryMap)
+          for(var y=1;y<H-1;y++) for(var x=1;x<W-1;x++){
+            var s=tmp[(y-1)*W+x-1]+tmp[(y-1)*W+x]+tmp[(y-1)*W+x+1]
+                 +tmp[y*W+x-1]    +tmp[y*W+x]    +tmp[y*W+x+1]
+                 +tmp[(y+1)*W+x-1]+tmp[(y+1)*W+x]+tmp[(y+1)*W+x+1]
+            stlBinaryMap[y*W+x]=s>=5?1:0
+          }
+        }
+        // Preview
+        stlPreview.innerHTML=''
+        var cv=document.createElement('canvas')
+        cv.width=W; cv.height=H
+        cv.style.cssText='max-width:100%;max-height:260px;image-rendering:pixelated;border-radius:6px;display:block;'
+        var ctx=cv.getContext('2d'), out=ctx.createImageData(W,H)
+        for(var i=0;i<W*H;i++){
+          var v=stlBinaryMap[i]
+          out.data[i*4]=v?21:0; out.data[i*4+1]=v?154:21
+          out.data[i*4+2]=v?156:33; out.data[i*4+3]=255
+        }
+        ctx.putImageData(out,0,0); stlPreview.appendChild(cv)
+        stlBtnGen.disabled=false
+        var filled=0; for(var i=0;i<stlBinaryMap.length;i++) filled+=stlBinaryMap[i]
+        document.getElementById('stlInfoRes').textContent=W+'x'+H
+        document.getElementById('stlInfoPx').textContent=filled.toLocaleString()
+        setStatus('Silueta lista.','ok')
+      }
+
+      window.stlGenerate=function(){
+        if(!stlBinaryMap.length){setStatus('Primero subi una imagen','err');return}
+        setStatus('Generando STL...','busy')
+        stlBtnGen.disabled=true
+        setTimeout(function(){
+          try{
+            var targetMM=parseInt(document.getElementById('stlSlSize').value)
+            var H=parseInt(document.getElementById('stlSlHeight').value)
+            var bH=Math.min(H*0.18,1.5)
+            var scale=targetMM/Math.max(stlMapW,stlMapH)
+            var W=stlMapW, HH=stlMapH
+            var tris=[]
+
+            function cell(x,y){return(x>=0&&x<W&&y>=0&&y<HH)?stlBinaryMap[y*W+x]:0}
+
+            function pushQuad(a,b,c,dd){
+              function tri(p,q,r){
+                var ux=q[0]-p[0],uy=q[1]-p[1],uz=q[2]-p[2]
+                var vx=r[0]-p[0],vy=r[1]-p[1],vz=r[2]-p[2]
+                var nx=uy*vz-uz*vy,ny=uz*vx-ux*vz,nz=ux*vy-uy*vx
+                var nl=Math.sqrt(nx*nx+ny*ny+nz*nz)||1
+                tris.push({n:[nx/nl,ny/nl,nz/nl],v:[p,q,r]})
+              }
+              tri(a,b,c); tri(a,c,dd)
+            }
+
+            for(var y=0;y<HH;y++){
+              for(var x=0;x<W;x++){
+                if(!cell(x,y)) continue
+                var x0=x*scale, x1=(x+1)*scale
+                var y0=y*scale, y1=(y+1)*scale
+                // Mirror X: remap so x0->mirX1, x1->mirX0
+                var maxX=W*scale
+                var mx0=maxX-x1, mx1=maxX-x0
+                var zT=0, zB=H, zTi=bH, zBi=H-bH
+
+                // Cara superior
+                pushQuad([mx1,y0,zT],[mx0,y0,zT],[mx0,y1,zT],[mx1,y1,zT])
+                // Cara inferior
+                pushQuad([mx1,y1,zB],[mx0,y1,zB],[mx0,y0,zB],[mx1,y0,zB])
+
+                // Paredes laterales solo en bordes (no internas)
+                if(!cell(x,y-1)){
+                  pushQuad([mx1,y0,zB],[mx0,y0,zB],[mx0,y0,zTi],[mx1,y0,zTi])
+                  pushQuad([mx1,y0,zTi],[mx0,y0,zTi],[mx0,y0,zT],[mx1,y0,zT])
+                }
+                if(!cell(x,y+1)){
+                  pushQuad([mx0,y1,zB],[mx1,y1,zB],[mx1,y1,zTi],[mx0,y1,zTi])
+                  pushQuad([mx0,y1,zTi],[mx1,y1,zTi],[mx1,y1,zT],[mx0,y1,zT])
+                }
+                if(!cell(x-1,y)){
+                  pushQuad([mx1,y0,zB],[mx1,y1,zB],[mx1,y1,zTi],[mx1,y0,zTi])
+                  pushQuad([mx1,y0,zTi],[mx1,y1,zTi],[mx1,y1,zT],[mx1,y0,zT])
+                }
+                if(!cell(x+1,y)){
+                  pushQuad([mx0,y1,zB],[mx0,y0,zB],[mx0,y0,zTi],[mx0,y1,zTi])
+                  pushQuad([mx0,y1,zTi],[mx0,y0,zTi],[mx0,y0,zT],[mx0,y1,zT])
+                }
+              }
+            }
+
+            var buf=new ArrayBuffer(80+4+tris.length*50)
+            var view=new DataView(buf)
+            view.setUint32(80,tris.length,true)
+            var off=84
+            for(var ti=0;ti<tris.length;ti++){
+              var t=tris[ti]
+              view.setFloat32(off,t.n[0],true);off+=4
+              view.setFloat32(off,t.n[1],true);off+=4
+              view.setFloat32(off,t.n[2],true);off+=4
+              for(var vi=0;vi<3;vi++){
+                view.setFloat32(off,t.v[vi][0],true);off+=4
+                view.setFloat32(off,t.v[vi][1],true);off+=4
+                view.setFloat32(off,t.v[vi][2],true);off+=4
+              }
+              view.setUint16(off,0,true);off+=2
+            }
+
+            var blob=new Blob([buf],{type:'application/octet-stream'})
+            var url=URL.createObjectURL(blob)
+            var a=document.createElement('a')
+            a.href=url; a.download='rabbit3d_modelo.stl'; a.click()
+            setTimeout(function(){URL.revokeObjectURL(url)},1000)
+
+            var kb=(buf.byteLength/1024).toFixed(1)
+            document.getElementById('stlInfoTris').textContent=tris.length.toLocaleString()
+            document.getElementById('stlInfoSize').textContent=kb+' KB'
+            setStatus('STL descargado — '+tris.length.toLocaleString()+' triangulos','ok')
+          }catch(e){
+            setStatus('Error: '+e.message,'err')
+            console.error(e)
+          }
+          stlBtnGen.disabled=false
+        },60)
+      }
+    })()
 
     // INICIO
     console.info('[Rabbit3D] Supabase URL:', SUPABASE_URL)
