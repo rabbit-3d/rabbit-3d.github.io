@@ -6,7 +6,14 @@
   <title>La Madriguera – Diseños para Impresión 3D</title>
   <link rel="stylesheet" href="styles.css" />
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Syne:wght@300;400;500&family=Rajdhani:wght@400;600;700&family=Fredoka+One&family=Paytone+One&family=Righteous&family=Titan+One&family=Boogaloo&family=Lilita+One&family=Passion+One&family=Russo+One&family=Squada+One&family=Black+Ops+One&display=swap" rel="stylesheet"/>
-
+  <script type="importmap">
+    {
+      "imports": {
+        "@supabase/supabase-js": "https://esm.sh/@supabase/supabase-js@2",
+        "@supabase/supabase-js@2": "https://esm.sh/@supabase/supabase-js@2"
+      }
+    }
+  </script>
 </head>
 <body>
 
@@ -35,14 +42,13 @@
         />
       </div>
       <nav class="nav">
-        <a href="#catalogo" class="nav__link">Catálogo</a>
-        <a href="#top-designs" class="nav__link">Top Diseños</a>
+        <a href="#makerworld" class="nav__link">Tendencias</a>
+        <a href="#catalogo" class="nav__link">Catálogo Rabbit3D</a>
         <a href="#herramientas" class="nav__link">Herramientas</a>
         <a href="#makers" class="nav__link">Comunidad</a>
         <a href="#youtube" class="nav__link">Videos</a>
         <a href="#sugerencias" class="nav__link">Sugerencias</a>
         <a href="#sobre-mi" class="nav__link">Sobre mí</a>
-        <a href="#contacto" class="nav__link">Contacto</a>
         <button class="nav__icon-btn" id="btnFavoritos" title="Favoritos">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
           <span class="nav__badge" id="badgeFavoritos">0</span>
@@ -65,13 +71,13 @@
       </button>
     </div>
     <div class="mobile-menu__inner">
+      <a href="#makerworld" class="mobile-menu__link" id="mm-mw">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+        Tendencias
+      </a>
       <a href="#catalogo" class="mobile-menu__link" id="mm-catalogo">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
-        Catálogo
-      </a>
-      <a href="#top-designs" class="mobile-menu__link" id="mm-top">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
-        Top Diseños
+        Catálogo Rabbit3D
       </a>
       <a href="#herramientas" class="mobile-menu__link" id="mm-herramientas">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
@@ -557,10 +563,32 @@
   </section>
 
   <!-- CATÁLOGO -->
+  <!-- TENDENCIAS -->
+  <section class="tend-section" id="makerworld">
+    <div class="section__header">
+      <h2 class="section__title">Tendencias en Impresión 3D</h2>
+      <p class="section__sub">Los diseños más populares de la semana en las principales plataformas</p>
+    </div>
+    <!-- Tabs -->
+    <div class="tend-tabs" id="tendTabs">
+      <button class="tend-tab tend-tab--active" data-plat="printables">Printables</button>
+      </button>
+      <button class="tend-tab" data-plat="cults3d">Cults3D</button>
+      </button>
+      <button class="tend-tab" data-plat="thingiverse">Thingiverse</button>
+      </button>
+    </div>
+    <div class="tend-meta" id="tendMeta"></div>
+    <div class="tend-grid" id="tendGrid">
+      <p class="cargando" style="grid-column:1/-1;padding:2rem;color:var(--muted)">Cargando tendencias...</p>
+    </div>
+  </section>
+
+
   <section class="catalogo" id="catalogo">
     <div class="section__header">
-      <h2 class="section__title">Catálogo</h2>
-      <p class="section__sub">Todos los diseños incluyen archivo STL listo para imprimir</p>
+      <h2 class="section__title">Catálogo Rabbit3D</h2>
+      <p class="section__sub">Todos los diseños incluyen archivo STL listo para imprimir · incluye Top Diseños</p>
     </div>
 
     <div class="admin-bar" id="adminBar">
@@ -573,6 +601,7 @@
       <button class="btn btn--sm" id="btnAdminYt">▶ Gestionar videos YT</button>
       <button class="btn btn--sm" id="btnVerUsuarios">👥 Usuarios</button>
       <button class="btn btn--sm" id="btnGestionarHerramientas" onclick="abrirGestionHerramientas()">🔧 Herramientas</button>
+      <button class="btn btn--sm" id="btnActualizarMW" onclick="actualizarMakerworld()">🔄 Actualizar Tendencias</button>
       <button class="btn btn--sm btn--danger" id="btnLogout">Cerrar sesión</button>
     </div>
 
@@ -647,25 +676,25 @@
     <div class="productos" id="productos">
       <p class="cargando">Cargando diseños...</p>
     </div>
+
+    <!-- TOP DISEÑOS dentro del catálogo -->
+    <div class="top-designs-inner" id="top-designs">
+      <div class="top-designs-inner__header">
+        <h3 class="top-designs-inner__title">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
+          Top Diseños Rabbit3D
+        </h3>
+        <p class="top-designs-inner__sub">Los más descargados por la comunidad</p>
+      </div>
+      <div class="top-grid" id="topGrid">
+        <p class="cargando" style="padding:2rem;grid-column:1/-1">Cargando...</p>
+      </div>
+      <div style="text-align:center;margin-top:1.5rem">
+        <button class="btn btn--outline" id="topVerMas" style="display:none" onclick="topVerMasClick()">Ver más</button>
+      </div>
+    </div>
   </section>
 
-  <!-- TOP DESIGNS CAROUSEL -->
-  <section class="top-designs" id="top-designs">
-    <div class="section__header">
-      <h2 class="section__title">Top Diseños</h2>
-      <p class="section__sub">Los 20 más descargados por la comunidad</p>
-    </div>
-    <div class="top-designs__track-wrap">
-      <button class="top-designs__btn top-designs__btn--prev" id="topPrev" aria-label="Anterior">&#8249;</button>
-      <div class="top-designs__viewport" id="topViewport">
-        <div class="top-designs__track" id="topTrack">
-          <p class="cargando" style="padding:2rem">Cargando...</p>
-        </div>
-      </div>
-      <button class="top-designs__btn top-designs__btn--next" id="topNext" aria-label="Siguiente">&#8250;</button>
-    </div>
-    <div class="top-designs__dots" id="topDots"></div>
-  </section>
 
   <!-- HERRAMIENTAS -->
   <section class="herramientas-section" id="herramientas">
@@ -1460,7 +1489,7 @@
     </div>
   </div>
 
-  <!-- SUGERENCIAS -->
+
   <section class="sugerencias" id="sugerencias">
     <div class="section__header">
       <h2 class="section__title">Sugerencias para la página</h2>
@@ -1636,7 +1665,7 @@
     }
   </script>
   <script type="module">
-    import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
+    import { createClient } from '@supabase/supabase-js'
 
     const SUPABASE_URL = 'https://jcrpxrfjenjdgqtwkiyw.supabase.co'
     const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpjcnB4cmZqZW5qZGdxdHdraXl3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzUyNzAzMDYsImV4cCI6MjA5MDg0NjMwNn0.eygcb6oGMkXRUXoJUCs_9B5yr5doF3LrQn9C1-eYHpE'
@@ -3200,102 +3229,78 @@
     // ══════════════════════════════════════════
     //  TOP DESIGNS CAROUSEL (hasta 20 diseños)
     // ══════════════════════════════════════════
+    var topAllDesigns = []
+    var topShowing = 10
+
     function renderTopDesigns() {
-      const track = document.getElementById('topTrack')
-      const dotsEl = document.getElementById('topDots')
-      if (!track) return
-      const top = [...productos]
+      const grid = document.getElementById('topGrid')
+      const btn  = document.getElementById('topVerMas')
+      if (!grid) return
+      topAllDesigns = [...productos]
         .filter(p => p.descargas && Number(p.descargas) > 0)
         .sort((a, b) => Number(b.descargas) - Number(a.descargas))
         .slice(0, 20)
-      if (top.length === 0) {
-        track.innerHTML = '<p class="cargando" style="padding:2rem;width:100%">Aún no hay datos de descargas.</p>'
-        if (dotsEl) dotsEl.innerHTML = ''
+      if (topAllDesigns.length === 0) {
+        grid.innerHTML = '<p class="cargando" style="padding:2rem;grid-column:1/-1">Aún no hay datos de descargas.</p>'
+        if (btn) btn.style.display = 'none'
         return
       }
-      track.innerHTML = top.map((p, i) => {
+      topShowing = 10
+      renderTopGrid()
+    }
+
+    function renderTopGrid() {
+      const grid = document.getElementById('topGrid')
+      const btn  = document.getElementById('topVerMas')
+      if (!grid) return
+      const visible = topAllDesigns.slice(0, topShowing)
+      grid.innerHTML = visible.map((p, i) => {
         const precio = Number(p.precio)
-        const precioTxt = precio === 0 ? 'Gratis' : `$${precio.toFixed(2)} USD`
+        const precioTexto = precio === 0 ? 'Gratis' : `$${precio.toFixed(2)} USD`
+        const esGratis = precio === 0
         return `
-        <article class="top-card" onclick="window.abrirDetalle('${p.id}')" style="cursor:pointer">
-          <div class="top-card__rank">${String(i + 1).padStart(2, '0')}</div>
-          <div class="top-card__img">
-            ${p.imagen_url ? `<img src="${p.imagen_url}" alt="${p.nombre}" loading="lazy"/>` : `<div class="card__placeholder">3D</div>`}
+        <article class="card" data-id="${p.id}" onclick="window.abrirDetalle('${p.id}')" style="cursor:pointer">
+          <div class="card__img-wrap">
+            ${p.imagen_url
+              ? `<img src="${p.imagen_url}" alt="${p.nombre}" class="card__img" loading="lazy"/>`
+              : `<div class="card__placeholder">3D</div>`}
+            <span class="card__num">${String(i+1).padStart(2,'0')}</span>
+            <span class="card__badge">${labelCategoria(p.categoria)}</span>
+            ${esGratis ? `<span class="card__badge-gratis">Gratis</span>` : ''}
+            <div class="card__overlay">
+              <p class="card__nombre-overlay">${p.nombre}</p>
+              <p class="card__precio-overlay">${precioTexto}</p>
+              ${p.descargas ? `<p class="card__descargas-overlay">↓ ${Number(p.descargas).toLocaleString()}</p>` : ''}
+            </div>
           </div>
-          <div class="top-card__body">
-            <p class="top-card__nombre">${p.nombre}</p>
-            <p class="top-card__precio">${precioTxt}</p>
-            <p class="top-card__descargas">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="11" height="11"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-              ${Number(p.descargas).toLocaleString()} descargas
-            </p>
+          <div class="card__body">
+            <h3 class="card__nombre">${p.nombre}</h3>
+            <div class="card__footer">
+              <span class="card__precio ${esGratis ? 'card__precio--gratis' : ''}">${precioTexto}</span>
+              <div class="card__acciones" onclick="event.stopPropagation()">
+                ${p.cults_url ? `<a href="${p.cults_url}" target="_blank" class="card__accion-btn card__accion-btn--cults card__accion-btn--descarga" title="Descargar en Cults3D" onclick="event.stopPropagation()">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" width="14" height="14"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                </a>` : ''}
+                <button class="card__accion-btn ${favoritos.includes(String(p.id)) ? 'activo' : ''}" onclick="window.toggleFavorito('${p.id}')" title="Favorito">
+                  <svg viewBox="0 0 24 24" fill="${favoritos.includes(String(p.id)) ? 'currentColor' : 'none'}" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+                </button>
+              </div>
+            </div>
           </div>
         </article>`
       }).join('')
-      initTopCarousel(top.length)
-    }
-
-    function initTopCarousel(total) {
-      const viewport = document.getElementById('topViewport')
-      const track    = document.getElementById('topTrack')
-      const dotsEl   = document.getElementById('topDots')
-      if (!track || !viewport) return
-
-      // Clonar botones para limpiar listeners acumulados de renders anteriores
-      const oldPrev = document.getElementById('topPrev')
-      const oldNext = document.getElementById('topNext')
-      const btnPrev = oldPrev.cloneNode(true)
-      const btnNext = oldNext.cloneNode(true)
-      oldPrev.parentNode.replaceChild(btnPrev, oldPrev)
-      oldNext.parentNode.replaceChild(btnNext, oldNext)
-
-      const CARD_W = 200, GAP = 16, STEP = CARD_W + GAP
-
-      function getVisible() { return Math.max(1, Math.floor(viewport.offsetWidth / STEP)) }
-
-      function update() {
-        const maxScroll = viewport.scrollWidth - viewport.offsetWidth
-        const atStart = viewport.scrollLeft <= 2
-        const atEnd   = viewport.scrollLeft >= maxScroll - 2
-        btnPrev.style.opacity = atStart ? '0.3' : '1'
-        btnPrev.style.pointerEvents = atStart ? 'none' : 'auto'
-        btnNext.style.opacity = atEnd ? '0.3' : '1'
-        btnNext.style.pointerEvents = atEnd ? 'none' : 'auto'
-        if (dotsEl && total > 0) {
-          const pages = Math.max(1, Math.ceil(total / getVisible()))
-          const cur   = Math.min(pages - 1, Math.round(viewport.scrollLeft / (STEP * getVisible())))
-          dotsEl.innerHTML = Array.from({length: pages}, (_, i) =>
-            `<span class="top-dot ${i === cur ? 'activo' : ''}"></span>`).join('')
-        }
+      if (btn) {
+        const hasMore = topAllDesigns.length > topShowing
+        btn.style.display = hasMore ? 'inline-flex' : 'none'
+        btn.textContent = 'Ver más (' + (topAllDesigns.length - topShowing) + ' restantes)'
       }
-
-      function next() { viewport.scrollBy({ left:  STEP * getVisible(), behavior: 'smooth' }) }
-      function prev() { viewport.scrollBy({ left: -STEP * getVisible(), behavior: 'smooth' }) }
-
-      btnNext.addEventListener('click', next)
-      btnPrev.addEventListener('click', prev)
-      viewport.addEventListener('scroll', update, { passive: true })
-
-      // Swipe táctil
-      let touchStartX = 0
-      viewport.addEventListener('touchstart', e => { touchStartX = e.touches[0].clientX }, { passive: true })
-      viewport.addEventListener('touchend', e => {
-        const dx = e.changedTouches[0].clientX - touchStartX
-        if (Math.abs(dx) > 40) { dx < 0 ? next() : prev() }
-      }, { passive: true })
-
-      // Teclado
-      viewport.setAttribute('tabindex', '0')
-      viewport.addEventListener('keydown', e => {
-        if (e.key === 'ArrowRight') next()
-        if (e.key === 'ArrowLeft')  prev()
-      })
-
-      // Esperar dos frames para que el DOM esté pintado y scrollWidth sea correcto
-      requestAnimationFrame(() => requestAnimationFrame(update))
     }
 
-    // ══════════════════════════════════════════
+    window.topVerMasClick = function() {
+      topShowing = Math.min(topShowing + 10, topAllDesigns.length)
+      renderTopGrid()
+    }
+
     //  YOUTUBE — CARRUSEL + REORDENAR
     // ══════════════════════════════════════════
     function ytIdFromUrl(url) {
@@ -5495,6 +5500,159 @@
     cargarSugerencias()
     cargarYoutube()
     cargarHcardImgs()
+    // ── TENDENCIAS MULTI-PLATAFORMA ────────────────────────────────────
+    let tendPlatActual = 'printables'
+    const tendCache = {}
+
+    async function cargarMakerworld() {
+      await cargarTendencias('printables')
+      // Init tabs
+      document.querySelectorAll('.tend-tab').forEach(btn => {
+        btn.addEventListener('click', () => {
+          document.querySelectorAll('.tend-tab').forEach(b => b.classList.remove('tend-tab--active'))
+          btn.classList.add('tend-tab--active')
+          tendPlatActual = btn.dataset.plat
+          cargarTendencias(tendPlatActual)
+        })
+      })
+    }
+
+    async function cargarTendencias(plat) {
+      const grid = document.getElementById('tendGrid')
+      const meta = document.getElementById('tendMeta')
+      if (!grid) return
+
+      // Usar cache si ya cargamos esta plataforma
+      if (tendCache[plat]) {
+        renderTendencias(tendCache[plat], plat)
+        return
+      }
+
+      grid.innerHTML = '<p style="grid-column:1/-1;padding:2rem;color:var(--muted);text-align:center">Cargando...</p>'
+      if (meta) meta.innerHTML = ''
+
+      try {
+        const { data, error } = await supabase
+          .from('tendencias_3d')
+          .select('*')
+          .eq('plataforma', plat)
+          .order('posicion', { ascending: true })
+          .limit(100)
+
+        if (error || !data || data.length === 0) {
+          grid.innerHTML = `<p style="grid-column:1/-1;padding:2rem;color:var(--muted);text-align:center">
+            Sin datos aún para esta plataforma.
+            ${esAdmin ? '<br><small>Usá el botón "Actualizar Tendencias" para cargar.</small>' : ''}
+          </p>`
+          return
+        }
+        tendCache[plat] = data
+        renderTendencias(data, plat)
+      } catch(e) {
+        console.warn('cargarTendencias error:', e)
+        grid.innerHTML = '<p style="grid-column:1/-1;padding:2rem;color:var(--muted);text-align:center">Error al cargar los datos.</p>'
+      }
+    }
+
+    const PLAT_LABELS = { printables:'Printables', cults3d:'Cults3D', thingiverse:'Thingiverse' }
+
+    function renderTendencias(data, plat) {
+      const grid = document.getElementById('tendGrid')
+      const meta = document.getElementById('tendMeta')
+      if (!grid) return
+      if (meta && data[0]?.scraped_at) {
+        const fecha = new Date(data[0].scraped_at).toLocaleDateString('es-AR',{day:'numeric',month:'long',year:'numeric'})
+        meta.innerHTML = `<p class="tend-meta__text">Última actualización: ${fecha} · ${data.length} diseños · ${PLAT_LABELS[plat]}</p>`
+      }
+      const fallback = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 4 3'%3E%3Crect fill='%23001520' width='4' height='3'/%3E%3C/svg%3E"
+      // Guardamos el fallback globalmente para usarlo en onerror sin conflicto de comillas
+      window._tendFallback = fallback
+      function proxyImg(url) {
+        if (!url) return fallback
+        if (url.includes('thingiverse.com') || url.includes('cdn.makerbot.com')) {
+          return 'https://images.weserv.nl/?url=' + encodeURIComponent(url) + '&w=400&output=webp'
+        }
+        return url
+      }
+      // Parsea el formato "video:URL" o URL directa
+      function parseImagen(raw) {
+        if (!raw) return { type: 'img', src: '' }
+        if (raw.startsWith('video:')) {
+          return { type: 'video', src: raw.slice(6) }
+        }
+        // Detectar MP4 por extensión para datos ya guardados sin prefijo
+        const lower = raw.toLowerCase().split('?')[0]
+        if (lower.endsWith('.mp4') || lower.includes('/mp4/')) {
+          return { type: 'video', src: raw }
+        }
+        return { type: 'img', src: raw }
+      }
+      function mediaThumb(rawUrl) {
+        if (!rawUrl) return '<img src="' + fallback + '" alt=""/>'
+        const parsed = parseImagen(rawUrl)
+
+        if (parsed.type === 'video') {
+          // MP4: usar <video> muted loop. onerror muestra el fallback sin intentar play()
+          return '<video src="' + parsed.src + '" muted loop playsinline preload="metadata"'
+            + ' style="width:100%;height:100%;object-fit:cover;display:block;"'
+            + ' onmouseenter="this.play()" onmouseleave="this.pause();this.currentTime=0"'
+            + ' onerror="this.style.display=&quot;none&quot;;var i=document.createElement(&quot;img&quot;);i.src=window._tendFallback;i.style.cssText=&quot;width:100%;height:100%;object-fit:cover&quot;;this.parentNode.appendChild(i)"'
+            + '></video>'
+        }
+
+        // Imagen (jpg/png/gif/webp animado — <img> los reproduce todos)
+        // onerror: mostrar fallback directo, sin intentar crear <video> (evita play() errors)
+        return '<img src="' + proxyImg(parsed.src) + '" alt="" loading="lazy"'
+          + ' onerror="this.onerror=null;this.src=window._tendFallback"'
+          + '/>'
+      }
+
+      grid.innerHTML = data.map((item,i) => `
+        <a class="tend-card" href="${item.url}" target="_blank" rel="noopener">
+          <div class="tend-card__rank">#${i+1}</div>
+          <div class="tend-card__thumb">
+            ${mediaThumb(item.imagen)}
+          </div>
+          <div class="tend-card__body">
+            <p class="tend-card__title">${item.titulo || 'Sin título'}</p>
+            <p class="tend-card__author">por ${item.autor || 'Desconocido'}</p>
+            ${item.descripcion ? `<p class="tend-card__desc">${item.descripcion.slice(0,80)}${item.descripcion.length>80?'…':''}</p>` : ''}
+            <div class="tend-card__stats">
+              ${item.likes ? `<span>❤️ ${Number(item.likes).toLocaleString()}</span>` : ''}
+              ${item.downloads ? `<span>⬇️ ${Number(item.downloads).toLocaleString()}</span>` : ''}
+              ${item.precio && item.precio !== '' ? `<span class="tend-card__precio${item.precio==='gratis'?' tend-card__precio--free':''}">${item.precio==='gratis'?'Gratis':item.precio}</span>` : ''}
+            </div>
+            <span class="tend-card__btn">Ver en ${PLAT_LABELS[plat]} ↗</span>
+          </div>
+        </a>`).join('')
+    }
+
+    window.actualizarMakerworld = async function() {
+      const btn = document.getElementById('btnActualizarMW')
+      if (btn) { btn.disabled = true; btn.textContent = 'Actualizando...' }
+      try {
+        const { data, error } = await supabase.functions.invoke('scrape-tendencias', {
+          method: 'POST', body: {}
+        })
+        if (error) throw error
+        if (data?.ok) {
+          Object.keys(tendCache).forEach(k => delete tendCache[k])
+          await cargarTendencias(tendPlatActual)
+          const resumen = Object.entries(data.results||{}).map(function(e){return e[0]+': '+e[1]+' items'}).join('\n')
+          alert('\u2713 Tendencias actualizadas:\n' + resumen)
+        } else {
+          alert('Respuesta inesperada: ' + JSON.stringify(data))
+        }
+      } catch(e) {
+        console.error('actualizarMakerworld error:', e)
+        alert('Error: ' + (e.message || String(e)))
+      } finally {
+        if (btn) { btn.disabled = false; btn.textContent = '🔄 Actualizar Tendencias' }
+      }
+    }
+
+    initMakersPromo()
+    cargarMakerworld()
 
     // Productos primero, después sesión y makers — orden importa para el CTA
     ;(async () => {
@@ -5505,7 +5663,7 @@
       console.info('[Rabbit3D] Sesión verificada, esAdmin:', esAdmin)
       // Cargar makers DESPUÉS de verificar sesión — así sabe si el usuario está logueado
       await cargarMakers()
-      initMakersPromo()
+      // ── MAKERWORLD TRENDING ─────────────────────────────────────────────
     })()
 
     // ── GESTIÓN HERRAMIENTAS (admin) ────────────────────────────────────
