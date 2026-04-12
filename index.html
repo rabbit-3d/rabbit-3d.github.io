@@ -47,7 +47,6 @@
         <a href="#herramientas" class="nav__link">Herramientas</a>
         <a href="#makers" class="nav__link">Comunidad</a>
         <a href="#youtube" class="nav__link">Videos</a>
-        <a href="#sugerencias" class="nav__link">Sugerencias</a>
         <a href="#sobre-mi" class="nav__link">Sobre mí</a>
         <button class="nav__icon-btn" id="btnFavoritos" title="Favoritos">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
@@ -94,10 +93,6 @@
       <a href="#sobre-mi" class="mobile-menu__link" id="mm-sobre">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
         Sobre mí
-      </a>
-      <a href="#sugerencias" class="mobile-menu__link" id="mm-sug">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-        Sugerencias
       </a>
       <div class="mobile-menu__divider"></div>
       <button class="mobile-menu__user" id="mm-btnUser">
@@ -575,7 +570,7 @@
       </button>
       <button class="tend-tab" data-plat="cults3d">Cults3D</button>
       </button>
-      <button class="tend-tab" data-plat="thingiverse">Thingiverse</button>
+      <button class="tend-tab" data-plat="thingiverse">Thingiverse · Destacados</button>
       </button>
     </div>
     <div class="tend-meta" id="tendMeta"></div>
@@ -591,19 +586,7 @@
       <p class="section__sub">Todos los diseños incluyen archivo STL listo para imprimir · incluye Top Diseños</p>
     </div>
 
-    <div class="admin-bar" id="adminBar">
-      <span class="admin-bar__texto">Modo administrador activo · Arrastrá las cards para reordenar</span>
-      <button class="btn btn--sm" id="btnEditarPerfil">Editar perfil</button>
-      <button class="btn btn--sm" id="btnEditarDisenador">Editar diseñador</button>
-      <button class="btn btn--sm" id="btnGestionarMedia">Subir media</button>
-      <button class="btn btn--sm btn--cults" id="btnSincronizarCults">⟳ Sincronizar Cults3D</button>
-      <button class="btn btn--sm btn--eliminar-masivo" id="btnEliminarMasivo">🗑 Eliminar seleccionados</button>
-      <button class="btn btn--sm" id="btnAdminYt">▶ Gestionar videos YT</button>
-      <button class="btn btn--sm" id="btnVerUsuarios">👥 Usuarios</button>
-      <button class="btn btn--sm" id="btnGestionarHerramientas" onclick="abrirGestionHerramientas()">🔧 Herramientas</button>
-      <button class="btn btn--sm" id="btnActualizarMW" onclick="actualizarMakerworld()">🔄 Actualizar Tendencias</button>
-      <button class="btn btn--sm btn--danger" id="btnLogout">Cerrar sesión</button>
-    </div>
+
 
     <!-- Filtros mobile: select nativo (solo visible en celular) -->
     <div class="filtros-mobile">
@@ -1564,10 +1547,6 @@
           </div>
         </div>
       </div>
-      <div class="sobre-mi__contacto" id="sobreMiContacto">
-        <p class="sobre-mi__contacto-titulo">Contacto</p>
-        <!-- Se rellena dinámicamente con JS -->
-      </div>
     </div>
   </section>
 
@@ -1578,6 +1557,12 @@
       <p class="section__sub">¿Querés un diseño personalizado o tenés alguna consulta?</p>
     </div>
     <div class="contacto__links" id="contactoLinks"></div>
+    <div class="contacto__email-wrap">
+      <a href="mailto:mateoduarte02@gmail.com" class="contacto__email-btn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+        mateoduarte02@gmail.com
+      </a>
+    </div>
   </section>
 
   <footer class="footer">
@@ -1781,28 +1766,6 @@
         if (txt) txt.style.display = 'none'
       }
 
-      // Panel contacto lateral en Sobre mí
-      const contactoPanel = document.getElementById('sobreMiContacto')
-      let contactoHTML = '<p class="sobre-mi__contacto-titulo">Contacto</p>'
-      if (p.instagram) contactoHTML += `
-        <a href="${p.instagram}" target="_blank" class="sobre-mi__contacto-item sobre-mi__contacto-item--ig">
-          <svg viewBox="0 0 24 24" fill="currentColor" width="15" height="15"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 1.366.062 2.633.334 3.608 1.308.975.975 1.246 2.242 1.308 3.608.058 1.266.07 1.646.07 4.85s-.012 3.584-.07 4.85c-.062 1.366-.334 2.633-1.308 3.608-.975.975-2.242 1.246-3.608 1.308-1.266.058-1.646.07-4.85.07s-3.584-.012-4.85-.07c-1.366-.062-2.633-.334-3.608-1.308-.975-.975-1.246-2.242-1.308-3.608C2.175 15.584 2.163 15.204 2.163 12s.012-3.584.07-4.85c.062-1.366.334-2.633 1.308-3.608.975-.975 2.242-1.246 3.608-1.308C8.416 2.175 8.796 2.163 12 2.163zm0-2.163C8.741 0 8.333.014 7.053.072 5.775.13 4.602.402 3.635 1.368 2.668 2.335 2.396 3.508 2.338 4.786 2.28 6.066 2.163 6.474 2.163 12c0 5.526.117 5.934.175 7.214.058 1.278.33 2.451 1.297 3.418.967.967 2.14 1.239 3.418 1.297C8.333 23.986 8.741 24 12 24s3.667-.014 4.947-.072c1.278-.058 2.451-.33 3.418-1.297.967-.967 1.239-2.14 1.297-3.418.058-1.28.072-1.688.072-7.214 0-5.526-.014-5.934-.072-7.214-.058-1.278-.33-2.451-1.297-3.418C19.398.402 18.225.13 16.947.072 15.667.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 1 0 0 12.324 6.162 6.162 0 0 0 0-12.324zm0 10.162a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm6.406-11.845a1.44 1.44 0 1 0 0 2.881 1.44 1.44 0 0 0 0-2.881z"/></svg>
-          <span class="sobre-mi__contacto-label">Instagram</span>
-        </a>`
-      if (p.telegram) contactoHTML += `
-        <a href="${p.telegram}" target="_blank" class="sobre-mi__contacto-item sobre-mi__contacto-item--tg">
-          <svg viewBox="0 0 24 24" fill="currentColor" width="15" height="15"><path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/></svg>
-          <span class="sobre-mi__contacto-label">Telegram</span>
-        </a>`
-      if (p.tiktok) contactoHTML += `
-        <a href="${p.tiktok}" target="_blank" class="sobre-mi__contacto-item sobre-mi__contacto-item--tt">
-          <svg viewBox="0 0 24 24" fill="currentColor" width="15" height="15"><path d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93-.01 2.92.01 5.84-.02 8.75-.08 1.4-.54 2.79-1.35 3.94-1.31 1.92-3.58 3.17-5.91 3.21-1.43.08-2.86-.31-4.08-1.03-2.02-1.19-3.44-3.37-3.65-5.71-.02-.5-.03-1-.01-1.49.18-1.9 1.12-3.72 2.58-4.96 1.66-1.44 3.98-2.13 6.15-1.72.02 1.48-.04 2.96-.04 4.44-.99-.32-2.15-.23-3.02.37-.63.41-1.11 1.04-1.36 1.75-.21.51-.15 1.07-.14 1.61.24 1.64 1.82 3.02 3.5 2.87 1.12-.01 2.19-.66 2.77-1.61.19-.33.4-.67.41-1.06.1-1.79.06-3.57.07-5.36.01-4.03-.01-8.05.02-12.07z"/></svg>
-          <span class="sobre-mi__contacto-label">TikTok</span>
-        </a>`
-      if (!p.instagram && !p.telegram && !p.tiktok) {
-        contactoHTML += `<span style="font-size:0.75rem;color:var(--muted);padding:0.5rem 0;">Sin redes configuradas</span>`
-      }
-      contactoPanel.innerHTML = contactoHTML
 
       const links = document.getElementById('contactoLinks')
       links.innerHTML = ''
@@ -2434,6 +2397,7 @@
       }
       actualizarNavUsuario()
       cargarMakers()
+      if (window.reopenBugModalIfPending) window.reopenBugModalIfPending()
     })
 
     // ── Registro ──
@@ -5570,7 +5534,11 @@
       function proxyImg(url) {
         if (!url) return fallback
         if (url.includes('thingiverse.com') || url.includes('cdn.makerbot.com')) {
-          return 'https://images.weserv.nl/?url=' + encodeURIComponent(url) + '&w=400&output=webp'
+          // Mejorar resolución antes de pasar por proxy
+          let betterUrl = url
+          if (betterUrl.includes('_thumb_medium')) betterUrl = betterUrl.replace('_thumb_medium', '_thumb_large')
+          if (betterUrl.includes('_thumb_small')) betterUrl = betterUrl.replace('_thumb_small', '_thumb_large')
+          return 'https://images.weserv.nl/?url=' + encodeURIComponent(betterUrl) + '&w=600&output=webp&q=85'
         }
         return url
       }
@@ -5868,6 +5836,182 @@
       }, 1000)
 
     })()
+
+    // ══════════════════════════════════════════
+    //  ADMIN PANEL FLOTANTE — toggle collapse
+    // ══════════════════════════════════════════
+    ;(function() {
+      const toggle = document.getElementById('adminFloatToggle')
+      const body   = document.getElementById('adminFloatBody')
+      const arrow  = document.getElementById('adminFloatArrow')
+      if (!toggle || !body) return
+      let collapsed = false
+      toggle.addEventListener('click', function() {
+        collapsed = !collapsed
+        body.classList.toggle('collapsed', collapsed)
+        toggle.classList.toggle('collapsed', collapsed)
+      })
+    })()
+
+    // ══════════════════════════════════════════
+    //  REPORTAR PROBLEMA — modal + Supabase
+    // ══════════════════════════════════════════
+    ;(function() {
+      const btnAbrir    = document.getElementById('bugFloatBtn')
+      const modal       = document.getElementById('modalBug')
+      const btnCerrar   = document.getElementById('btnCerrarBug')
+      const btnCancelar = document.getElementById('bugBtnCancelar')
+      const loginGate   = document.getElementById('bugLoginGate')
+      const bugForm     = document.getElementById('bugForm')
+      const feedback    = document.getElementById('bugFeedback')
+      const btnLogin    = document.getElementById('bugBtnLogin')
+
+      function abrirModalBug() {
+        modal.style.display = 'flex'
+        // Mostrar formulario o gate según sesión
+        if (perfilId) {
+          loginGate.style.display = 'none'
+          bugForm.style.display   = 'block'
+        } else {
+          loginGate.style.display = 'block'
+          bugForm.style.display   = 'none'
+        }
+        feedback.style.display = 'none'
+        document.getElementById('bugTexto').value   = ''
+        document.getElementById('bugSeccion').value = ''
+      }
+
+      function cerrarModalBug() {
+        modal.style.display = 'none'
+      }
+
+      btnAbrir.addEventListener('click', abrirModalBug)
+      btnCerrar.addEventListener('click', cerrarModalBug)
+      btnCancelar.addEventListener('click', cerrarModalBug)
+      modal.addEventListener('click', function(e) {
+        if (e.target === modal) cerrarModalBug()
+      })
+
+      // Si hacen click en "Iniciar sesión" desde el gate
+      btnLogin.addEventListener('click', function() {
+        cerrarModalBug()
+        document.getElementById('btnUserLogin').click()
+      })
+
+      // Envío del formulario
+      bugForm.addEventListener('submit', async function(e) {
+        e.preventDefault()
+        const texto   = document.getElementById('bugTexto').value.trim()
+        const seccion = document.getElementById('bugSeccion').value.trim()
+        if (!texto) return
+
+        const btnEnviar = document.getElementById('bugBtnEnviar')
+        btnEnviar.disabled = true
+        btnEnviar.textContent = 'Enviando...'
+        feedback.style.display = 'none'
+
+        try {
+          // user_id debe ser el UUID de auth.users, no el id bigint de perfil
+          const authUserId = usuarioActual?.id
+          if (!authUserId) throw new Error('No hay sesión activa')
+
+          const { error } = await supabase.from('reportes_problemas').insert({
+            user_id:  authUserId,
+            texto,
+            seccion:  seccion || null,
+          })
+
+          if (error) {
+            console.error('Bug report DB error:', error)
+            if (error.code === '42P01' || error.message?.includes('does not exist')) {
+              throw new Error('La tabla reportes_problemas no existe en Supabase.')
+            }
+            throw error
+          }
+
+          // Notificar por email al admin via Edge Function
+          supabase.functions.invoke('notificar-reporte', {
+            method: 'POST',
+            body: { texto, seccion, user_id: authUserId }
+          }).catch(function(){}) // Fire and forget
+
+          feedback.style.display = 'block'
+          feedback.innerHTML = '<div class="form-success">✓ Reporte enviado. ¡Gracias por ayudarnos a mejorar!</div>'
+          setTimeout(cerrarModalBug, 2200)
+        } catch(err) {
+          feedback.style.display = 'block'
+          feedback.innerHTML = '<div style="color:#d94060;font-size:0.82rem;padding:0.5rem 0.85rem;background:rgba(217,64,96,0.08);border:1px solid rgba(217,64,96,0.25);border-radius:6px">Error al enviar. Intentá de nuevo.</div>'
+          console.error('Bug report error:', err)
+        } finally {
+          btnEnviar.disabled = false
+          btnEnviar.textContent = 'Enviar reporte'
+        }
+      })
+
+      // Exponer función para reabrir el modal desde login exitoso
+      window.reopenBugModalIfPending = function() {
+        if (modal.style.display === 'flex' && loginGate.style.display !== 'none') {
+          abrirModalBug()
+        }
+      }
+    })()
+
+    // ══════════════════════════════════════════
+    //  REPORTES ADMIN — cargar y mostrar
+    // ══════════════════════════════════════════
+    window.cargarReportesAdmin = async function() {
+      const { data, error } = await supabase
+        .from('reportes_problemas')
+        .select('*')
+        .order('created_at', { ascending: false })
+        .limit(50)
+      if (error) { console.error('Reportes error:', error); return }
+
+      const container = document.getElementById('reportesAdminContainer')
+      if (!container) return
+
+      if (!data || !data.length) {
+        container.innerHTML = '<p style="color:var(--muted);font-size:0.85rem;padding:1rem 0">No hay reportes aún.</p>'
+        return
+      }
+
+      container.innerHTML = '<div class="reportes-lista">' + data.map(function(r) {
+        const fecha = new Date(r.created_at).toLocaleDateString('es-AR', {day:'numeric',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'})
+        // user_id es uuid de auth.users — mostramos los primeros 8 chars como referencia
+        const user = r.user_id?.slice(0, 8) || 'Anónimo'
+        return '<div class="reporte-item" data-id="' + r.id + '">'
+          + '<div class="reporte-item__header">'
+          + '<span class="reporte-item__user">Usuario ' + user + '</span>'
+          + (r.seccion ? '<span class="reporte-item__seccion">' + r.seccion + '</span>' : '')
+          + '<span class="reporte-item__fecha">' + fecha + '</span>'
+          + '<button class="reporte-item__del" onclick="eliminarReporte(\'' + r.id + '\')" title="Eliminar">✕</button>'
+          + '</div>'
+          + '<p class="reporte-item__texto">' + (r.texto || '') + '</p>'
+          + '</div>'
+      }).join('') + '</div>'
+    }
+
+    window.eliminarReporte = async function(id) {
+      if (!confirm('¿Eliminar este reporte?')) return
+      await supabase.from('reportes_problemas').delete().eq('id', id)
+      window.cargarReportesAdmin()
+    }
+
+    window.abrirReportesAdmin = function() {
+      const m = document.getElementById('modalReportesAdmin')
+      if (!m) return
+      m.style.display = 'flex'
+      window.cargarReportesAdmin()
+      m.addEventListener('click', function handler(e) {
+        if (e.target === m) { m.style.display='none'; m.removeEventListener('click', handler) }
+      })
+    }
+
+    window.cerrarReportesAdmin = function() {
+      const m = document.getElementById('modalReportesAdmin')
+      if (m) m.style.display = 'none'
+    }
+
   </script>
 
   <!-- CARRUSEL JS (vacío, ahora es dinámico) -->
@@ -5934,5 +6078,81 @@
       </button>
     </div>
   </div>
+
+  <!-- PANEL ADMIN FLOTANTE -->
+  <div class="admin-float" id="adminBar">
+    <div class="admin-float__header">
+      <span class="admin-float__title">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><circle cx="12" cy="8" r="4"/><path d="M20 21a8 8 0 1 0-16 0"/></svg>
+        Admin
+      </span>
+      <button class="admin-float__toggle" id="adminFloatToggle" title="Minimizar/Expandir">
+        <svg id="adminFloatArrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="14" height="14"><polyline points="18 15 12 9 6 15"/></svg>
+      </button>
+    </div>
+    <div class="admin-float__body" id="adminFloatBody">
+      <button class="btn btn--sm" id="btnEditarPerfil">✏️ Editar perfil</button>
+      <button class="btn btn--sm" id="btnEditarDisenador">🎨 Diseñador</button>
+      <button class="btn btn--sm" id="btnGestionarMedia">📁 Media</button>
+      <button class="btn btn--sm btn--cults" id="btnSincronizarCults">⟳ Cults3D</button>
+      <button class="btn btn--sm btn--eliminar-masivo" id="btnEliminarMasivo">🗑 Eliminar</button>
+      <button class="btn btn--sm" id="btnAdminYt">▶ Videos YT</button>
+      <button class="btn btn--sm" id="btnVerUsuarios">👥 Usuarios</button>
+      <button class="btn btn--sm" id="btnGestionarHerramientas" onclick="abrirGestionHerramientas()">🔧 Herramientas</button>
+      <button class="btn btn--sm" id="btnActualizarMW" onclick="actualizarMakerworld()">🔄 Tendencias</button>
+      <button class="btn btn--sm" id="btnVerReportes" onclick="abrirReportesAdmin()">🐛 Reportes</button>
+      <button class="btn btn--sm btn--danger" id="btnLogout">🚪 Cerrar sesión</button>
+    </div>
+  </div>
+
+  <!-- BOTÓN FLOTANTE REPORTAR PROBLEMA -->
+  <button class="bug-float-btn" id="bugFloatBtn" title="Reportar un problema">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+    <span class="bug-float-btn__label">Reportar problema</span>
+  </button>
+
+  <!-- MODAL REPORTAR PROBLEMA -->
+  <div class="modal-overlay" id="modalBug" style="display:none">
+    <div class="modal modal-bug">
+      <button class="modal__close" id="btnCerrarBug">✕</button>
+      <div class="modal-bug__header">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="22" height="22"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        <h2 class="modal__title">Reportar un problema</h2>
+      </div>
+      <div id="bugLoginGate" style="display:none">
+        <p style="color:var(--muted);font-size:0.9rem;margin-bottom:1rem;line-height:1.6">Para enviar un reporte necesitás iniciar sesión.</p>
+        <button class="btn btn--primary" id="bugBtnLogin">Iniciar sesión</button>
+      </div>
+      <form id="bugForm" style="display:none">
+        <div class="form-group">
+          <label class="form-label">¿Qué problema encontraste?</label>
+          <textarea id="bugTexto" class="form-input" rows="4" placeholder="Describí el problema con el mayor detalle posible..." style="resize:vertical;min-height:100px" required></textarea>
+        </div>
+        <div class="form-group" style="margin-top:0.75rem">
+          <label class="form-label">Sección o página (opcional)</label>
+          <input type="text" id="bugSeccion" class="form-input" placeholder="Ej: Catálogo, Tendencias, Herramientas..."/>
+        </div>
+        <div id="bugFeedback" style="display:none;margin-top:0.75rem"></div>
+        <div style="display:flex;gap:0.75rem;margin-top:1.25rem;justify-content:flex-end">
+          <button type="button" class="btn" id="bugBtnCancelar">Cancelar</button>
+          <button type="submit" class="btn btn--primary" id="bugBtnEnviar">Enviar reporte</button>
+        </div>
+      </form>
+    </div>
+  </div>  <!-- MODAL REPORTES ADMIN -->
+  <div class="modal-overlay" id="modalReportesAdmin" style="display:none;z-index:9998">
+    <div class="modal" style="max-width:680px;width:95%">
+      <div class="modal__header">
+        <h2 class="modal__title">🐛 Reportes de problemas</h2>
+        <button class="modal__close" onclick="cerrarReportesAdmin()">✕</button>
+      </div>
+      <div class="modal__body" style="padding:1.5rem">
+        <div id="reportesAdminContainer">
+          <p style="color:var(--muted);font-size:0.85rem">Cargando...</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
 </body>
 </html>

@@ -2930,3 +2930,206 @@ a { text-decoration: none; color: inherit; }
   color: var(--cyan);
   border-color: rgba(21,154,156,0.3);
 }
+
+/* ══════════════════════════════════════════
+   ADMIN PANEL FLOTANTE
+══════════════════════════════════════════ */
+.admin-float {
+  display: none;
+  position: fixed;
+  bottom: 5.5rem;
+  right: 1.25rem;
+  z-index: 9000;
+  background: var(--bg-card);
+  border: 1px solid rgba(21,154,156,0.35);
+  border-radius: 12px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.5), 0 0 0 1px rgba(21,154,156,0.1);
+  width: 210px;
+  overflow: hidden;
+  transition: box-shadow 0.2s;
+}
+.admin-float.activo { display: block; }
+.admin-float__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.6rem 0.85rem;
+  background: rgba(21,154,156,0.08);
+  border-bottom: 1px solid rgba(21,154,156,0.15);
+  cursor: default;
+}
+.admin-float__title {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-family: var(--font-head);
+  font-size: 0.55rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--cyan);
+}
+.admin-float__toggle {
+  background: none;
+  border: none;
+  color: var(--muted);
+  cursor: pointer;
+  padding: 0.15rem;
+  display: flex;
+  align-items: center;
+  transition: color 0.2s, transform 0.25s;
+  border-radius: 4px;
+}
+.admin-float__toggle:hover { color: var(--cyan); }
+.admin-float__toggle.collapsed { transform: rotate(180deg); }
+.admin-float__body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  padding: 0.65rem;
+  max-height: 400px;
+  overflow-y: auto;
+  transition: max-height 0.25s ease, padding 0.25s ease, opacity 0.2s;
+}
+.admin-float__body.collapsed {
+  max-height: 0;
+  padding-top: 0;
+  padding-bottom: 0;
+  opacity: 0;
+  overflow: hidden;
+}
+.admin-float .btn {
+  width: 100%;
+  justify-content: flex-start;
+  font-size: 0.72rem;
+  padding: 0.4rem 0.65rem;
+  text-align: left;
+}
+
+/* ══════════════════════════════════════════
+   BOTÓN FLOTANTE REPORTAR PROBLEMA
+══════════════════════════════════════════ */
+.bug-float-btn {
+  position: fixed;
+  bottom: 1.25rem;
+  right: 1.25rem;
+  z-index: 8999;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: var(--bg-card);
+  border: 1px solid rgba(21,154,156,0.3);
+  border-radius: 50px;
+  padding: 0.6rem 1rem 0.6rem 0.75rem;
+  color: var(--muted);
+  cursor: pointer;
+  font-family: var(--font-head);
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  box-shadow: 0 4px 18px rgba(0,0,0,0.4);
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+.bug-float-btn:hover {
+  border-color: var(--cyan);
+  color: var(--cyan);
+  box-shadow: 0 4px 24px rgba(21,154,156,0.2);
+  transform: translateY(-1px);
+}
+.bug-float-btn svg { flex-shrink: 0; }
+@media (max-width: 480px) {
+  .bug-float-btn__label { display: none; }
+  .bug-float-btn { padding: 0.65rem; border-radius: 50%; }
+  .admin-float { width: 180px; right: 0.75rem; }
+  .bug-float-btn { right: 0.75rem; bottom: 0.75rem; }
+  .admin-float { bottom: 4.5rem; }
+}
+
+/* ══════════════════════════════════════════
+   MODAL REPORTAR PROBLEMA
+══════════════════════════════════════════ */
+.modal-bug {
+  max-width: 480px;
+  width: 94%;
+}
+.modal-bug__header {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  margin-bottom: 1.25rem;
+  color: var(--cyan);
+}
+.modal-bug__header svg { flex-shrink: 0; }
+.modal-bug__header .modal__title { margin: 0; }
+
+/* ══════════════════════════════════════════
+   SECCIÓN REPORTES (admin)
+══════════════════════════════════════════ */
+.reportes-lista {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  max-height: 480px;
+  overflow-y: auto;
+}
+.reporte-item {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 0.85rem 1rem;
+}
+.reporte-item__header {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin-bottom: 0.4rem;
+  flex-wrap: wrap;
+}
+.reporte-item__user {
+  font-family: var(--font-head);
+  font-size: 0.55rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: var(--cyan);
+}
+.reporte-item__seccion {
+  font-size: 0.7rem;
+  color: var(--muted);
+  background: var(--bg3);
+  padding: 0.1rem 0.4rem;
+  border-radius: 4px;
+}
+.reporte-item__fecha { font-size: 0.68rem; color: var(--muted); margin-left: auto; }
+.reporte-item__texto { font-size: 0.85rem; color: var(--text); line-height: 1.65; }
+.reporte-item__del {
+  background: none; border: none; color: var(--muted);
+  cursor: pointer; font-size: 0.65rem; padding: 0.1rem 0.3rem;
+  transition: color 0.2s; margin-left: 0.25rem;
+}
+.reporte-item__del:hover { color: #d94060; }
+.contacto__email-wrap {
+  text-align: center;
+  margin-top: 1.5rem;
+}
+.contacto__email-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  color: var(--cyan);
+  font-family: var(--font-head);
+  font-size: 0.85rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-decoration: none;
+  border: 1px solid rgba(21,154,156,0.3);
+  border-radius: 8px;
+  padding: 0.65rem 1.2rem;
+  transition: all 0.2s;
+  background: rgba(21,154,156,0.05);
+}
+.contacto__email-btn:hover {
+  background: rgba(21,154,156,0.12);
+  border-color: var(--cyan);
+}
