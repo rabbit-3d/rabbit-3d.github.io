@@ -217,6 +217,42 @@
     </div>
   </div>
 
+  <!-- MODAL EDITAR VIDEO YOUTUBE -->
+  <div class="modal-overlay" id="modalEditYt" style="display:none">
+    <div class="modal modal-edit-yt">
+      <button class="modal__close" id="btnCerrarEditYt">✕</button>
+      <h2 class="modal__title">Editar video</h2>
+      <input type="hidden" id="editYtId"/>
+
+      <div class="form-group">
+        <label class="form-label">Título</label>
+        <input type="text" id="editYtTitulo" class="form-input" placeholder="Título del video"/>
+      </div>
+
+      <div class="form-group" style="margin-top:1rem">
+        <label class="form-label">Portada personalizada <span style="color:var(--muted);font-size:0.7rem">(opcional — si no se elige, usa la de YouTube)</span></label>
+        <div class="yt-portada-wrap" id="editYtPortadaWrap">
+          <div class="yt-portada-preview" id="editYtPortadaPreview">
+            <img id="editYtPortadaImg" src="" alt="" style="display:none;width:100%;height:100%;object-fit:cover;border-radius:6px"/>
+            <div class="yt-portada-placeholder" id="editYtPortadaPlaceholder">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="28" height="28"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="m9 9 6 3-6 3V9z"/></svg>
+              <span>Clic para subir portada</span>
+            </div>
+          </div>
+          <input type="file" id="editYtPortadaFile" accept="image/*" style="display:none"/>
+          <button class="btn btn--sm" id="editYtPortadaBtn" style="margin-top:0.6rem">📷 Cambiar portada</button>
+          <button class="btn btn--sm" id="editYtPortadaRemoveBtn" style="margin-top:0.6rem;display:none;color:#d94060;border-color:rgba(217,64,96,0.4)">✕ Quitar portada custom</button>
+        </div>
+      </div>
+
+      <p class="form-error" id="editYtError" style="margin-top:0.75rem"></p>
+      <div style="display:flex;gap:0.65rem;margin-top:1.25rem;justify-content:flex-end">
+        <button class="btn" id="editYtCancelar">Cancelar</button>
+        <button class="btn btn--primary" id="editYtGuardar">Guardar cambios</button>
+      </div>
+    </div>
+  </div>
+
   <!-- MODAL USUARIO: LOGIN / REGISTRO -->
   <div class="modal-overlay" id="modalUsuario">
     <div class="modal">
@@ -566,12 +602,10 @@
     </div>
     <!-- Tabs -->
     <div class="tend-tabs" id="tendTabs">
-      <button class="tend-tab tend-tab--active" data-plat="printables">Printables</button>
-      </button>
+      <button class="tend-tab tend-tab--active" data-plat="todas">Todas</button>
       <button class="tend-tab" data-plat="cults3d">Cults3D</button>
-      </button>
-      <button class="tend-tab" data-plat="thingiverse">Thingiverse · Destacados</button>
-      </button>
+      <button class="tend-tab" data-plat="printables">Printables</button>
+      <button class="tend-tab" data-plat="thingiverse">Thingiverse</button>
     </div>
     <div class="tend-meta" id="tendMeta"></div>
     <div class="tend-grid" id="tendGrid">
@@ -1560,7 +1594,7 @@
     <div class="contacto__email-wrap">
       <a href="mailto:mateoduarte02@gmail.com" class="contacto__email-btn">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
-        mateoduarte02@gmail.com
+        <span>mateoduarte02@gmail.com</span>
       </a>
     </div>
   </section>
@@ -3315,16 +3349,28 @@
         grid.innerHTML = '<p style="padding:2rem;grid-column:1/-1;color:var(--muted)">No hay videos cargados aún.</p>'
         return
       }
-      grid.innerHTML = ytVideos.map((v, i) => `
+      grid.innerHTML = ytVideos.map((v, i) => {
+        const thumb = v.portada_url
+          ? v.portada_url
+          : `https://img.youtube.com/vi/${v.yt_id}/hqdefault.jpg`
+        return `
         <div class="yt-card" data-ytid="${v.yt_id}" data-id="${v.id}" onclick="window.open('https://www.youtube.com/watch?v=${v.yt_id}','_blank','noopener')">
           ${esAdmin ? `<div class="yt-card__admin" onclick="event.stopPropagation()">
-            <button onclick="window.ytMover('${v.id}',-1)" title="Subir">↑</button>
-            <button onclick="window.ytMover('${v.id}', 1)" title="Bajar">↓</button>
-            <button onclick="window.eliminarYt('${v.id}')" title="Eliminar">✕</button>
+            <button class="yt-admin-btn" onclick="window.ytMover('${v.id}',-1)" title="Subir">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="11" height="11"><polyline points="18 15 12 9 6 15"/></svg>
+            </button>
+            <button class="yt-admin-btn" onclick="window.ytMover('${v.id}', 1)" title="Bajar">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="11" height="11"><polyline points="6 9 12 15 18 9"/></svg>
+            </button>
+            <button class="yt-admin-btn yt-admin-btn--edit" onclick="window.abrirEditYt('${v.id}')" title="Editar">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="11" height="11"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+            </button>
+            <button class="yt-admin-btn yt-admin-btn--del" onclick="window.eliminarYt('${v.id}')" title="Eliminar">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="11" height="11"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4h6v2"/></svg>
+            </button>
           </div>` : ''}
           <div class="yt-card__thumb">
-            <img src="https://img.youtube.com/vi/${v.yt_id}/hqdefault.jpg"
-              alt="${v.titulo || 'Video'}" data-ytid="${v.yt_id}" loading="lazy"/>
+            <img src="${thumb}" alt="${v.titulo || 'Video'}" data-ytid="${v.yt_id}" loading="lazy"/>
             <div class="yt-card__play">
               <svg viewBox="0 0 24 24" fill="currentColor" width="44" height="44"><path d="M8 5v14l11-7z"/></svg>
             </div>
@@ -3333,7 +3379,8 @@
             <p class="yt-card__title">${v.titulo || 'Ver en YouTube'}</p>
             <p class="yt-card__channel">La Madriguera</p>
           </div>
-        </div>`).join('')
+        </div>`
+      }).join('')
       grid.querySelectorAll('img[data-ytid]').forEach(img => {
         img.onerror = function() { window.ytThumbFallback(this) }
       })
@@ -3357,9 +3404,140 @@
 
     window.eliminarYt = async (id) => {
       if (!confirm('¿Eliminar este video?')) return
+      // Si tiene portada custom en storage, eliminarla
+      const v = ytVideos.find(x => String(x.id) === String(id))
+      if (v && v.portada_nombre) {
+        await supabase.storage.from('media').remove([v.portada_nombre])
+      }
       await supabase.from('youtube_videos').delete().eq('id', id)
       await cargarYoutube()
     }
+
+    // ── Modal de edición de video YouTube ──────────────────────────────
+    let editYtPortadaPendiente = null  // { file, previewUrl } o null
+    let editYtPortadaRemover   = false // si se debe quitar la portada custom
+
+    window.abrirEditYt = (id) => {
+      const v = ytVideos.find(x => String(x.id) === String(id))
+      if (!v) return
+      document.getElementById('editYtId').value        = id
+      document.getElementById('editYtTitulo').value    = v.titulo || ''
+      document.getElementById('editYtError').textContent = ''
+      editYtPortadaPendiente = null
+      editYtPortadaRemover   = false
+
+      // Preview de portada
+      const img  = document.getElementById('editYtPortadaImg')
+      const ph   = document.getElementById('editYtPortadaPlaceholder')
+      const rmBtn = document.getElementById('editYtPortadaRemoveBtn')
+      if (v.portada_url) {
+        img.src = v.portada_url; img.style.display = 'block'
+        ph.style.display = 'none'
+        rmBtn.style.display = 'inline-flex'
+      } else {
+        img.src = ''; img.style.display = 'none'
+        ph.style.display = 'flex'
+        rmBtn.style.display = 'none'
+      }
+      document.getElementById('editYtPortadaFile').value = ''
+      document.getElementById('modalEditYt').style.display = 'flex'
+    }
+
+    document.getElementById('btnCerrarEditYt').addEventListener('click', () => {
+      document.getElementById('modalEditYt').style.display = 'none'
+    })
+    document.getElementById('editYtCancelar').addEventListener('click', () => {
+      document.getElementById('modalEditYt').style.display = 'none'
+    })
+    document.getElementById('modalEditYt').addEventListener('click', (e) => {
+      if (e.target === document.getElementById('modalEditYt'))
+        document.getElementById('modalEditYt').style.display = 'none'
+    })
+
+    // Seleccionar portada
+    document.getElementById('editYtPortadaBtn').addEventListener('click', () => {
+      document.getElementById('editYtPortadaFile').click()
+    })
+    document.getElementById('editYtPortadaWrap').addEventListener('click', (e) => {
+      if (e.target.closest('#editYtPortadaPlaceholder') || e.target.closest('#editYtPortadaImg')) {
+        document.getElementById('editYtPortadaFile').click()
+      }
+    })
+    document.getElementById('editYtPortadaFile').addEventListener('change', (e) => {
+      const file = e.target.files[0]
+      if (!file) return
+      editYtPortadaPendiente = { file, previewUrl: URL.createObjectURL(file) }
+      editYtPortadaRemover   = false
+      const img = document.getElementById('editYtPortadaImg')
+      const ph  = document.getElementById('editYtPortadaPlaceholder')
+      const rmBtn = document.getElementById('editYtPortadaRemoveBtn')
+      img.src = editYtPortadaPendiente.previewUrl
+      img.style.display = 'block'
+      ph.style.display  = 'none'
+      rmBtn.style.display = 'inline-flex'
+    })
+
+    // Quitar portada custom
+    document.getElementById('editYtPortadaRemoveBtn').addEventListener('click', (e) => {
+      e.stopPropagation()
+      editYtPortadaPendiente = null
+      editYtPortadaRemover   = true
+      const img  = document.getElementById('editYtPortadaImg')
+      const ph   = document.getElementById('editYtPortadaPlaceholder')
+      const rmBtn = document.getElementById('editYtPortadaRemoveBtn')
+      img.style.display = 'none'; ph.style.display = 'flex'
+      rmBtn.style.display = 'none'
+    })
+
+    // Guardar cambios
+    document.getElementById('editYtGuardar').addEventListener('click', async () => {
+      const id     = document.getElementById('editYtId').value
+      const titulo = document.getElementById('editYtTitulo').value.trim()
+      const errEl  = document.getElementById('editYtError')
+      const btn    = document.getElementById('editYtGuardar')
+      errEl.textContent = ''
+      btn.disabled = true; btn.textContent = 'Guardando...'
+
+      const v = ytVideos.find(x => String(x.id) === String(id))
+      let portada_url    = v ? v.portada_url    : null
+      let portada_nombre = v ? v.portada_nombre : null
+
+      try {
+        // Subir nueva portada si hay
+        if (editYtPortadaPendiente) {
+          const file = editYtPortadaPendiente.file
+          const ext  = file.name.split('.').pop()
+          const nombre = `yt_portada_${id}_${Date.now()}.${ext}`
+          const { error: upErr } = await supabase.storage.from('media').upload(nombre, file, { upsert: true })
+          if (upErr) throw upErr
+          // Eliminar portada anterior si la había
+          if (portada_nombre) await supabase.storage.from('media').remove([portada_nombre])
+          const { data: urlData } = supabase.storage.from('media').getPublicUrl(nombre)
+          portada_url    = urlData.publicUrl
+          portada_nombre = nombre
+        }
+
+        // Quitar portada si se pidió
+        if (editYtPortadaRemover) {
+          if (portada_nombre) await supabase.storage.from('media').remove([portada_nombre])
+          portada_url    = null
+          portada_nombre = null
+        }
+
+        const { error } = await supabase
+          .from('youtube_videos')
+          .update({ titulo: titulo || null, portada_url, portada_nombre })
+          .eq('id', id)
+        if (error) throw error
+
+        document.getElementById('modalEditYt').style.display = 'none'
+        await cargarYoutube()
+      } catch(e) {
+        errEl.textContent = 'Error: ' + (e.message || String(e))
+      } finally {
+        btn.disabled = false; btn.textContent = 'Guardar cambios'
+      }
+    })
 
     document.getElementById('btnAdminYt').addEventListener('click', () => {
       const bar = document.getElementById('ytAdminBar')
@@ -6144,15 +6322,4 @@
     <div class="modal" style="max-width:680px;width:95%">
       <div class="modal__header">
         <h2 class="modal__title">🐛 Reportes de problemas</h2>
-        <button class="modal__close" onclick="cerrarReportesAdmin()">✕</button>
-      </div>
-      <div class="modal__body" style="padding:1.5rem">
-        <div id="reportesAdminContainer">
-          <p style="color:var(--muted);font-size:0.85rem">Cargando...</p>
-        </div>
-      </div>
-    </div>
-  </div>
-
-</body>
-</html>
+        <button class="modal__close" onclick="cerrarReportesAdmin()">✕</button
