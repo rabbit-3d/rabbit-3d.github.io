@@ -22,32 +22,14 @@
       <a href="#" class="logo">
         <img id="headerLogo" src="imagenes/logo.png" alt="Rabbit3D" class="logo__img"/>
       </a>
-      <div class="header__search">
-        <span class="header__search-icon">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
-        </span>
-        <!-- Inputs trampa para engañar al autocomplete de Chrome -->
-        <input type="text" style="display:none" aria-hidden="true"/>
-        <input type="password" style="display:none" aria-hidden="true"/>
-        <input type="search" id="buscador" class="buscador" placeholder="Buscar diseños..."
-          autocomplete="off"
-          autocorrect="off"
-          autocapitalize="off"
-          spellcheck="false"
-          aria-autocomplete="none"
-          role="searchbox"
-          name="buscar_disenios_rabbit3d_x"
-          data-form-type="other"
-          data-lpignore="true"
-        />
-      </div>
+
       <nav class="nav">
         <a href="#makerworld" class="nav__link">Tendencias</a>
         <a href="#catalogo" class="nav__link">Catálogo Rabbit3D</a>
-        <a href="#herramientas" class="nav__link">Herramientas</a>
+        <a href="#herramientas" class="nav__link">Laboratorio 3D</a>
+        <a href="#emprendedores" class="nav__link">Área de Emprendedores</a>
         <a href="#makers" class="nav__link">Comunidad</a>
         <a href="#youtube" class="nav__link">Videos</a>
-        <a href="#sobre-mi" class="nav__link">Sobre mí</a>
         <button class="nav__icon-btn" id="btnFavoritos" title="Favoritos">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
           <span class="nav__badge" id="badgeFavoritos">0</span>
@@ -80,7 +62,11 @@
       </a>
       <a href="#herramientas" class="mobile-menu__link" id="mm-herramientas">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
-        Herramientas
+        Laboratorio 3D
+      </a>
+      <a href="#emprendedores" class="mobile-menu__link" id="mm-emprendedores">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+        Área de Emprendedores
       </a>
       <a href="#makers" class="mobile-menu__link" id="mm-makers">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
@@ -89,10 +75,6 @@
       <a href="#youtube" class="mobile-menu__link" id="mm-yt">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg>
         Videos
-      </a>
-      <a href="#sobre-mi" class="mobile-menu__link" id="mm-sobre">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-        Sobre mí
       </a>
       <div class="mobile-menu__divider"></div>
       <button class="mobile-menu__user" id="mm-btnUser">
@@ -213,42 +195,6 @@
       <div class="media-section">
         <p class="form-label">Videos actuales en el carrusel</p>
         <div id="listaVideos" class="media-lista"></div>
-      </div>
-    </div>
-  </div>
-
-  <!-- MODAL EDITAR VIDEO YOUTUBE -->
-  <div class="modal-overlay" id="modalEditYt" style="display:none">
-    <div class="modal modal-edit-yt">
-      <button class="modal__close" id="btnCerrarEditYt">✕</button>
-      <h2 class="modal__title">Editar video</h2>
-      <input type="hidden" id="editYtId"/>
-
-      <div class="form-group">
-        <label class="form-label">Título</label>
-        <input type="text" id="editYtTitulo" class="form-input" placeholder="Título del video"/>
-      </div>
-
-      <div class="form-group" style="margin-top:1rem">
-        <label class="form-label">Portada personalizada <span style="color:var(--muted);font-size:0.7rem">(opcional — si no se elige, usa la de YouTube)</span></label>
-        <div class="yt-portada-wrap" id="editYtPortadaWrap">
-          <div class="yt-portada-preview" id="editYtPortadaPreview">
-            <img id="editYtPortadaImg" src="" alt="" style="display:none;width:100%;height:100%;object-fit:cover;border-radius:6px"/>
-            <div class="yt-portada-placeholder" id="editYtPortadaPlaceholder">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="28" height="28"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="m9 9 6 3-6 3V9z"/></svg>
-              <span>Clic para subir portada</span>
-            </div>
-          </div>
-          <input type="file" id="editYtPortadaFile" accept="image/*" style="display:none"/>
-          <button class="btn btn--sm" id="editYtPortadaBtn" style="margin-top:0.6rem">📷 Cambiar portada</button>
-          <button class="btn btn--sm" id="editYtPortadaRemoveBtn" style="margin-top:0.6rem;display:none;color:#d94060;border-color:rgba(217,64,96,0.4)">✕ Quitar portada custom</button>
-        </div>
-      </div>
-
-      <p class="form-error" id="editYtError" style="margin-top:0.75rem"></p>
-      <div style="display:flex;gap:0.65rem;margin-top:1.25rem;justify-content:flex-end">
-        <button class="btn" id="editYtCancelar">Cancelar</button>
-        <button class="btn btn--primary" id="editYtGuardar">Guardar cambios</button>
       </div>
     </div>
   </div>
@@ -650,6 +596,21 @@
       </div>
     </div>
 
+    <!-- Buscador dentro del catálogo -->
+    <div class="catalogo-search-wrap">
+      <span class="catalogo-search-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+      </span>
+      <!-- Inputs trampa para engañar al autocomplete de Chrome -->
+      <input type="text" style="display:none" aria-hidden="true"/>
+      <input type="password" style="display:none" aria-hidden="true"/>
+      <input type="search" id="buscador" class="buscador catalogo-buscador" placeholder="Buscar en el catálogo..."
+        autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"
+        aria-autocomplete="none" role="searchbox"
+        name="buscar_disenios_rabbit3d_x" data-form-type="other" data-lpignore="true"
+      />
+    </div>
+
     <div class="filtros">
       <!-- Fila 1: categorías (scroll horizontal en mobile) -->
       <div class="filtros-cats-row">
@@ -716,12 +677,20 @@
   <!-- HERRAMIENTAS -->
   <section class="herramientas-section" id="herramientas">
     <div class="section__header">
-      <h2 class="section__title">Herramientas</h2>
+      <h2 class="section__title">Laboratorio 3D</h2>
       <p class="section__sub">Generadores gratuitos para impresión 3D — directo desde el navegador</p>
     </div>
     <div class="herramientas-grid">
 
-      <div class="herramienta-card" onclick="abrirHerramienta('modal-stl')">
+      <div class="herramienta-card herramienta-card--wip" id="hcard-stl" onclick="abrirHerramientaStl()">
+        <div class="herramienta-card__wip-overlay" id="hcardWipOverlay">
+          <div class="herramienta-card__wip-badge">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M12 8v4M12 16h.01"/></svg>
+            En construcción
+          </div>
+          <p class="herramienta-card__wip-msg">Esta herramienta estará disponible próximamente</p>
+          <span class="herramienta-card__wip-admin" id="hcardWipAdminBtn" style="display:none">⚙ Activar (admin)</span>
+        </div>
         <div class="herramienta-card__visual" id="hcard-visual-stl">
           <div class="hcard-edit-overlay" id="hcard-edit-stl" style="display:none" onclick="event.stopPropagation(); herramientaEditImg('stl')">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20"><path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"/><circle cx="12" cy="13" r="4"/></svg>
@@ -768,11 +737,11 @@
         </div>
         <div class="herramienta-card__info">
           <div class="herramienta-card__top">
-            <span class="herramienta-card__badge">🧪 Beta</span>
+            <span class="herramienta-card__badge herramienta-card__badge--wip">🚧 En construcción</span>
           </div>
           <h3 class="herramienta-card__title">Cuadros 2D</h3>
           <p class="herramienta-card__desc">Subí cualquier silueta — logo, personaje, ícono — y la herramienta genera automáticamente un modelo 3D listo para laminar e imprimir.</p>
-          <button class="herramienta-card__btn">Abrir herramienta →</button>
+          <button class="herramienta-card__btn herramienta-card__btn--wip" disabled>Próximamente →</button>
         </div>
       </div>
 
@@ -879,8 +848,8 @@
         </div>
         <div class="herramienta-card__info">
           <div class="herramienta-card__top"><span class="herramienta-card__badge">🧪 Beta</span></div>
-          <h3 class="herramienta-card__title">Maceta / Bowl</h3>
-          <p class="herramienta-card__desc">Generá macetas o bowls con forma troncocónica. Ajustá diámetro, altura, grosor, inclinación y agregá texto en relieve.</p>
+          <h3 class="herramienta-card__title">Maceta</h3>
+          <p class="herramienta-card__desc">Generá macetas con forma troncocónica. Ajustá diámetro, altura, grosor, inclinación y agregá texto en relieve.</p>
           <button class="herramienta-card__btn">Abrir herramienta →</button>
         </div>
       </div>
@@ -954,8 +923,217 @@
     </div>
   </section>
 
+  <!-- ÁREA DE EMPRENDEDORES -->
+  <section class="emprendedores-section" id="emprendedores">
+    <div class="section__header">
+      <h2 class="section__title">Área de Emprendedores</h2>
+      <p class="section__sub">Herramientas gratuitas para potenciar tu emprendimiento de impresión 3D</p>
+    </div>
+    <div class="emprendedores-grid">
+      <div class="empr-card" onclick="abrirEmprendedor('modal-tarjetas')">
+        <div class="empr-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="36" height="36"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/><path d="M6 15h4M14 15h4"/></svg></div>
+        <div class="empr-card__info"><h3 class="empr-card__title">Tarjetas de agradecimiento 💌</h3><p class="empr-card__desc">Subí tu logo y generá 4 diseños de tarjetas de agradecimiento por la compra con nombre de negocio y mensaje personalizado.</p></div>
+        <div class="empr-card__footer"><span class="empr-card__tag empr-card__tag--free">100% Gratis</span><span class="empr-card__cta">Abrir →</span></div>
+      </div>
+      <div class="empr-card" onclick="abrirEmprendedor('modal-costos')">
+        <div class="empr-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="36" height="36"><rect x="4" y="2" width="16" height="20" rx="2"/><line x1="8" y1="10" x2="16" y2="10"/><line x1="8" y1="14" x2="16" y2="14"/><line x1="8" y1="18" x2="12" y2="18"/></svg></div>
+        <div class="empr-card__info"><h3 class="empr-card__title">Calculadora de costos</h3><p class="empr-card__desc">Calculá el precio de venta: material, electricidad, tiempo y margen de ganancia.</p></div>
+        <div class="empr-card__footer"><span class="empr-card__tag empr-card__tag--free">Gratis</span><span class="empr-card__cta">Abrir →</span></div>
+      </div>
 
-  <!-- MODAL CAJA CON TAPA -->
+      <div class="empr-card" onclick="abrirEmprendedor('modal-mejora')">
+        <div class="empr-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="36" height="36"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="m21 15-5-5L5 21"/><path d="m14 14 2-2"/><path d="M9 9l2-2"/></svg></div>
+        <div class="empr-card__info">
+          <h3 class="empr-card__title">Mejorador de imágenes ✨</h3>
+          <p class="empr-card__desc">Subí una foto pixeleada o de baja calidad y aplicá suavizado, nitidez y mejora de contraste para obtener una imagen más limpia y nítida.</p>
+        </div>
+        <div class="empr-card__footer"><span class="empr-card__tag empr-card__tag--free">100% Gratis</span><span class="empr-card__cta">Abrir →</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- MODAL TARJETAS -->
+  <div class="modal-overlay" id="modal-tarjetas" style="display:none">
+    <div class="modal modal-tarjetas">
+      <button class="modal__close" onclick="cerrarEmprendedor('modal-tarjetas')">✕</button>
+      <h2 class="modal__title">💌 Tarjetas de agradecimiento</h2>
+      <p class="modal__sub">Generá 4 diseños personalizados con tu logo listos para imprimir</p>
+      <div class="tarj-form">
+        <div class="tarj-upload-zone" id="tarjUploadZone">
+          <input type="file" id="tarjLogoFile" accept="image/*" style="display:none"/>
+          <div class="tarj-upload-inner" id="tarjUploadInner">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="32" height="32" style="color:var(--cyan);opacity:.7"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+            <p style="margin:.3rem 0 .1rem;font-weight:600;color:var(--text);font-size:.88rem">Subí tu logo</p>
+            <p style="margin:0;font-size:.72rem;color:var(--muted)">PNG con fondo transparente recomendado</p>
+          </div>
+          <div class="tarj-upload-preview" id="tarjUploadPreview" style="display:none">
+            <img id="tarjLogoPreviewImg" src="" alt="" style="max-height:80px;max-width:180px;object-fit:contain;border-radius:6px"/>
+            <button class="tarj-change-logo" id="tarjChangeLogo">🔄 Cambiar</button>
+          </div>
+        </div>
+        <div class="tarj-fields">
+          <div class="form-group"><label class="form-label">Nombre de tu negocio</label><input type="text" id="tarjNegocio" class="form-input" placeholder="Ej: Rabbit3D" maxlength="40"/></div>
+          <div class="form-group"><label class="form-label">Mensaje <span style="color:var(--muted);font-size:.7rem">(opcional)</span></label><textarea id="tarjMensaje" class="form-input" rows="2" placeholder="Ej: ¡Gracias por tu compra! ✨" style="resize:vertical;min-height:55px" maxlength="120"></textarea></div>
+          <div class="form-group"><label class="form-label">Instagram / web <span style="color:var(--muted);font-size:.7rem">(opcional)</span></label><input type="text" id="tarjContacto" class="form-input" placeholder="Ej: @rabbit3d · rabbit3d.com" maxlength="50"/></div>
+        </div>
+        <button class="btn btn--primary" id="btnGenerarTarjetas" style="width:100%;margin-top:1rem;display:flex;align-items:center;justify-content:center;gap:.5rem">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg>
+          Generar 8 tarjetas
+        </button>
+      </div>
+      <div class="tarj-resultados" id="tarjResultados" style="display:none">
+        <p style="font-size:.78rem;color:var(--muted);margin:0 0 1rem">Hacé clic en "Descargar" para guardar como PNG (9×5.5cm a 300dpi)</p>
+        <div class="tarj-grid" id="tarjGrid"></div>
+      </div>
+      <p class="form-error" id="tarjError" style="margin-top:.75rem"></p>
+    </div>
+  </div>
+
+  <!-- MODAL POTENCIADOR -->
+  <div class="modal-overlay" id="modal-potenciador" style="display:none">
+    <div class="modal modal-potenciador">
+      <button class="modal__close" onclick="cerrarEmprendedor('modal-potenciador')">✕</button>
+      <h2 class="modal__title">✨ Potenciador de producto</h2>
+      <p class="modal__sub">Subí la foto y la IA genera contenido profesional para redes</p>
+      <div class="potenc-upload-zone" id="potencUploadZone"><input type="file" id="potencImgFile" accept="image/*" style="display:none"/>
+        <div class="potenc-upload-inner" id="potencUploadInner">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="40" height="40" style="color:var(--cyan);opacity:.7"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+          <p style="margin:.5rem 0 .2rem;font-weight:600;color:var(--text)">Clic o arrastrá tu foto</p>
+          <p style="margin:0;font-size:.75rem;color:var(--muted)">JPG, PNG o WEBP — máx. 5MB</p>
+        </div>
+        <img id="potencImgPreview" src="" alt="" style="display:none;width:100%;height:100%;object-fit:contain;border-radius:8px"/>
+        <button class="potenc-change-btn" id="potencChangeBtn" style="display:none">🔄 Cambiar imagen</button>
+      </div>
+      <div class="form-group" style="margin-top:1rem"><label class="form-label">Descripción <span style="color:var(--muted);font-size:.7rem">(opcional)</span></label><textarea id="potencDesc" class="form-input" rows="2" placeholder="Ej: Llavero de Mario en PLA bicolor..." style="resize:vertical;min-height:60px"></textarea></div>
+      <button class="btn btn--primary" id="btnPotenciar" style="width:100%;margin-top:1rem;display:flex;align-items:center;justify-content:center;gap:.5rem">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg> Generar con IA
+      </button>
+      <div class="potenc-loading" id="potencLoading" style="display:none"><div class="potenc-loading__spinner"></div><p id="potencLoadingMsg">Analizando imagen...</p></div>
+      <div class="potenc-resultados" id="potencResultados" style="display:none">
+        <div class="potenc-bloque"><div class="potenc-bloque__header"><span class="potenc-bloque__icon">🎨</span><h3 class="potenc-bloque__titulo">Prompt para mejorar la imagen</h3></div><p class="potenc-bloque__hint">Pegá en Midjourney, Leonardo.ai o Ideogram:</p><div class="potenc-bloque__content" id="potencPromptImg"></div><button class="potenc-copy-btn" onclick="potencCopiar('potencPromptImg',this)">📋 Copiar</button></div>
+        <div class="potenc-bloque"><div class="potenc-bloque__header"><span class="potenc-bloque__icon">✏️</span><h3 class="potenc-bloque__titulo">5 títulos para publicar</h3></div><div class="potenc-titulos" id="potencTitulos"></div></div>
+        <div class="potenc-bloque"><div class="potenc-bloque__header"><span class="potenc-bloque__icon">📝</span><h3 class="potenc-bloque__titulo">Descripción profesional</h3></div><div class="potenc-bloque__content" id="potencDescResult"></div><button class="potenc-copy-btn" onclick="potencCopiar('potencDescResult',this)">📋 Copiar</button></div>
+      </div>
+      <p class="form-error" id="potencError" style="margin-top:.75rem"></p>
+    </div>
+  </div>
+
+  <!-- MODAL CALCULADORA -->
+  <div class="modal-overlay" id="modal-costos" style="display:none">
+    <div class="modal modal-costos">
+      <button class="modal__close" onclick="cerrarEmprendedor('modal-costos')">✕</button>
+      <h2 class="modal__title">💰 Calculadora de costos</h2>
+      <p class="modal__sub">Estimá el precio de venta de tu impresión 3D</p>
+      <div class="costos-grid">
+        <div class="form-group"><label class="form-label">Peso material (g)</label><input type="number" id="costoGramos" class="form-input" placeholder="45" min="0" step="0.1"/></div>
+        <div class="form-group"><label class="form-label">Precio por kg ($)</label><input type="number" id="costoPorKg" class="form-input" placeholder="15000" min="0"/></div>
+        <div class="form-group"><label class="form-label">Tiempo impresión (hs)</label><input type="number" id="costoHoras" class="form-input" placeholder="3.5" min="0" step="0.1"/></div>
+        <div class="form-group"><label class="form-label">Electricidad/hora ($)</label><input type="number" id="costoElect" class="form-input" placeholder="120" min="0"/></div>
+        <div class="form-group"><label class="form-label">Tiempo trabajo (min)</label><input type="number" id="costoTrabajo" class="form-input" placeholder="20" min="0"/></div>
+        <div class="form-group"><label class="form-label">Valor hora trabajo ($)</label><input type="number" id="costoHoraTrabajo" class="form-input" placeholder="1500" min="0"/></div>
+        <div class="form-group"><label class="form-label">Margen ganancia (%)</label><input type="number" id="costoMargen" class="form-input" placeholder="40" min="0" max="500"/></div>
+        <div class="form-group"><label class="form-label">Gastos fijos ($)</label><input type="number" id="costoFijos" class="form-input" placeholder="200" min="0"/></div>
+      </div>
+      <button class="btn btn--primary" id="btnCalcularCosto" style="width:100%;margin-top:1.25rem">Calcular precio</button>
+      <div class="costos-resultado" id="costosResultado" style="display:none">
+        <div class="costos-resultado__fila"><span>Material</span><span id="resMateria">$0</span></div>
+        <div class="costos-resultado__fila"><span>Electricidad</span><span id="resElect">$0</span></div>
+        <div class="costos-resultado__fila"><span>Mano de obra</span><span id="resTrabajo">$0</span></div>
+        <div class="costos-resultado__fila"><span>Gastos fijos</span><span id="resFijos">$0</span></div>
+        <div class="costos-resultado__fila costos-resultado__fila--sub"><span>Subtotal</span><span id="resSubtotal">$0</span></div>
+        <div class="costos-resultado__fila costos-resultado__fila--ganancia"><span>Ganancia</span><span id="resGanancia">$0</span></div>
+        <div class="costos-resultado__fila costos-resultado__fila--total"><span>💰 Precio de venta</span><span id="resTotal">$0</span></div>
+        <button class="btn btn--sm" id="btnCopiarCosto" style="margin-top:1rem;width:100%">📋 Copiar resumen</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL MEJORADOR DE IMÁGENES -->
+  <div class="modal-overlay" id="modal-mejora" style="display:none">
+    <div class="modal modal-mejora">
+      <button class="modal__close" onclick="cerrarEmprendedor('modal-mejora')">✕</button>
+      <h2 class="modal__title">✨ Mejorador de imágenes</h2>
+      <p class="modal__sub">Suavizá, nitidez y mejorá imágenes pixeleadas — 100% en el navegador</p>
+
+      <div class="mejora-upload-zone" id="mejoraUploadZone">
+        <input type="file" id="mejoraImgFile" accept="image/*" style="display:none"/>
+        <div class="mejora-upload-inner" id="mejoraUploadInner">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="36" height="36" style="color:var(--cyan);opacity:.7"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+          <p style="margin:.4rem 0 .1rem;font-weight:600;color:var(--text)">Clic o arrastrá tu imagen</p>
+          <p style="margin:0;font-size:.75rem;color:var(--muted)">PNG, JPG, WEBP — funciona mejor con logos e ilustraciones</p>
+        </div>
+      </div>
+
+      <div id="mejoraControles" style="display:none">
+        <div class="mejora-controles-grid">
+
+          <div class="mejora-control">
+            <label class="mejora-label">Escala de salida <span class="mejora-label-val" id="mejoraEscalaVal">2×</span></label>
+            <div class="mejora-radio-group">
+              <button class="mejora-radio mejora-radio--active" data-scale="2">2×</button>
+              <button class="mejora-radio" data-scale="3">3×</button>
+              <button class="mejora-radio" data-scale="4">4×</button>
+            </div>
+          </div>
+
+          <div class="mejora-control">
+            <label class="mejora-label">Suavizado <span class="mejora-label-val" id="mejoraSuavizadoVal">3</span></label>
+            <input type="range" id="mejoraSuavizado" min="0" max="8" value="3" step="1" class="mejora-slider"/>
+            <div class="mejora-slider-hints"><span>ninguno</span><span>máximo</span></div>
+          </div>
+
+          <div class="mejora-control">
+            <label class="mejora-label">Nitidez <span class="mejora-label-val" id="mejoraNitidezVal">4</span></label>
+            <input type="range" id="mejoraNitidez" min="0" max="10" value="4" step="1" class="mejora-slider"/>
+            <div class="mejora-slider-hints"><span>suave</span><span>nítida</span></div>
+          </div>
+
+          <div class="mejora-control">
+            <label class="mejora-label">Contraste <span class="mejora-label-val" id="mejoraContrasteVal">0</span></label>
+            <input type="range" id="mejoraContraste" min="-50" max="80" value="0" step="5" class="mejora-slider"/>
+            <div class="mejora-slider-hints"><span>−</span><span>+</span></div>
+          </div>
+
+          <div class="mejora-control">
+            <label class="mejora-label">Reducir ruido <span class="mejora-label-val" id="mejoraRuidoVal">2</span></label>
+            <input type="range" id="mejoraRuido" min="0" max="6" value="2" step="1" class="mejora-slider"/>
+            <div class="mejora-slider-hints"><span>ninguno</span><span>máximo</span></div>
+          </div>
+
+          <div class="mejora-control">
+            <label class="mejora-label">Saturación <span class="mejora-label-val" id="mejoraSatVal">0</span></label>
+            <input type="range" id="mejoraSat" min="-50" max="80" value="0" step="5" class="mejora-slider"/>
+            <div class="mejora-slider-hints"><span>−</span><span>+</span></div>
+          </div>
+
+        </div>
+
+        <div class="mejora-preview-wrap">
+          <div class="mejora-preview-panel">
+            <p class="mejora-preview-label">Original <span class="mejora-dim" id="mejoraDimOrig"></span></p>
+            <canvas id="mejoraCanvasOrig" class="mejora-canvas"></canvas>
+          </div>
+          <div class="mejora-preview-panel">
+            <p class="mejora-preview-label">Resultado <span class="mejora-dim" id="mejoraDimResult"></span></p>
+            <canvas id="mejoraCanvasResult" class="mejora-canvas mejora-canvas--result"></canvas>
+          </div>
+        </div>
+
+        <div class="mejora-actions">
+          <button class="btn btn--primary" id="btnMejorar">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/></svg>
+            Mejorar imagen
+          </button>
+          <button class="btn" id="btnDescargarMejora" style="display:none">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            Descargar PNG
+          </button>
+          <button class="btn" id="btnNuevaMejora">🔄 Nueva imagen</button>
+        </div>
+        <p class="form-error" id="mejoraError"></p>
+      </div>
+    </div>
+  </div>
   <div class="modal-overlay herramienta-modal-overlay" id="modal-caja">
     <div class="modal herramienta-modal">
       <div class="herramienta-modal__header">
@@ -1026,7 +1204,7 @@
   <div class="modal-overlay herramienta-modal-overlay" id="modal-maceta">
     <div class="modal herramienta-modal">
       <div class="herramienta-modal__header">
-        <h2 class="modal__title">Maceta / Bowl</h2>
+        <h2 class="modal__title">Maceta</h2>
         <button class="modal__close" onclick="cerrarHerramienta('modal-maceta')">✕</button>
       </div>
       <div class="herramienta-modal__body">
@@ -1594,7 +1772,7 @@
     <div class="contacto__email-wrap">
       <a href="mailto:mateoduarte02@gmail.com" class="contacto__email-btn">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
-        <span>mateoduarte02@gmail.com</span>
+        mateoduarte02@gmail.com
       </a>
     </div>
   </section>
@@ -1704,7 +1882,12 @@
     let productoDetalleActual = null
 
     // Favoritos en localStorage
-    let favoritos = JSON.parse(localStorage.getItem('r3d_favoritos') || '[]')
+    let favoritos = (() => {
+      try {
+        const raw = JSON.parse(localStorage.getItem('r3d_favoritos') || '[]')
+        return Array.isArray(raw) ? raw.filter(x => x && String(x).trim() !== '') : []
+      } catch(e) { return [] }
+    })()
 
     function guardarFavoritos() { localStorage.setItem('r3d_favoritos', JSON.stringify(favoritos)) }
 
@@ -2209,54 +2392,61 @@
     // ══════════════════════════════════════════
     //  DRAG AND DROP PARA REORDENAR EN GRILLA
     // ══════════════════════════════════════════
+    let _dragDropInit = false
     function initDragDrop() {
       const grid = document.getElementById('productos')
       grid.classList.add('drag-mode')
-      const cards = grid.querySelectorAll('.card')
+      // Usar delegación de eventos — solo UNA vez, no por cada render
+      if (_dragDropInit) {
+        // Ya inicializado, solo marcar cards como draggable
+        grid.querySelectorAll('.card').forEach(c => c.setAttribute('draggable','true'))
+        return
+      }
+      _dragDropInit = true
       let dragSrc = null
 
-      cards.forEach(card => {
-        card.setAttribute('draggable', 'true')
-
-        card.addEventListener('dragstart', e => {
-          dragSrc = card
-          card.classList.add('dragging')
-          e.dataTransfer.effectAllowed = 'move'
-          e.dataTransfer.setData('text/plain', card.dataset.id)
-        })
-        card.addEventListener('dragend', () => {
-          card.classList.remove('dragging')
-          cards.forEach(c => c.classList.remove('drag-over'))
-        })
-        card.addEventListener('dragover', e => {
-          e.preventDefault()
-          e.dataTransfer.dropEffect = 'move'
-          if (card !== dragSrc) {
-            cards.forEach(c => c.classList.remove('drag-over'))
-            card.classList.add('drag-over')
-          }
-        })
-        card.addEventListener('dragleave', () => card.classList.remove('drag-over'))
-        card.addEventListener('drop', async e => {
-          e.preventDefault()
-          e.stopPropagation()
-          card.classList.remove('drag-over')
-          if (!dragSrc || dragSrc === card) return
-
-          // Reordenar en el DOM
-          const allCards = [...grid.querySelectorAll('.card')]
-          const srcIdx   = allCards.indexOf(dragSrc)
-          const dstIdx   = allCards.indexOf(card)
-          if (srcIdx < dstIdx) {
-            grid.insertBefore(dragSrc, card.nextSibling)
-          } else {
-            grid.insertBefore(dragSrc, card)
-          }
-
-          // Guardar nuevo orden en Supabase
-          await guardarOrden()
-        })
+      grid.addEventListener('dragstart', e => {
+        const card = e.target.closest('.card')
+        if (!card) return
+        dragSrc = card
+        card.classList.add('dragging')
+        e.dataTransfer.effectAllowed = 'move'
+        e.dataTransfer.setData('text/plain', card.dataset.id)
       })
+      grid.addEventListener('dragend', e => {
+        const card = e.target.closest('.card')
+        if (card) card.classList.remove('dragging')
+        grid.querySelectorAll('.drag-over').forEach(c => c.classList.remove('drag-over'))
+      })
+      grid.addEventListener('dragover', e => {
+        e.preventDefault()
+        e.dataTransfer.dropEffect = 'move'
+        const card = e.target.closest('.card')
+        if (card && card !== dragSrc) {
+          grid.querySelectorAll('.drag-over').forEach(c => c.classList.remove('drag-over'))
+          card.classList.add('drag-over')
+        }
+      })
+      grid.addEventListener('dragleave', e => {
+        const card = e.target.closest('.card')
+        if (card) card.classList.remove('drag-over')
+      })
+      grid.addEventListener('drop', async e => {
+        e.preventDefault()
+        e.stopPropagation()
+        const card = e.target.closest('.card')
+        if (!card) return
+        card.classList.remove('drag-over')
+        if (!dragSrc || dragSrc === card) return
+        const allCards = [...grid.querySelectorAll('.card')]
+        const srcIdx = allCards.indexOf(dragSrc)
+        const dstIdx = allCards.indexOf(card)
+        if (srcIdx < dstIdx) grid.insertBefore(dragSrc, card.nextSibling)
+        else grid.insertBefore(dragSrc, card)
+        await guardarOrden()
+      })
+      // Marcar cards actuales como draggable
+      grid.querySelectorAll('.card').forEach(c => c.setAttribute('draggable','true'))
     }
 
     async function guardarOrden() {
@@ -2740,12 +2930,12 @@
     async function cargarMedia() {
       const { data } = await supabase.from('media').select('*')
       if (!data) return
-
-      // Logo
       const logo = data.find(m => m.tipo === 'logo')
       if (logo) document.getElementById('headerLogo').src = logo.url
-
-      // Videos
+      ;['printables','cults3d','thingiverse'].forEach(plat => {
+        const entry = data.find(m => m.tipo === `logo_${plat}`)
+        if (entry) { platLogosUrl[plat] = entry.url }
+      })
       videosMedia = data.filter(m => m.tipo === 'video')
       renderCarrusel()
     }
@@ -3349,28 +3539,16 @@
         grid.innerHTML = '<p style="padding:2rem;grid-column:1/-1;color:var(--muted)">No hay videos cargados aún.</p>'
         return
       }
-      grid.innerHTML = ytVideos.map((v, i) => {
-        const thumb = v.portada_url
-          ? v.portada_url
-          : `https://img.youtube.com/vi/${v.yt_id}/hqdefault.jpg`
-        return `
+      grid.innerHTML = ytVideos.map((v, i) => `
         <div class="yt-card" data-ytid="${v.yt_id}" data-id="${v.id}" onclick="window.open('https://www.youtube.com/watch?v=${v.yt_id}','_blank','noopener')">
           ${esAdmin ? `<div class="yt-card__admin" onclick="event.stopPropagation()">
-            <button class="yt-admin-btn" onclick="window.ytMover('${v.id}',-1)" title="Subir">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="11" height="11"><polyline points="18 15 12 9 6 15"/></svg>
-            </button>
-            <button class="yt-admin-btn" onclick="window.ytMover('${v.id}', 1)" title="Bajar">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="11" height="11"><polyline points="6 9 12 15 18 9"/></svg>
-            </button>
-            <button class="yt-admin-btn yt-admin-btn--edit" onclick="window.abrirEditYt('${v.id}')" title="Editar">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="11" height="11"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
-            </button>
-            <button class="yt-admin-btn yt-admin-btn--del" onclick="window.eliminarYt('${v.id}')" title="Eliminar">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="11" height="11"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4h6v2"/></svg>
-            </button>
+            <button onclick="window.ytMover('${v.id}',-1)" title="Subir">↑</button>
+            <button onclick="window.ytMover('${v.id}', 1)" title="Bajar">↓</button>
+            <button onclick="window.eliminarYt('${v.id}')" title="Eliminar">✕</button>
           </div>` : ''}
           <div class="yt-card__thumb">
-            <img src="${thumb}" alt="${v.titulo || 'Video'}" data-ytid="${v.yt_id}" loading="lazy"/>
+            <img src="https://img.youtube.com/vi/${v.yt_id}/hqdefault.jpg"
+              alt="${v.titulo || 'Video'}" data-ytid="${v.yt_id}" loading="lazy"/>
             <div class="yt-card__play">
               <svg viewBox="0 0 24 24" fill="currentColor" width="44" height="44"><path d="M8 5v14l11-7z"/></svg>
             </div>
@@ -3379,8 +3557,7 @@
             <p class="yt-card__title">${v.titulo || 'Ver en YouTube'}</p>
             <p class="yt-card__channel">La Madriguera</p>
           </div>
-        </div>`
-      }).join('')
+        </div>`).join('')
       grid.querySelectorAll('img[data-ytid]').forEach(img => {
         img.onerror = function() { window.ytThumbFallback(this) }
       })
@@ -3404,140 +3581,9 @@
 
     window.eliminarYt = async (id) => {
       if (!confirm('¿Eliminar este video?')) return
-      // Si tiene portada custom en storage, eliminarla
-      const v = ytVideos.find(x => String(x.id) === String(id))
-      if (v && v.portada_nombre) {
-        await supabase.storage.from('media').remove([v.portada_nombre])
-      }
       await supabase.from('youtube_videos').delete().eq('id', id)
       await cargarYoutube()
     }
-
-    // ── Modal de edición de video YouTube ──────────────────────────────
-    let editYtPortadaPendiente = null  // { file, previewUrl } o null
-    let editYtPortadaRemover   = false // si se debe quitar la portada custom
-
-    window.abrirEditYt = (id) => {
-      const v = ytVideos.find(x => String(x.id) === String(id))
-      if (!v) return
-      document.getElementById('editYtId').value        = id
-      document.getElementById('editYtTitulo').value    = v.titulo || ''
-      document.getElementById('editYtError').textContent = ''
-      editYtPortadaPendiente = null
-      editYtPortadaRemover   = false
-
-      // Preview de portada
-      const img  = document.getElementById('editYtPortadaImg')
-      const ph   = document.getElementById('editYtPortadaPlaceholder')
-      const rmBtn = document.getElementById('editYtPortadaRemoveBtn')
-      if (v.portada_url) {
-        img.src = v.portada_url; img.style.display = 'block'
-        ph.style.display = 'none'
-        rmBtn.style.display = 'inline-flex'
-      } else {
-        img.src = ''; img.style.display = 'none'
-        ph.style.display = 'flex'
-        rmBtn.style.display = 'none'
-      }
-      document.getElementById('editYtPortadaFile').value = ''
-      document.getElementById('modalEditYt').style.display = 'flex'
-    }
-
-    document.getElementById('btnCerrarEditYt').addEventListener('click', () => {
-      document.getElementById('modalEditYt').style.display = 'none'
-    })
-    document.getElementById('editYtCancelar').addEventListener('click', () => {
-      document.getElementById('modalEditYt').style.display = 'none'
-    })
-    document.getElementById('modalEditYt').addEventListener('click', (e) => {
-      if (e.target === document.getElementById('modalEditYt'))
-        document.getElementById('modalEditYt').style.display = 'none'
-    })
-
-    // Seleccionar portada
-    document.getElementById('editYtPortadaBtn').addEventListener('click', () => {
-      document.getElementById('editYtPortadaFile').click()
-    })
-    document.getElementById('editYtPortadaWrap').addEventListener('click', (e) => {
-      if (e.target.closest('#editYtPortadaPlaceholder') || e.target.closest('#editYtPortadaImg')) {
-        document.getElementById('editYtPortadaFile').click()
-      }
-    })
-    document.getElementById('editYtPortadaFile').addEventListener('change', (e) => {
-      const file = e.target.files[0]
-      if (!file) return
-      editYtPortadaPendiente = { file, previewUrl: URL.createObjectURL(file) }
-      editYtPortadaRemover   = false
-      const img = document.getElementById('editYtPortadaImg')
-      const ph  = document.getElementById('editYtPortadaPlaceholder')
-      const rmBtn = document.getElementById('editYtPortadaRemoveBtn')
-      img.src = editYtPortadaPendiente.previewUrl
-      img.style.display = 'block'
-      ph.style.display  = 'none'
-      rmBtn.style.display = 'inline-flex'
-    })
-
-    // Quitar portada custom
-    document.getElementById('editYtPortadaRemoveBtn').addEventListener('click', (e) => {
-      e.stopPropagation()
-      editYtPortadaPendiente = null
-      editYtPortadaRemover   = true
-      const img  = document.getElementById('editYtPortadaImg')
-      const ph   = document.getElementById('editYtPortadaPlaceholder')
-      const rmBtn = document.getElementById('editYtPortadaRemoveBtn')
-      img.style.display = 'none'; ph.style.display = 'flex'
-      rmBtn.style.display = 'none'
-    })
-
-    // Guardar cambios
-    document.getElementById('editYtGuardar').addEventListener('click', async () => {
-      const id     = document.getElementById('editYtId').value
-      const titulo = document.getElementById('editYtTitulo').value.trim()
-      const errEl  = document.getElementById('editYtError')
-      const btn    = document.getElementById('editYtGuardar')
-      errEl.textContent = ''
-      btn.disabled = true; btn.textContent = 'Guardando...'
-
-      const v = ytVideos.find(x => String(x.id) === String(id))
-      let portada_url    = v ? v.portada_url    : null
-      let portada_nombre = v ? v.portada_nombre : null
-
-      try {
-        // Subir nueva portada si hay
-        if (editYtPortadaPendiente) {
-          const file = editYtPortadaPendiente.file
-          const ext  = file.name.split('.').pop()
-          const nombre = `yt_portada_${id}_${Date.now()}.${ext}`
-          const { error: upErr } = await supabase.storage.from('media').upload(nombre, file, { upsert: true })
-          if (upErr) throw upErr
-          // Eliminar portada anterior si la había
-          if (portada_nombre) await supabase.storage.from('media').remove([portada_nombre])
-          const { data: urlData } = supabase.storage.from('media').getPublicUrl(nombre)
-          portada_url    = urlData.publicUrl
-          portada_nombre = nombre
-        }
-
-        // Quitar portada si se pidió
-        if (editYtPortadaRemover) {
-          if (portada_nombre) await supabase.storage.from('media').remove([portada_nombre])
-          portada_url    = null
-          portada_nombre = null
-        }
-
-        const { error } = await supabase
-          .from('youtube_videos')
-          .update({ titulo: titulo || null, portada_url, portada_nombre })
-          .eq('id', id)
-        if (error) throw error
-
-        document.getElementById('modalEditYt').style.display = 'none'
-        await cargarYoutube()
-      } catch(e) {
-        errEl.textContent = 'Error: ' + (e.message || String(e))
-      } finally {
-        btn.disabled = false; btn.textContent = 'Guardar cambios'
-      }
-    })
 
     document.getElementById('btnAdminYt').addEventListener('click', () => {
       const bar = document.getElementById('ytAdminBar')
@@ -4947,6 +4993,38 @@
           }
         }
       }
+
+    // Cuadros 2D — bloqueado para usuarios, solo admin puede activar
+    window.abrirHerramientaStl = function() {
+      if (esAdmin) {
+        // Admin: abre directo sin bloqueo
+        window.abrirHerramienta('modal-stl')
+      }
+      // No-admin: el overlay visual es suficiente, no hace nada más
+    }
+
+    // Mostrar botón "Activar" del WIP solo para admin
+    ;(function() {
+      const adminBtn = document.getElementById('hcardWipAdminBtn')
+      if (adminBtn && esAdmin) {
+        adminBtn.style.display = 'inline-flex'
+        adminBtn.addEventListener('click', function(e) {
+          e.stopPropagation()
+          // Quitar overlay y habilitar la card
+          const overlay = document.getElementById('hcardWipOverlay')
+          const card    = document.getElementById('hcard-stl')
+          if (overlay) overlay.remove()
+          if (card) {
+            card.classList.remove('herramienta-card--wip')
+            card.onclick = function() { window.abrirHerramienta('modal-stl') }
+          }
+          const badge = card && card.querySelector('.herramienta-card__badge--wip')
+          if (badge) { badge.textContent = '🧪 Beta'; badge.classList.remove('herramienta-card__badge--wip') }
+          const btn = card && card.querySelector('.herramienta-card__btn--wip')
+          if (btn) { btn.textContent = 'Abrir herramienta →'; btn.disabled = false; btn.classList.remove('herramienta-card__btn--wip') }
+        })
+      }
+    })()
     }
     window.cerrarHerramienta = function(id) {
       document.getElementById(id).classList.remove('activo')
@@ -5035,77 +5113,109 @@
     }
 
     // ── Drag to reposition image (admin only) ────────────────────────────
+    // Global handler compartido — evita acumular listeners por cada llamada
+    const _hcardDragState = {}
+    let _hcardGlobalListenersAdded = false
+
+    function _addHcardGlobalListeners() {
+      if (_hcardGlobalListenersAdded) return
+      _hcardGlobalListenersAdded = true
+      document.addEventListener('mousemove', function(e) {
+        for (const tool in _hcardDragState) {
+          const s = _hcardDragState[tool]
+          if (!s.dragging) continue
+          const visual = document.getElementById('hcard-visual-' + tool)
+          if (!visual) continue
+          const img = visual.querySelector('img')
+          if (!img) continue
+          const dx = (e.clientX - s.startX) / visual.offsetWidth  * 100
+          const dy = (e.clientY - s.startY) / visual.offsetHeight * 100
+          s.posX = Math.max(0, Math.min(100, s.posX - dx))
+          s.posY = Math.max(0, Math.min(100, s.posY - dy))
+          s.startX = e.clientX; s.startY = e.clientY
+          img.style.objectPosition = s.posX.toFixed(1)+'% '+s.posY.toFixed(1)+'%'
+        }
+      })
+      document.addEventListener('mouseup', async function() {
+        for (const tool in _hcardDragState) {
+          const s = _hcardDragState[tool]
+          if (!s.dragging) continue
+          s.dragging = false
+          const visual = document.getElementById('hcard-visual-' + tool)
+          if (visual) visual.style.cursor = esAdmin ? 'grab' : 'default'
+          const img = visual && visual.querySelector('img')
+          if (!img || !esAdmin) continue
+          const pos = img.style.objectPosition
+          try {
+            const posKey='hcard-'+tool+'-pos'
+            await supabase.from('media').delete().eq('tipo',posKey)
+            await supabase.from('media').insert([{tipo:posKey,url:pos,nombre:posKey}])
+          } catch(e) { console.warn('pos save:', e) }
+        }
+      })
+      document.addEventListener('touchmove', function(e) {
+        for (const tool in _hcardDragState) {
+          const s = _hcardDragState[tool]
+          if (!s.dragging) continue
+          const visual = document.getElementById('hcard-visual-' + tool)
+          if (!visual) continue
+          const img = visual.querySelector('img')
+          if (!img) continue
+          const t = e.touches[0]
+          const dx = (t.clientX - s.startX) / visual.offsetWidth  * 100
+          const dy = (t.clientY - s.startY) / visual.offsetHeight * 100
+          s.posX = Math.max(0, Math.min(100, s.posX - dx))
+          s.posY = Math.max(0, Math.min(100, s.posY - dy))
+          s.startX = t.clientX; s.startY = t.clientY
+          img.style.objectPosition = s.posX.toFixed(1)+'% '+s.posY.toFixed(1)+'%'
+          e.preventDefault()
+        }
+      }, { passive: false })
+      document.addEventListener('touchend', async function() {
+        for (const tool in _hcardDragState) {
+          const s = _hcardDragState[tool]
+          if (!s.dragging) continue
+          s.dragging = false
+          const visual = document.getElementById('hcard-visual-' + tool)
+          const img = visual && visual.querySelector('img')
+          if (!img || !esAdmin) continue
+          const pos = img.style.objectPosition
+          try {
+            const posKey='hcard-'+tool+'-pos'
+            await supabase.from('media').delete().eq('tipo',posKey)
+            await supabase.from('media').insert([{tipo:posKey,url:pos,nombre:posKey}])
+          } catch(e) { console.warn('pos save:', e) }
+        }
+      })
+    }
+
     function initHcardDrag(tool) {
       const visual = document.getElementById('hcard-visual-' + tool)
       if (!visual) return
-      let dragging=false, startX=0, startY=0, posX=50, posY=50
-
+      // Init state for this tool
+      _hcardDragState[tool] = { dragging: false, startX: 0, startY: 0, posX: 50, posY: 50 }
+      const s = _hcardDragState[tool]
       // Load saved position
       const img = visual.querySelector('img')
       if (img && img.style.objectPosition) {
         const parts = img.style.objectPosition.split(' ')
-        posX = parseFloat(parts[0]) || 50
-        posY = parseFloat(parts[1]) || 50
+        s.posX = parseFloat(parts[0]) || 50
+        s.posY = parseFloat(parts[1]) || 50
       }
-
+      // Only add mousedown on the visual element (not global)
       visual.addEventListener('mousedown', function(e) {
         if (!esAdmin) return
-        const img = visual.querySelector('img')
-        if (!img) return
-        dragging=true; startX=e.clientX; startY=e.clientY
-        visual.style.cursor='grabbing'
-        e.preventDefault()
+        const img = visual.querySelector('img'); if (!img) return
+        s.dragging = true; s.startX = e.clientX; s.startY = e.clientY
+        visual.style.cursor = 'grabbing'; e.preventDefault()
       })
-
-      document.addEventListener('mousemove', function(e) {
-        if (!dragging) return
-        const img = visual.querySelector('#hcard-visual-'+tool+' img') || visual.querySelector('img')
-        if (!img) return
-        const dx = (e.clientX - startX) / visual.offsetWidth  * 100
-        const dy = (e.clientY - startY) / visual.offsetHeight * 100
-        posX = Math.max(0, Math.min(100, posX - dx))
-        posY = Math.max(0, Math.min(100, posY - dy))
-        startX = e.clientX; startY = e.clientY
-        img.style.objectPosition = posX.toFixed(1)+'% '+posY.toFixed(1)+'%'
-      })
-
-      document.addEventListener('mouseup', async function() {
-        if (!dragging) return
-        dragging=false
-        visual.style.cursor = esAdmin ? 'grab' : 'default'
-        // Save position
-        const img = visual.querySelector('img')
-        if (!img || !esAdmin) return
-        const pos = img.style.objectPosition
-        try {
-          const posKey='hcard-'+tool+'-pos'; await supabase.from('media').delete().eq('tipo',posKey); await supabase.from('media').insert([{tipo:posKey,url:pos,nombre:posKey}])
-        } catch(e) { console.warn('pos save:', e) }
-      })
-
-      // Touch support
       visual.addEventListener('touchstart', function(e) {
         if (!esAdmin) return
-        const t=e.touches[0]; startX=t.clientX; startY=t.clientY; dragging=true
+        const t = e.touches[0]; s.startX = t.clientX; s.startY = t.clientY; s.dragging = true
         e.preventDefault()
-      }, {passive:false})
-      visual.addEventListener('touchmove', function(e) {
-        if (!dragging) return
-        const img = visual.querySelector('img'); if (!img) return
-        const t=e.touches[0]
-        const dx=(t.clientX-startX)/visual.offsetWidth*100
-        const dy=(t.clientY-startY)/visual.offsetHeight*100
-        posX=Math.max(0,Math.min(100,posX-dx))
-        posY=Math.max(0,Math.min(100,posY-dy))
-        startX=t.clientX; startY=t.clientY
-        img.style.objectPosition=posX.toFixed(1)+'% '+posY.toFixed(1)+'%'
-        e.preventDefault()
-      }, {passive:false})
-      visual.addEventListener('touchend', async function() {
-        if (!dragging) return
-        dragging=false
-        const img=visual.querySelector('img'); if (!img||!esAdmin) return
-        try { const pk='hcard-'+tool+'-pos'; await supabase.from('media').delete().eq('tipo',pk); await supabase.from('media').insert([{tipo:pk,url:img.style.objectPosition,nombre:pk}]) } catch(e){}
-      })
+      }, { passive: false })
+      // Add global listeners once
+      _addHcardGlobalListeners()
     }
 
     // Init drag for both cards
@@ -5643,134 +5753,243 @@
     cargarYoutube()
     cargarHcardImgs()
     // ── TENDENCIAS MULTI-PLATAFORMA ────────────────────────────────────
-    let tendPlatActual = 'printables'
+    let tendPlatActual = 'todas'
     const tendCache = {}
+    const TEND_INICIAL = 15
+    const PLAT_LABELS = { printables:'Printables', cults3d:'Cults3D', thingiverse:'Thingiverse' }
+    const PLAT_BADGE_COLOR = { printables:'#fa6831', cults3d:'#f75a5a', thingiverse:'#248bfb' }
+    const platLogosUrl = { printables: null, cults3d: null, thingiverse: null }
+    const PLAT_SVG_FALLBACK = {
+      printables: `<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="#fa6831"/><text x="12" y="16.5" text-anchor="middle" font-size="10" font-weight="900" fill="white" font-family="Arial">P</text></svg>`,
+      cults3d: `<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="#f75a5a"/><text x="12" y="16.5" text-anchor="middle" font-size="10" font-weight="900" fill="white" font-family="Arial">C</text></svg>`,
+      thingiverse: `<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="#248bfb"/><text x="12" y="16.5" text-anchor="middle" font-size="10" font-weight="900" fill="white" font-family="Arial">T</text></svg>`
+    }
+    function platLogoHTML(plat) {
+      const color = PLAT_BADGE_COLOR[plat]||'var(--cyan)', url = platLogosUrl[plat]
+      const inner = url
+        ? `<img src="${url}" style="width:100%;height:100%;object-fit:contain;padding:3px" onerror="this.style.display='none';this.nextSibling.style.display='flex'"><span class="tend-plat-svg" style="display:none">${PLAT_SVG_FALLBACK[plat]||''}</span>`
+        : `<span class="tend-plat-svg">${PLAT_SVG_FALLBACK[plat]||''}</span>`
+      return `<div class="tend-card__plat-logo" style="--plat-color:${color}">${inner}</div>`
+    }
 
     async function cargarMakerworld() {
-      await cargarTendencias('printables')
-      // Init tabs
+      await cargarTendencias('todas')
       document.querySelectorAll('.tend-tab').forEach(btn => {
         btn.addEventListener('click', () => {
           document.querySelectorAll('.tend-tab').forEach(b => b.classList.remove('tend-tab--active'))
           btn.classList.add('tend-tab--active')
           tendPlatActual = btn.dataset.plat
+          const old = document.getElementById('tendVerMasWrap')
+          if (old) old.remove()
           cargarTendencias(tendPlatActual)
         })
       })
+    }
+
+    // IDs eliminados manualmente por el admin — persisten en localStorage
+    const TEND_OCULTAS_KEY = 'r3d_tend_ocultas'
+    function getTendOcultas() {
+      try { return new Set(JSON.parse(localStorage.getItem(TEND_OCULTAS_KEY)||'[]')) } catch(e){ return new Set() }
+    }
+    function addTendOculta(id) {
+      const set = getTendOcultas(); set.add(String(id))
+      localStorage.setItem(TEND_OCULTAS_KEY, JSON.stringify([...set]))
+    }
+
+    async function fetchPlat(plat) {
+      if (tendCache[plat]) return tendCache[plat]
+      const { data, error } = await supabase
+        .from('tendencias_3d').select('*').eq('plataforma', plat)
+        .order('posicion', { ascending: true }).limit(100)
+      if (!error && data && data.length > 0) {
+        const ocultas = getTendOcultas()
+        tendCache[plat] = data
+          .filter(item => !ocultas.has(String(item.id)))
+          .map(item => ({ ...item, plataforma: plat }))
+      }
+      return tendCache[plat] || []
     }
 
     async function cargarTendencias(plat) {
       const grid = document.getElementById('tendGrid')
       const meta = document.getElementById('tendMeta')
       if (!grid) return
-
-      // Usar cache si ya cargamos esta plataforma
-      if (tendCache[plat]) {
-        renderTendencias(tendCache[plat], plat)
-        return
-      }
-
+      const old = document.getElementById('tendVerMasWrap')
+      if (old) old.remove()
       grid.innerHTML = '<p style="grid-column:1/-1;padding:2rem;color:var(--muted);text-align:center">Cargando...</p>'
       if (meta) meta.innerHTML = ''
-
       try {
-        const { data, error } = await supabase
-          .from('tendencias_3d')
-          .select('*')
-          .eq('plataforma', plat)
-          .order('posicion', { ascending: true })
-          .limit(100)
-
-        if (error || !data || data.length === 0) {
+        let data = []
+        if (plat === 'todas') {
+          const [prints, cults, thing] = await Promise.all([
+            fetchPlat('printables'), fetchPlat('cults3d'), fetchPlat('thingiverse')
+          ])
+          const maxLen = Math.max(prints.length, cults.length, thing.length)
+          for (let i = 0; i < maxLen; i++) {
+            if (prints[i]) data.push(prints[i])
+            if (cults[i])  data.push(cults[i])
+            if (thing[i])  data.push(thing[i])
+          }
+          if (meta) meta.innerHTML = `<p class="tend-meta__text">${data.length} diseños · Todas las plataformas</p>`
+        } else {
+          data = await fetchPlat(plat)
+          if (meta && data[0]?.scraped_at) {
+            const fecha = new Date(data[0].scraped_at).toLocaleDateString('es-AR',{day:'numeric',month:'long',year:'numeric'})
+            meta.innerHTML = `<p class="tend-meta__text">Última actualización: ${fecha} · ${data.length} diseños · ${PLAT_LABELS[plat]}</p>`
+          }
+        }
+        if (!data.length) {
           grid.innerHTML = `<p style="grid-column:1/-1;padding:2rem;color:var(--muted);text-align:center">
             Sin datos aún para esta plataforma.
             ${esAdmin ? '<br><small>Usá el botón "Actualizar Tendencias" para cargar.</small>' : ''}
           </p>`
           return
         }
-        tendCache[plat] = data
-        renderTendencias(data, plat)
+        if (plat === 'todas' && data.length > TEND_INICIAL) {
+          renderTendencias(data.slice(0, TEND_INICIAL), plat)
+          insertarVerMas(data, plat)
+        } else {
+          renderTendencias(data, plat)
+        }
       } catch(e) {
         console.warn('cargarTendencias error:', e)
         grid.innerHTML = '<p style="grid-column:1/-1;padding:2rem;color:var(--muted);text-align:center">Error al cargar los datos.</p>'
       }
     }
 
-    const PLAT_LABELS = { printables:'Printables', cults3d:'Cults3D', thingiverse:'Thingiverse' }
+    function insertarVerMas(data, plat) {
+      const section = document.getElementById('makerworld')
+      if (!section) return
+      const restantes = data.length - TEND_INICIAL
+      const wrap = document.createElement('div')
+      wrap.id = 'tendVerMasWrap'
+      wrap.style.cssText = 'display:flex;flex-direction:column;align-items:center;gap:.5rem;margin:1.5rem auto 0;'
+      wrap.innerHTML = `<button class="btn-ver-mas-tend" id="btnVerMasTend">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" width="16" height="16"><polyline points="6 9 12 15 18 9"/></svg>
+        Ver más
+        <span class="btn-ver-mas-tend__count">+${restantes} diseños</span>
+      </button>`
+      section.appendChild(wrap)
+      document.getElementById('btnVerMasTend').addEventListener('click', () => {
+        wrap.remove()
+        const grid = document.getElementById('tendGrid')
+        if (!grid) return
+        data.slice(TEND_INICIAL).forEach((item, i) => {
+          const tmp = document.createElement('div')
+          tmp.innerHTML = buildCardHTML(item, TEND_INICIAL + i, plat)
+          const card = tmp.firstElementChild
+          card.classList.add('tend-card--reveal')
+          card.style.animationDelay = `${Math.min(i * 40, 400)}ms`
+          grid.appendChild(card)
+        })
+      })
+    }
 
-    function renderTendencias(data, plat) {
-      const grid = document.getElementById('tendGrid')
-      const meta = document.getElementById('tendMeta')
-      if (!grid) return
-      if (meta && data[0]?.scraped_at) {
-        const fecha = new Date(data[0].scraped_at).toLocaleDateString('es-AR',{day:'numeric',month:'long',year:'numeric'})
-        meta.innerHTML = `<p class="tend-meta__text">Última actualización: ${fecha} · ${data.length} diseños · ${PLAT_LABELS[plat]}</p>`
-      }
+    function buildCardHTML(item, i, plat) {
       const fallback = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 4 3'%3E%3Crect fill='%23001520' width='4' height='3'/%3E%3C/svg%3E"
-      // Guardamos el fallback globalmente para usarlo en onerror sin conflicto de comillas
       window._tendFallback = fallback
       function proxyImg(url) {
         if (!url) return fallback
         if (url.includes('thingiverse.com') || url.includes('cdn.makerbot.com')) {
-          // Mejorar resolución antes de pasar por proxy
-          let betterUrl = url
-          if (betterUrl.includes('_thumb_medium')) betterUrl = betterUrl.replace('_thumb_medium', '_thumb_large')
-          if (betterUrl.includes('_thumb_small')) betterUrl = betterUrl.replace('_thumb_small', '_thumb_large')
-          return 'https://images.weserv.nl/?url=' + encodeURIComponent(betterUrl) + '&w=600&output=webp&q=85'
+          let u = url
+          if (u.includes('_thumb_medium')) u = u.replace('_thumb_medium', '_thumb_large')
+          if (u.includes('_thumb_small'))  u = u.replace('_thumb_small',  '_thumb_large')
+          return 'https://images.weserv.nl/?url=' + encodeURIComponent(u) + '&w=600&output=webp&q=85'
         }
         return url
       }
-      // Parsea el formato "video:URL" o URL directa
       function parseImagen(raw) {
         if (!raw) return { type: 'img', src: '' }
-        if (raw.startsWith('video:')) {
-          return { type: 'video', src: raw.slice(6) }
-        }
-        // Detectar MP4 por extensión para datos ya guardados sin prefijo
+        if (raw.startsWith('video:')) return { type: 'video', src: raw.slice(6) }
         const lower = raw.toLowerCase().split('?')[0]
-        if (lower.endsWith('.mp4') || lower.includes('/mp4/')) {
-          return { type: 'video', src: raw }
-        }
+        if (lower.endsWith('.mp4') || lower.includes('/mp4/')) return { type: 'video', src: raw }
         return { type: 'img', src: raw }
       }
       function mediaThumb(rawUrl) {
         if (!rawUrl) return '<img src="' + fallback + '" alt=""/>'
         const parsed = parseImagen(rawUrl)
-
         if (parsed.type === 'video') {
-          // MP4: usar <video> muted loop. onerror muestra el fallback sin intentar play()
           return '<video src="' + parsed.src + '" muted loop playsinline preload="metadata"'
             + ' style="width:100%;height:100%;object-fit:cover;display:block;"'
             + ' onmouseenter="this.play()" onmouseleave="this.pause();this.currentTime=0"'
             + ' onerror="this.style.display=&quot;none&quot;;var i=document.createElement(&quot;img&quot;);i.src=window._tendFallback;i.style.cssText=&quot;width:100%;height:100%;object-fit:cover&quot;;this.parentNode.appendChild(i)"'
             + '></video>'
         }
-
-        // Imagen (jpg/png/gif/webp animado — <img> los reproduce todos)
-        // onerror: mostrar fallback directo, sin intentar crear <video> (evita play() errors)
         return '<img src="' + proxyImg(parsed.src) + '" alt="" loading="lazy"'
           + ' onerror="this.onerror=null;this.src=window._tendFallback"'
           + '/>'
       }
+      const mostrarTodas = (plat === 'todas')
+      const itemPlat = item.plataforma || plat
+      const platLabel = PLAT_LABELS[itemPlat] || itemPlat
+      const adminBtn = esAdmin
+        ? `<button class="tend-card__del-btn" title="Quitar de tendencias"
+             onclick="event.preventDefault();event.stopPropagation();window.eliminarTendencia('${item.id}',this)"
+             aria-label="Eliminar">
+             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="12" height="12">
+               <polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/>
+               <path d="M10 11v6M14 11v6"/><path d="M9 6V4h6v2"/>
+             </svg>
+           </button>`
+        : ''
+      return `<a class="tend-card" href="${item.url}" target="_blank" rel="noopener" data-tend-id="${item.id}">
+        <div class="tend-card__rank">#${i+1}</div>
+        ${mostrarTodas ? platLogoHTML(itemPlat) : ''}
+        ${adminBtn}
+        <div class="tend-card__thumb">${mediaThumb(item.imagen)}</div>
+        <div class="tend-card__body">
+          <p class="tend-card__title">${item.titulo || 'Sin título'}</p>
+          <p class="tend-card__author">por ${item.autor || 'Desconocido'}</p>
+          ${item.descripcion ? `<p class="tend-card__desc">${item.descripcion.slice(0,80)}${item.descripcion.length>80?'…':''}</p>` : ''}
+          <div class="tend-card__stats">
+            ${item.likes    ? `<span>❤️ ${Number(item.likes).toLocaleString()}</span>` : ''}
+            ${item.downloads ? `<span>⬇️ ${Number(item.downloads).toLocaleString()}</span>` : ''}
+            ${item.precio && item.precio !== '' ? `<span class="tend-card__precio${item.precio==='gratis'?' tend-card__precio--free':''}">${item.precio==='gratis'?'Gratis':item.precio}</span>` : ''}
+          </div>
+          <span class="tend-card__btn">Ver en ${platLabel} ↗</span>
+        </div>
+      </a>`
+    }
 
-      grid.innerHTML = data.map((item,i) => `
-        <a class="tend-card" href="${item.url}" target="_blank" rel="noopener">
-          <div class="tend-card__rank">#${i+1}</div>
-          <div class="tend-card__thumb">
-            ${mediaThumb(item.imagen)}
-          </div>
-          <div class="tend-card__body">
-            <p class="tend-card__title">${item.titulo || 'Sin título'}</p>
-            <p class="tend-card__author">por ${item.autor || 'Desconocido'}</p>
-            ${item.descripcion ? `<p class="tend-card__desc">${item.descripcion.slice(0,80)}${item.descripcion.length>80?'…':''}</p>` : ''}
-            <div class="tend-card__stats">
-              ${item.likes ? `<span>❤️ ${Number(item.likes).toLocaleString()}</span>` : ''}
-              ${item.downloads ? `<span>⬇️ ${Number(item.downloads).toLocaleString()}</span>` : ''}
-              ${item.precio && item.precio !== '' ? `<span class="tend-card__precio${item.precio==='gratis'?' tend-card__precio--free':''}">${item.precio==='gratis'?'Gratis':item.precio}</span>` : ''}
-            </div>
-            <span class="tend-card__btn">Ver en ${PLAT_LABELS[plat]} ↗</span>
-          </div>
-        </a>`).join('')
+    function renderTendencias(data, plat) {
+      const grid = document.getElementById('tendGrid')
+      if (!grid) return
+      grid.innerHTML = data.map((item, i) => buildCardHTML(item, i, plat)).join('')
+    }
+
+    window.eliminarTendencia = async function(id, btn) {
+      if (!confirm('¿Quitar esta publicación de tendencias?')) return
+      btn.disabled = true
+      try {
+        const { error } = await supabase.from('tendencias_3d').delete().eq('id', id)
+        if (error) throw error
+        // Guardar en lista de ocultas (persiste al recargar)
+        addTendOculta(id)
+        // Limpiar cache en memoria
+        ;['printables','cults3d','thingiverse'].forEach(plat => {
+          if (tendCache[plat]) tendCache[plat] = tendCache[plat].filter(x => String(x.id) !== String(id))
+        })
+        // Animar y eliminar la card del DOM
+        const card = document.querySelector(`[data-tend-id="${id}"]`)
+        if (card) {
+          card.style.transition = 'opacity .3s ease, transform .3s ease'
+          card.style.opacity = '0'
+          card.style.transform = 'scale(0.9)'
+          setTimeout(() => {
+            card.remove()
+            document.querySelectorAll('.tend-card__rank').forEach((el, i) => {
+              el.textContent = `#${i+1}`
+            })
+          }, 320)
+        }
+        // Feedback visual en el botón
+        btn.innerHTML = '✓'
+        btn.style.color = 'var(--cyan)'
+      } catch(e) {
+        console.error('eliminarTendencia error:', e)
+        btn.disabled = false
+        alert('Error al eliminar: ' + (e.message || String(e)))
+      }
     }
 
     window.actualizarMakerworld = async function() {
@@ -5798,9 +6017,371 @@
     }
 
     initMakersPromo()
-    cargarMakerworld()
+    // cargarMakerworld() se llama después de verificarSesionUsuario() para que esAdmin esté definido
 
-    // Productos primero, después sesión y makers — orden importa para el CTA
+    // ══════════════════════════════════════════
+    //  ÁREA DE EMPRENDEDORES
+    // ══════════════════════════════════════════
+    window.abrirEmprendedor = function(id) { const el=document.getElementById(id); if(el) el.style.display='flex' }
+    window.cerrarEmprendedor = function(id) { const el=document.getElementById(id); if(el) el.style.display='none' }
+    ;['modal-tarjetas','modal-potenciador','modal-costos','modal-mejora'].forEach(id=>{
+      const el=document.getElementById(id)
+      if(el) el.addEventListener('click',e=>{ if(e.target===el) el.style.display='none' })
+    })
+
+    // ── TARJETAS ─────────────────────────────────────────────────────
+    let tarjLogoImg=null, tarjLogoColor=null
+    const tarjZone=document.getElementById('tarjUploadZone'),tarjFile=document.getElementById('tarjLogoFile'),tarjInner=document.getElementById('tarjUploadInner'),tarjPrev=document.getElementById('tarjUploadPreview'),tarjPrevImg=document.getElementById('tarjLogoPreviewImg')
+    function tarjLoadLogo(file){if(!file||!file.type.startsWith('image/'))return;const r=new FileReader();r.onload=e=>{const img=new Image();img.onload=()=>{tarjLogoImg=img;tarjPrevImg.src=e.target.result;tarjInner.style.display='none';tarjPrev.style.display='flex';document.getElementById('tarjError').textContent='';
+      // Extraer color dominante del logo para usarlo en las tarjetas
+      try {
+        const tc=document.createElement('canvas'); tc.width=40; tc.height=40
+        const tx=tc.getContext('2d'); tx.drawImage(img,0,0,40,40)
+        const pixels=tx.getImageData(0,0,40,40).data
+        const colorMap={}
+        for(let i=0;i<pixels.length;i+=4){
+          const a=pixels[i+3]; if(a<80) continue // skip transparent
+          const rv=pixels[i],gv=pixels[i+1],bv=pixels[i+2]
+          const bright=rv*0.299+gv*0.587+bv*0.114
+          if(bright>220) continue // skip near-white
+          if(bright<20) continue // skip near-black
+          const key=`${Math.round(rv/32)*32},${Math.round(gv/32)*32},${Math.round(bv/32)*32}`
+          colorMap[key]=(colorMap[key]||0)+1
+        }
+        const top=Object.entries(colorMap).sort((a,b)=>b[1]-a[1])[0]
+        if(top){const[r2,g2,b2]=top[0].split(',').map(Number); tarjLogoColor=`rgb(${r2},${g2},${b2})`}
+        else tarjLogoColor=null
+      } catch(e){ tarjLogoColor=null }
+    };img.src=e.target.result};r.readAsDataURL(file)}
+    tarjZone.addEventListener('click',e=>{if(!e.target.closest('#tarjChangeLogo'))tarjFile.click()})
+    document.getElementById('tarjChangeLogo').addEventListener('click',e=>{e.stopPropagation();tarjFile.click()})
+    tarjFile.addEventListener('change',e=>tarjLoadLogo(e.target.files[0]))
+    tarjZone.addEventListener('dragover',e=>{e.preventDefault();tarjZone.classList.add('vec-drag')});tarjZone.addEventListener('dragleave',()=>tarjZone.classList.remove('vec-drag'));tarjZone.addEventListener('drop',e=>{e.preventDefault();tarjZone.classList.remove('vec-drag');tarjLoadLogo(e.dataTransfer.files[0])})
+    const TARJ_W=1063,TARJ_H=650
+    function tarjWrapText(ctx,text,x,y,maxW,lineH,color,font,align='left'){ctx.font=font;ctx.fillStyle=color;ctx.textAlign=align;const words=text.split(' ');let line='',ly=y;for(let w of words){const t=line+(line?'\u00a0':'')+w;if(ctx.measureText(t).width>maxW&&line){ctx.fillText(line,x,ly);line=w;ly+=lineH}else line=t}if(line)ctx.fillText(line,x,ly);ctx.textAlign='left'}
+    function roundRect(ctx,x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.lineTo(x+w-r,y);ctx.arcTo(x+w,y,x+w,y+r,r);ctx.lineTo(x+w,y+h-r);ctx.arcTo(x+w,y+h,x+w-r,y+h,r);ctx.lineTo(x+r,y+h);ctx.arcTo(x,y+h,x,y+h-r,r);ctx.lineTo(x,y+r);ctx.arcTo(x,y,x+r,y,r);ctx.closePath()}
+    const TARJ_DISENOS=[
+      // 1 — Minimalista oscuro
+      {nombre:'Minimalista oscuro',render(ctx,W,H,logo,neg,msg,con,ac){const accent=ac||'#159A9C';const bg=ctx.createLinearGradient(0,0,W,H);bg.addColorStop(0,'#001520');bg.addColorStop(1,'#002535');ctx.fillStyle=bg;ctx.fillRect(0,0,W,H);ctx.fillStyle=accent;ctx.fillRect(0,0,5,H);ctx.fillStyle='rgba(21,154,156,0.08)';ctx.fillRect(0,0,W,H*0.35);if(logo){const lh=H*0.30,lw=logo.width*(lh/logo.height);ctx.drawImage(logo,W*0.07,H*0.12,Math.min(lw,W*0.35),lh)}ctx.font=`900 ${H*0.11}px Arial`;ctx.fillStyle='#ffffff';ctx.textAlign='left';ctx.fillText(neg||'Tu Negocio',W*0.07,H*0.58);ctx.fillStyle=accent;ctx.fillRect(W*0.07,H*0.63,W*0.15,2);tarjWrapText(ctx,msg||'\u00a1Gracias por tu compra!',W*0.07,H*0.72,W*0.86,H*0.062,'#DEEFE7',`${H*0.062}px Arial`);ctx.font=`${H*0.055}px Arial`;ctx.fillStyle=accent;ctx.fillText(con||'',W*0.07,H*0.92);ctx.font=`${H*0.18}px Arial`;ctx.fillStyle='rgba(21,154,156,0.12)';ctx.textAlign='right';ctx.fillText('\u2665',W*0.95,H*0.55);ctx.textAlign='left'}},
+      // 2 — Cálido con flores
+      {nombre:'Calido con flores',render(ctx,W,H,logo,neg,msg,con,ac){ctx.fillStyle='#FDF6EC';ctx.fillRect(0,0,W,H);ctx.strokeStyle='#C8956C';ctx.lineWidth=3;ctx.strokeRect(12,12,W-24,H-24);ctx.strokeStyle='#E8C4A0';ctx.lineWidth=1;ctx.strokeRect(20,20,W-40,H-40);['\ud83c\udf38','\ud83c\udf38','\ud83c\udf3f','\ud83c\udf3f'].forEach((e,i)=>{ctx.font=`${H*0.13}px Arial`;ctx.textAlign=i%2?'right':'left';ctx.fillText(e,i%2?W*0.98:W*0.02,i<2?H*0.22:H*0.92)});if(logo){const lh=H*0.25,lw=logo.width*(lh/logo.height);ctx.drawImage(logo,(W-Math.min(lw,W*0.4))/2,H*0.07,Math.min(lw,W*0.4),lh)}ctx.font=`bold ${H*0.10}px Georgia,serif`;ctx.fillStyle='#7B4F2E';ctx.textAlign='center';ctx.fillText(neg||'Tu Negocio',W/2,H*0.46);ctx.strokeStyle='#C8956C';ctx.lineWidth=1.5;ctx.beginPath();ctx.moveTo(W*0.25,H*0.52);ctx.lineTo(W*0.75,H*0.52);ctx.stroke();tarjWrapText(ctx,msg||'Gracias por tu compra!',W/2,H*0.64,W*0.75,H*0.068,'#5C3D2E',`italic ${H*0.068}px Georgia,serif`,'center');ctx.font=`${H*0.053}px Arial`;ctx.fillStyle='#C8956C';ctx.fillText(con||'',W/2,H*0.89);ctx.textAlign='left'}},
+      // 3 — Moderno degradado
+      {nombre:'Moderno degradado',render(ctx,W,H,logo,neg,msg,con,ac){const accent=ac||'#159A9C';ctx.fillStyle='#ffffff';ctx.fillRect(0,0,W,H);const grad=ctx.createLinearGradient(0,0,W*0.42,H);grad.addColorStop(0,accent);grad.addColorStop(1,'#0d6e70');ctx.fillStyle=grad;ctx.fillRect(0,0,W*0.42,H);ctx.beginPath();ctx.arc(W*0.42,H/2,H*0.55,0,Math.PI*2);ctx.fillStyle='rgba(255,255,255,0.06)';ctx.fill();if(logo){const lh=H*0.28,lw=logo.width*(lh/logo.height);ctx.drawImage(logo,(W*0.42-Math.min(lw,W*0.35))/2,H*0.10,Math.min(lw,W*0.35),lh)}ctx.font=`bold ${H*0.085}px Arial`;ctx.fillStyle='#fff';ctx.textAlign='center';ctx.fillText(neg||'Tu Negocio',W*0.21,H*0.52);ctx.font=`${H*0.06}px Arial`;ctx.fillText('\u2726 \u2726 \u2726',W*0.21,H*0.64);ctx.font=`${H*0.05}px Arial`;ctx.fillStyle='rgba(255,255,255,0.8)';ctx.fillText(con||'',W*0.21,H*0.87);ctx.textAlign='left';ctx.font=`${H*0.075}px Arial`;ctx.fillStyle=accent;ctx.fillText('\u00a1Gracias!',W*0.50,H*0.22);ctx.fillStyle='#f0a028';ctx.fillRect(W*0.50,H*0.27,W*0.18,3);tarjWrapText(ctx,msg||'Gracias por elegirnos.',W*0.50,H*0.42,W*0.47,H*0.072,'#333',`${H*0.068}px Arial`)}},
+      // 4 — Festivo con confetti
+      {nombre:'Festivo con confetti',render(ctx,W,H,logo,neg,msg,con,ac){ctx.fillStyle='#ffffff';ctx.fillRect(0,0,W,H);const cc=['#FF6B6B','#FFD93D','#6BCB77','#4D96FF','#FF6BD6','#FF9F43'];const rng=s=>{let x=Math.sin(s)*10000;return x-Math.floor(x)};for(let i=0;i<55;i++){ctx.save();ctx.fillStyle=cc[Math.floor(rng(i*7+1)*cc.length)];ctx.globalAlpha=0.55;const cx2=rng(i*3+1)*W,cy2=rng(i*5+2)*H,sz=6+rng(i*11+3)*12;ctx.translate(cx2,cy2);ctx.rotate(rng(i*13+4)*Math.PI*2);if(i%3===0)ctx.fillRect(-sz/2,-sz/6,sz,sz/3);else if(i%3===1){ctx.beginPath();ctx.arc(0,0,sz/2.5,0,Math.PI*2);ctx.fill()}else{ctx.beginPath();ctx.moveTo(0,-sz/2);ctx.lineTo(sz/2,sz/2);ctx.lineTo(-sz/2,sz/2);ctx.closePath();ctx.fill()};ctx.restore()};ctx.globalAlpha=1;const bx=W*0.08,by=H*0.06,bw=W*0.84,bh=H*0.88;ctx.fillStyle='rgba(255,255,255,0.92)';roundRect(ctx,bx,by,bw,bh,16);ctx.fill();ctx.strokeStyle='#FFD93D';ctx.lineWidth=3;roundRect(ctx,bx,by,bw,bh,16);ctx.stroke();if(logo){const lh=H*0.24,lw=logo.width*(lh/logo.height);ctx.drawImage(logo,(W-Math.min(lw,W*0.40))/2,H*0.10,Math.min(lw,W*0.40),lh)}ctx.font=`900 ${H*0.095}px Arial`;ctx.fillStyle='#FF6B6B';ctx.textAlign='center';ctx.fillText('\u00a1GRACIAS!',W/2,H*0.46);ctx.font=`bold ${H*0.075}px Arial`;ctx.fillStyle='#4D96FF';ctx.fillText(neg||'Tu Negocio',W/2,H*0.58);tarjWrapText(ctx,msg||'Tu compra nos alegra el dia!',W/2,H*0.72,W*0.72,H*0.062,'#555',`${H*0.062}px Arial`,'center');ctx.font=`${H*0.052}px Arial`;ctx.fillStyle='#888';ctx.fillText(con||'',W/2,H*0.90);ctx.textAlign='left'}},
+      // 5 — Elegante negro y dorado
+      {nombre:'Elegante negro y dorado',render(ctx,W,H,logo,neg,msg,con,ac){ctx.fillStyle='#0a0a0a';ctx.fillRect(0,0,W,H);const gBorder=ctx.createLinearGradient(0,0,W,H);gBorder.addColorStop(0,'#c9a84c');gBorder.addColorStop(0.5,'#f0d060');gBorder.addColorStop(1,'#c9a84c');ctx.strokeStyle=gBorder;ctx.lineWidth=3;ctx.strokeRect(10,10,W-20,H-20);ctx.strokeStyle='rgba(201,168,76,0.3)';ctx.lineWidth=1;ctx.strokeRect(18,18,W-36,H-36);if(logo){const lh=H*0.28,lw=logo.width*(lh/logo.height);ctx.drawImage(logo,W*0.06,H*0.10,Math.min(lw,W*0.35),lh)}ctx.font=`bold ${H*0.095}px Georgia,serif`;ctx.fillStyle='#f0d060';ctx.textAlign='left';ctx.fillText(neg||'Tu Negocio',W*0.06,H*0.55);const gLine=ctx.createLinearGradient(W*0.06,0,W*0.5,0);gLine.addColorStop(0,'#f0d060');gLine.addColorStop(1,'transparent');ctx.strokeStyle=gLine;ctx.lineWidth=1.5;ctx.beginPath();ctx.moveTo(W*0.06,H*0.60);ctx.lineTo(W*0.55,H*0.60);ctx.stroke();tarjWrapText(ctx,msg||'Gracias por tu confianza.',W*0.06,H*0.71,W*0.88,H*0.065,'#d4c5a0',`italic ${H*0.065}px Georgia,serif`);ctx.font=`${H*0.052}px Arial`;ctx.fillStyle='rgba(201,168,76,0.7)';ctx.fillText(con||'',W*0.06,H*0.90);ctx.font=`${H*0.22}px Arial`;ctx.fillStyle='rgba(201,168,76,0.06)';ctx.textAlign='right';ctx.fillText('\u2605',W*0.97,H*0.65);ctx.textAlign='left'}},
+      // 6 — Naturaleza verde
+      {nombre:'Naturaleza verde',render(ctx,W,H,logo,neg,msg,con,ac){const accent=ac||'#2d7a4f';const bg=ctx.createLinearGradient(0,0,W,H);bg.addColorStop(0,'#f0f7f0');bg.addColorStop(1,'#e0f0e8');ctx.fillStyle=bg;ctx.fillRect(0,0,W,H);ctx.fillStyle=accent;ctx.fillRect(0,0,W*0.06,H);const av=ctx.createLinearGradient(0,0,0,H);av.addColorStop(0,'#4ade80');av.addColorStop(1,accent);ctx.fillStyle=av;ctx.fillRect(0,0,6,H);['\ud83c\udf3f','\ud83c\udf43','\ud83c\udf3f','\ud83c\udf43'].forEach((e,i)=>{ctx.font=`${H*(i<2?0.10:0.08)}px Arial`;ctx.textAlign='right';ctx.fillText(e,W*0.99,i<2?H*(0.15+i*0.12):H*(0.78+i*0.08))});if(logo){const lh=H*0.28,lw=logo.width*(lh/logo.height);ctx.drawImage(logo,W*0.10,H*0.10,Math.min(lw,W*0.38),lh)}ctx.font=`bold ${H*0.10}px Arial`;ctx.fillStyle='#1a5c38';ctx.textAlign='left';ctx.fillText(neg||'Tu Negocio',W*0.10,H*0.55);ctx.fillStyle=accent;ctx.fillRect(W*0.10,H*0.60,W*0.12,2.5);tarjWrapText(ctx,msg||'Gracias por elegirnos!',W*0.10,H*0.70,W*0.82,H*0.062,'#2d5a3d',`${H*0.062}px Arial`);ctx.font=`${H*0.052}px Arial`;ctx.fillStyle=accent;ctx.fillText(con||'',W*0.10,H*0.90)}},
+      // 7 — Pastel rosado
+      {nombre:'Pastel rosado',render(ctx,W,H,logo,neg,msg,con,ac){const bg=ctx.createLinearGradient(0,0,W,H);bg.addColorStop(0,'#fff0f5');bg.addColorStop(1,'#ffe4ef');ctx.fillStyle=bg;ctx.fillRect(0,0,W,H);ctx.fillStyle='rgba(255,182,193,0.4)';ctx.beginPath();ctx.arc(W*0.85,H*0.15,H*0.4,0,Math.PI*2);ctx.fill();ctx.beginPath();ctx.arc(W*0.1,H*0.85,H*0.3,0,Math.PI*2);ctx.fill();ctx.strokeStyle='#e8a0b0';ctx.lineWidth=2;ctx.strokeRect(12,12,W-24,H-24);['\ud83c\udf39','\ud83c\udf37','\ud83d\udc9d','\u2728'].forEach((e,i)=>{ctx.font=`${H*(i<2?0.10:0.09)}px Arial`;ctx.fillText(e,W*(0.06+i*0.22),H*0.96)});if(logo){const lh=H*0.25,lw=logo.width*(lh/logo.height);ctx.drawImage(logo,(W-Math.min(lw,W*0.4))/2,H*0.07,Math.min(lw,W*0.4),lh)}ctx.font=`bold ${H*0.095}px Georgia,serif`;ctx.fillStyle='#c0406a';ctx.textAlign='center';ctx.fillText(neg||'Tu Negocio',W/2,H*0.47);ctx.strokeStyle='#f4a0b8';ctx.lineWidth=1.5;ctx.beginPath();ctx.moveTo(W*0.2,H*0.52);ctx.lineTo(W*0.8,H*0.52);ctx.stroke();tarjWrapText(ctx,msg||'Gracias por tu compra!',W/2,H*0.64,W*0.78,H*0.065,'#8b3a5a',`italic ${H*0.065}px Georgia,serif`,'center');ctx.font=`${H*0.052}px Arial`;ctx.fillStyle='#c0406a';ctx.fillText(con||'',W/2,H*0.84);ctx.textAlign='left'}},
+      // 8 — Geométrico moderno
+      {nombre:'Geometrico moderno',render(ctx,W,H,logo,neg,msg,con,ac){const accent=ac||'#e94560';ctx.fillStyle='#f8f9fa';ctx.fillRect(0,0,W,H);ctx.fillStyle='#1a1a2e';ctx.beginPath();ctx.moveTo(0,0);ctx.lineTo(W*0.45,0);ctx.lineTo(W*0.35,H);ctx.lineTo(0,H);ctx.closePath();ctx.fill();ctx.fillStyle=accent;ctx.beginPath();ctx.moveTo(W*0.45,0);ctx.lineTo(W*0.52,0);ctx.lineTo(W*0.42,H);ctx.lineTo(W*0.35,H);ctx.closePath();ctx.fill();ctx.fillStyle='rgba(21,154,156,0.15)';ctx.beginPath();ctx.moveTo(W*0.52,0);ctx.lineTo(W,0);ctx.lineTo(W,H*0.5);ctx.closePath();ctx.fill();if(logo){const lh=H*0.28,lw=logo.width*(lh/logo.height);ctx.drawImage(logo,(W*0.38/2-Math.min(lw,W*0.32)/2),H*0.10,Math.min(lw,W*0.32),lh)}ctx.font=`bold ${H*0.09}px Arial`;ctx.fillStyle='#ffffff';ctx.textAlign='center';ctx.fillText(neg||'Tu Negocio',W*0.19,H*0.55);ctx.font=`${H*0.052}px Arial`;ctx.fillStyle='rgba(255,255,255,0.7)';ctx.fillText(con||'',W*0.19,H*0.68);ctx.font=`${H*0.08}px Arial`;ctx.fillStyle='#1a1a2e';ctx.textAlign='left';ctx.fillText('\u00a1Gracias!',W*0.58,H*0.30);ctx.fillStyle=accent;ctx.fillRect(W*0.58,H*0.35,W*0.12,3);tarjWrapText(ctx,msg||'Gracias por elegirnos.',W*0.58,H*0.46,W*0.38,H*0.062,'#333',`${H*0.058}px Arial`);ctx.font=`${H*0.20}px Arial`;ctx.fillStyle=accent.replace(')',',0.07)').replace('rgb','rgba');ctx.textAlign='right';ctx.fillText('\u25b2',W*0.99,H*0.92);ctx.textAlign='left'}}
+    ]
+    function tarjGenerarTodas(){
+      const neg=document.getElementById('tarjNegocio').value.trim(),msg=document.getElementById('tarjMensaje').value.trim(),con=document.getElementById('tarjContacto').value.trim()
+      const grid=document.getElementById('tarjGrid');grid.innerHTML=''
+      TARJ_DISENOS.forEach((d,idx)=>{
+        const canvas=document.createElement('canvas');canvas.width=TARJ_W;canvas.height=TARJ_H
+        d.render(canvas.getContext('2d'),TARJ_W,TARJ_H,tarjLogoImg,neg,msg,con,tarjLogoColor)
+        const wrap=document.createElement('div');wrap.className='tarj-card-wrap'
+        const label=document.createElement('p');label.className='tarj-card-label';label.textContent=`${idx+1}. ${d.nombre}`
+        const prev=document.createElement('canvas');prev.width=TARJ_W/2;prev.height=TARJ_H/2;prev.style.cssText='width:100%;border-radius:8px;border:1px solid var(--border-sub);display:block'
+        prev.getContext('2d').drawImage(canvas,0,0,TARJ_W/2,TARJ_H/2)
+        const btn=document.createElement('button');btn.className='btn btn--sm tarj-dl-btn';btn.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> Descargar PNG'
+        btn.addEventListener('click',()=>{canvas.toBlob(blob=>{const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=`tarjeta-${idx+1}.png`;a.click();URL.revokeObjectURL(url)},'image/png')})
+        wrap.appendChild(label);wrap.appendChild(prev);wrap.appendChild(btn);grid.appendChild(wrap)
+      })
+      document.getElementById('tarjResultados').style.display='block'
+      document.getElementById('tarjResultados').scrollIntoView({behavior:'smooth',block:'nearest'})
+    }
+    document.getElementById('btnGenerarTarjetas').addEventListener('click',tarjGenerarTodas)
+
+
+    // ── POTENCIADOR CON IA ────────────────────────────────────────────
+    const EDGE_FN_URL=SUPABASE_URL+'/functions/v1/potenciador-producto'
+    let potencImgBase64=null,potencImgType='image/jpeg'
+    const potencZone=document.getElementById('potencUploadZone'),potencFile=document.getElementById('potencImgFile'),potencPreview=document.getElementById('potencImgPreview'),potencInner=document.getElementById('potencUploadInner'),potencChange=document.getElementById('potencChangeBtn')
+    function potencSetImg(file){if(!file)return;if(file.size>5*1024*1024){document.getElementById('potencError').textContent='Imagen mayor a 5MB';return}potencImgType=file.type||'image/jpeg';const r=new FileReader();r.onload=e=>{potencImgBase64=e.target.result.split(',')[1];potencPreview.src=e.target.result;potencPreview.style.display='block';potencInner.style.display='none';potencChange.style.display='block';document.getElementById('potencError').textContent='';document.getElementById('potencResultados').style.display='none'};r.readAsDataURL(file)}
+    potencZone.addEventListener('click',e=>{if(!e.target.closest('#potencChangeBtn'))potencFile.click()});potencChange.addEventListener('click',e=>{e.stopPropagation();potencFile.click()});potencFile.addEventListener('change',e=>potencSetImg(e.target.files[0]));potencZone.addEventListener('dragover',e=>{e.preventDefault();potencZone.classList.add('potenc-drag')});potencZone.addEventListener('dragleave',()=>potencZone.classList.remove('potenc-drag'));potencZone.addEventListener('drop',e=>{e.preventDefault();potencZone.classList.remove('potenc-drag');const f=e.dataTransfer.files[0];if(f&&f.type.startsWith('image/'))potencSetImg(f)})
+    window.potencCopiar=function(id,btn){navigator.clipboard.writeText(document.getElementById(id).innerText).then(()=>{const o=btn.textContent;btn.textContent='Copiado!';setTimeout(()=>{btn.textContent=o},2000)})}
+    window.potencCopiarTitulo=function(btn,text){navigator.clipboard.writeText(text).then(()=>{const o=btn.textContent;btn.textContent='OK';setTimeout(()=>{btn.textContent=o},1800)})}
+    document.getElementById('btnPotenciar').addEventListener('click',async()=>{const err=document.getElementById('potencError'),load=document.getElementById('potencLoading'),res=document.getElementById('potencResultados'),btn=document.getElementById('btnPotenciar');err.textContent='';if(!potencImgBase64){err.textContent='Primero subi una foto.';return}const desc=document.getElementById('potencDesc').value.trim();btn.disabled=true;load.style.display='flex';res.style.display='none';const msgs=['Analizando imagen...','Generando propuestas...','Creando descripcion...','Casi listo...'];let mi=0;const mel=document.getElementById('potencLoadingMsg');const intv=setInterval(()=>{mi=(mi+1)%msgs.length;mel.textContent=msgs[mi]},2200);try{const resp=await fetch(EDGE_FN_URL,{method:'POST',headers:{'Content-Type':'application/json','apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY},body:JSON.stringify({imageBase64:potencImgBase64,imageType:potencImgType,descripcion:desc||null})});const data=await resp.json();if(!resp.ok||!data.ok)throw new Error(data?.error||data?.detail||`Error ${resp.status}`);const p=data.data;document.getElementById('potencPromptImg').textContent=p.prompt_imagen||'';document.getElementById('potencTitulos').innerHTML=(p.titulos||[]).map((t,i)=>`<div class="potenc-titulo-item"><span class="potenc-titulo-num">${i+1}</span><span class="potenc-titulo-text">${t}</span><button class="potenc-copy-mini" onclick="potencCopiarTitulo(this,${JSON.stringify(t)})">copiar</button></div>`).join('');document.getElementById('potencDescResult').textContent=p.descripcion||'';res.style.display='block';res.scrollIntoView({behavior:'smooth',block:'nearest'})}catch(e){let msg=e.message||'Intenta de nuevo.';if(msg.includes('ANTHROPIC_API_KEY'))msg='Falta la API key en Supabase Edge Functions Secrets.';else if(msg.includes('Failed to fetch'))msg='No se pudo conectar con la Edge Function.';err.textContent=msg}finally{clearInterval(intv);load.style.display='none';btn.disabled=false}})
+
+    // ── CALCULADORA ───────────────────────────────────────────────────
+    document.getElementById('btnCalcularCosto').addEventListener('click',()=>{const g=id=>parseFloat(document.getElementById(id).value)||0;const mat=(g('costoGramos')/1000)*g('costoPorKg'),el=g('costoHoras')*g('costoElect'),trab=(g('costoTrabajo')/60)*g('costoHoraTrabajo'),fij=g('costoFijos');const sub=mat+el+trab+fij,gan=sub*(g('costoMargen')/100),tot=sub+gan;const fmt=n=>'$'+Math.round(n).toLocaleString('es-AR');[['resMateria',mat],['resElect',el],['resTrabajo',trab],['resFijos',fij],['resSubtotal',sub],['resGanancia',gan],['resTotal',tot]].forEach(([id,v])=>document.getElementById(id).textContent=fmt(v));document.getElementById('costosResultado').style.display='block'})
+    document.getElementById('btnCopiarCosto').addEventListener('click',()=>{const g=id=>document.getElementById(id).textContent;const txt=['Calculadora Rabbit3D','Material: '+g('resMateria'),'Electricidad: '+g('resElect'),'Mano de obra: '+g('resTrabajo'),'Gastos fijos: '+g('resFijos'),'Subtotal: '+g('resSubtotal'),'Ganancia: '+g('resGanancia'),'PRECIO VENTA: '+g('resTotal')].join('\n');navigator.clipboard.writeText(txt).then(()=>{const b=document.getElementById('btnCopiarCosto');b.textContent='Copiado!';setTimeout(()=>{b.textContent='Copiar resumen'},2000)})})
+
+    // ══════════════════════════════════════════
+    //  MEJORADOR DE IMÁGENES — Canvas API
+    // ══════════════════════════════════════════
+    let mejoraImgOrig = null  // HTMLImageElement
+    let mejoraEscala  = 2
+    const mejoraZone  = document.getElementById('mejoraUploadZone')
+    const mejoraFile  = document.getElementById('mejoraImgFile')
+    const mejoraInner = document.getElementById('mejoraUploadInner')
+    const meCtrls     = document.getElementById('mejoraControles')
+
+    // Upload
+    mejoraZone.addEventListener('click', () => mejoraFile.click())
+    mejoraFile.addEventListener('change', e => mejoraCargarImg(e.target.files[0]))
+    mejoraZone.addEventListener('dragover', e => { e.preventDefault(); mejoraZone.classList.add('mejora-drag') })
+    mejoraZone.addEventListener('dragleave', () => mejoraZone.classList.remove('mejora-drag'))
+    mejoraZone.addEventListener('drop', e => { e.preventDefault(); mejoraZone.classList.remove('mejora-drag'); mejoraCargarImg(e.dataTransfer.files[0]) })
+
+    function mejoraCargarImg(file) {
+      if (!file || !file.type.startsWith('image/')) return
+      const reader = new FileReader()
+      reader.onload = e => {
+        const img = new Image()
+        img.onload = () => {
+          mejoraImgOrig = img
+          // Dibujar original en canvas preview
+          const c = document.getElementById('mejoraCanvasOrig')
+          c.width = img.width; c.height = img.height
+          c.getContext('2d').drawImage(img, 0, 0)
+          document.getElementById('mejoraDimOrig').textContent = `${img.width}×${img.height}px`
+          mejoraInner.style.display = 'none'
+          meCtrls.style.display = 'block'
+          document.getElementById('btnDescargarMejora').style.display = 'none'
+          document.getElementById('mejoraError').textContent = ''
+          // Limpiar resultado
+          const r = document.getElementById('mejoraCanvasResult')
+          r.width = img.width * mejoraEscala; r.height = img.height * mejoraEscala
+          r.getContext('2d').clearRect(0, 0, r.width, r.height)
+          document.getElementById('mejoraDimResult').textContent = ''
+        }
+        img.src = e.target.result
+      }
+      reader.readAsDataURL(file)
+    }
+
+    // Sliders
+    ;[['mejoraSuavizado','mejoraSuavizadoVal'],['mejoraNitidez','mejoraNitidezVal'],
+      ['mejoraContraste','mejoraContrasteVal'],['mejoraRuido','mejoraRuidoVal'],
+      ['mejoraSat','mejoraSatVal']
+    ].forEach(([id,vid]) => {
+      const el = document.getElementById(id)
+      if (el) el.addEventListener('input', function() { document.getElementById(vid).textContent = this.value })
+    })
+
+    // Escala radio buttons
+    document.querySelectorAll('.mejora-radio').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.mejora-radio').forEach(b => b.classList.remove('mejora-radio--active'))
+        btn.classList.add('mejora-radio--active')
+        mejoraEscala = parseInt(btn.dataset.scale)
+        document.getElementById('mejoraEscalaVal').textContent = mejoraEscala + '×'
+      })
+    })
+
+    // ── Algoritmos de mejora ──────────────────────────────────────────
+
+    // Convolución genérica 3×3
+    function mejoraConvolucion(src, width, height, kernel, factor, bias) {
+      const dst = new Uint8ClampedArray(src.length)
+      for (let y = 1; y < height - 1; y++) {
+        for (let x = 1; x < width - 1; x++) {
+          let r = 0, g = 0, b = 0
+          for (let ky = -1; ky <= 1; ky++) {
+            for (let kx = -1; kx <= 1; kx++) {
+              const idx = ((y + ky) * width + (x + kx)) * 4
+              const w = kernel[(ky+1)*3+(kx+1)]
+              r += src[idx]   * w
+              g += src[idx+1] * w
+              b += src[idx+2] * w
+            }
+          }
+          const i = (y * width + x) * 4
+          dst[i]   = Math.min(255, Math.max(0, r / factor + bias))
+          dst[i+1] = Math.min(255, Math.max(0, g / factor + bias))
+          dst[i+2] = Math.min(255, Math.max(0, b / factor + bias))
+          dst[i+3] = src[i+3]
+        }
+      }
+      // Copiar bordes del original
+      for (let x = 0; x < width; x++) { const i=(x)*4; dst[i]=src[i]; dst[i+1]=src[i+1]; dst[i+2]=src[i+2]; dst[i+3]=src[i+3]; const j=((height-1)*width+x)*4; dst[j]=src[j]; dst[j+1]=src[j+1]; dst[j+2]=src[j+2]; dst[j+3]=src[j+3] }
+      for (let y = 0; y < height; y++) { const i=(y*width)*4; dst[i]=src[i]; dst[i+1]=src[i+1]; dst[i+2]=src[i+2]; dst[i+3]=src[i+3]; const j=(y*width+width-1)*4; dst[j]=src[j]; dst[j+1]=src[j+1]; dst[j+2]=src[j+2]; dst[j+3]=src[j+3] }
+      return dst
+    }
+
+    // Gaussian blur (radio variable: 1..4 pasadas de box blur 3×3)
+    function mejoraGaussian(data, width, height, pasadas) {
+      const kernel = [1,2,1, 2,4,2, 1,2,1]
+      let cur = new Uint8ClampedArray(data)
+      for (let p = 0; p < pasadas; p++) cur = mejoraConvolucion(cur, width, height, kernel, 16, 0)
+      return cur
+    }
+
+    // Unsharp mask: original + alpha*(original - blurred)
+    function mejoraUnsharp(data, blurred, width, height, strength) {
+      const dst = new Uint8ClampedArray(data.length)
+      for (let i = 0; i < data.length; i += 4) {
+        dst[i]   = Math.min(255, Math.max(0, data[i]   + strength * (data[i]   - blurred[i])))
+        dst[i+1] = Math.min(255, Math.max(0, data[i+1] + strength * (data[i+1] - blurred[i+1])))
+        dst[i+2] = Math.min(255, Math.max(0, data[i+2] + strength * (data[i+2] - blurred[i+2])))
+        dst[i+3] = data[i+3]
+      }
+      return dst
+    }
+
+    // Ajuste de contraste y saturación
+    function mejoraAjustes(data, contraste, saturacion) {
+      const dst = new Uint8ClampedArray(data)
+      const cf = (259 * (contraste + 255)) / (255 * (259 - contraste))
+      for (let i = 0; i < dst.length; i += 4) {
+        let r = dst[i], g = dst[i+1], b = dst[i+2]
+        // Contraste
+        r = cf * (r - 128) + 128
+        g = cf * (g - 128) + 128
+        b = cf * (b - 128) + 128
+        // Saturación via HSL shift simple
+        if (saturacion !== 0) {
+          const gray = 0.299*r + 0.587*g + 0.114*b
+          const sf = 1 + saturacion / 100
+          r = gray + sf*(r-gray); g = gray + sf*(g-gray); b = gray + sf*(b-gray)
+        }
+        dst[i]   = Math.min(255, Math.max(0, r))
+        dst[i+1] = Math.min(255, Math.max(0, g))
+        dst[i+2] = Math.min(255, Math.max(0, b))
+      }
+      return dst
+    }
+
+    // Median filter 3×3 (reducir ruido puntual)
+    function mejoraMedian(data, width, height) {
+      const dst = new Uint8ClampedArray(data)
+      for (let y = 1; y < height-1; y++) {
+        for (let x = 1; x < width-1; x++) {
+          const rs=[], gs=[], bs=[]
+          for (let ky=-1;ky<=1;ky++) for (let kx=-1;kx<=1;kx++) {
+            const idx=((y+ky)*width+(x+kx))*4
+            rs.push(data[idx]); gs.push(data[idx+1]); bs.push(data[idx+2])
+          }
+          rs.sort((a,b)=>a-b); gs.sort((a,b)=>a-b); bs.sort((a,b)=>a-b)
+          const i=(y*width+x)*4
+          dst[i]=rs[4]; dst[i+1]=gs[4]; dst[i+2]=bs[4]; dst[i+3]=data[i+3]
+        }
+      }
+      return dst
+    }
+
+    // Upscale bicúbico via canvas (interpolación del browser)
+    function mejoraUpscale(srcCanvas, escala) {
+      const dstW = srcCanvas.width * escala
+      const dstH = srcCanvas.height * escala
+      const dst = document.createElement('canvas')
+      dst.width = dstW; dst.height = dstH
+      const ctx = dst.getContext('2d')
+      ctx.imageSmoothingEnabled = true
+      ctx.imageSmoothingQuality = 'high'
+      ctx.drawImage(srcCanvas, 0, 0, dstW, dstH)
+      return dst
+    }
+
+    // ── Pipeline principal ────────────────────────────────────────────
+    document.getElementById('btnMejorar').addEventListener('click', async () => {
+      if (!mejoraImgOrig) return
+      const btn    = document.getElementById('btnMejorar')
+      const errEl  = document.getElementById('mejoraError')
+      const result = document.getElementById('mejoraCanvasResult')
+      errEl.textContent = ''; btn.disabled = true
+      btn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14" style="animation:potencSpin .7s linear infinite"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg> Procesando...'
+
+      // Yield al browser antes de empezar para que muestre el spinner
+      await new Promise(r => setTimeout(r, 60))
+
+      try {
+        const suavizado  = parseInt(document.getElementById('mejoraSuavizado').value)
+        const nitidez    = parseInt(document.getElementById('mejoraNitidez').value)
+        const contraste  = parseInt(document.getElementById('mejoraContraste').value)
+        const ruido      = parseInt(document.getElementById('mejoraRuido').value)
+        const saturacion = parseInt(document.getElementById('mejoraSat').value)
+        const W = mejoraImgOrig.width
+        const H = mejoraImgOrig.height
+
+        // Limitar tamaño máximo para no congelar el browser
+        const MAX_PIX = 1200
+        const ratio = Math.min(1, MAX_PIX / Math.max(W, H))
+        const w = Math.round(W * ratio)
+        const h = Math.round(H * ratio)
+
+        // 1. Dibujar original en canvas temporal (con resize si es muy grande)
+        const tmpC = document.createElement('canvas')
+        tmpC.width = w; tmpC.height = h
+        const tmpCtx = tmpC.getContext('2d')
+        tmpCtx.imageSmoothingEnabled = true
+        tmpCtx.imageSmoothingQuality = 'high'
+        tmpCtx.drawImage(mejoraImgOrig, 0, 0, w, h)
+        let pix = tmpCtx.getImageData(0, 0, w, h).data
+
+        // Yield entre pasos pesados
+        const yld = () => new Promise(r => setTimeout(r, 0))
+
+        // 2. Reducir ruido (median — limitado a 2 pasadas máx para no colgar)
+        if (ruido > 0) {
+          const pasadas = Math.min(ruido, 2)
+          for (let r2 = 0; r2 < pasadas; r2++) { pix = mejoraMedian(pix, w, h); await yld() }
+        }
+
+        // 3. Suavizado gaussian
+        if (suavizado > 0) { pix = mejoraGaussian(pix, w, h, Math.min(Math.ceil(suavizado / 2), 3)); await yld() }
+
+        // 4. Poner pixeles en canvas y upscale
+        tmpCtx.putImageData(new ImageData(pix, w, h), 0, 0)
+        const upC = mejoraUpscale(tmpC, mejoraEscala)
+        await yld()
+
+        const upCtx = upC.getContext('2d')
+        let upPix = upCtx.getImageData(0, 0, upC.width, upC.height).data
+
+        // 5. Unsharp mask
+        if (nitidez > 0) {
+          const blurred = mejoraGaussian(upPix, upC.width, upC.height, 1)
+          upPix = mejoraUnsharp(upPix, blurred, upC.width, upC.height, nitidez * 0.25)
+          await yld()
+        }
+
+        // 6. Contraste + saturación
+        if (contraste !== 0 || saturacion !== 0) {
+          upPix = mejoraAjustes(upPix, contraste, saturacion)
+          await yld()
+        }
+
+        // 7. Resultado final
+        result.width = upC.width; result.height = upC.height
+        result.getContext('2d').putImageData(new ImageData(upPix, upC.width, upC.height), 0, 0)
+        document.getElementById('mejoraDimResult').textContent = `${upC.width}×${upC.height}px`
+        if (ratio < 1) document.getElementById('mejoraError').textContent = `⚠ Imagen reducida a ${w}×${h}px antes de procesar para no saturar el browser.`
+        document.getElementById('btnDescargarMejora').style.display = 'inline-flex'
+
+      } catch(e) {
+        errEl.textContent = 'Error: ' + (e.message || String(e))
+        console.error(e)
+      } finally {
+        btn.disabled = false
+        btn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/></svg> Mejorar imagen'
+      }
+    })
+
+    document.getElementById('btnDescargarMejora').addEventListener('click', () => {
+      const c = document.getElementById('mejoraCanvasResult')
+      c.toBlob(blob => {
+        const url = URL.createObjectURL(blob)
+        const a = document.createElement('a')
+        a.href = url; a.download = 'imagen-mejorada.png'; a.click()
+        URL.revokeObjectURL(url)
+      }, 'image/png')
+    })
+
+    document.getElementById('btnNuevaMejora').addEventListener('click', () => {
+      mejoraImgOrig = null; mejoraFile.value = ''
+      mejoraInner.style.display = 'flex'; meCtrls.style.display = 'none'
+      document.getElementById('btnDescargarMejora').style.display = 'none'
+      document.getElementById('mejoraError').textContent = ''
+      document.getElementById('mejoraDimOrig').textContent = ''
+      document.getElementById('mejoraDimResult').textContent = ''
+    })
     ;(async () => {
       console.info('[Rabbit3D] Cargando productos...')
       await Promise.all([cargarProductos(), cargarTematicas()])
@@ -5809,6 +6390,8 @@
       console.info('[Rabbit3D] Sesión verificada, esAdmin:', esAdmin)
       // Cargar makers DESPUÉS de verificar sesión — así sabe si el usuario está logueado
       await cargarMakers()
+      // Cargar tendencias DESPUÉS de verificar sesión — así esAdmin está definido para el botón eliminar
+      cargarMakerworld()
       // ── MAKERWORLD TRENDING ─────────────────────────────────────────────
     })()
 
@@ -5819,7 +6402,7 @@
         {id:'stl',      label:'Cuadros 2D',        modal:'modal-stl'},
         {id:'llavero',  label:'Llaveros con nombre',modal:'modal-llavero'},
         {id:'caja',     label:'Caja con tapa',      modal:'modal-caja'},
-        {id:'maceta',   label:'Maceta / Bowl',      modal:'modal-maceta'},
+        {id:'maceta',   label:'Maceta',      modal:'modal-maceta'},
         {id:'marco',    label:'Marco / Porta-foto', modal:'modal-marco'},
         {id:'cortante', label:'Cortantes', modal:'modal-cortante'},
       ]
@@ -6322,4 +6905,15 @@
     <div class="modal" style="max-width:680px;width:95%">
       <div class="modal__header">
         <h2 class="modal__title">🐛 Reportes de problemas</h2>
-        <button class="modal__close" onclick="cerrarReportesAdmin()">✕</button
+        <button class="modal__close" onclick="cerrarReportesAdmin()">✕</button>
+      </div>
+      <div class="modal__body" style="padding:1.5rem">
+        <div id="reportesAdminContainer">
+          <p style="color:var(--muted);font-size:0.85rem">Cargando...</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>
