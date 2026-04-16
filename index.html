@@ -933,12 +933,12 @@
       <div class="empr-card" onclick="abrirEmprendedor('modal-tarjetas')" data-empr-id="tarjetas">
         <div class="empr-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/><path d="M6 15h4M14 15h4"/></svg></div>
         <div class="empr-card__info"><h3 class="empr-card__title">Tarjetas de agradecimiento 💌</h3><p class="empr-card__desc">Subí tu logo y generá 4 diseños de tarjetas de agradecimiento por la compra con nombre de negocio y mensaje personalizado.</p></div>
-        <div class="empr-card__footer"><span class="empr-card__tag empr-card__tag--free">100% Gratis</span><span class="empr-card__cta">Abrir →</span></div>
+        <button class="herramienta-card__btn empr-card__btn">Abrir herramienta →</button>
       </div>
       <div class="empr-card" onclick="abrirEmprendedor('modal-costos')" data-empr-id="costos">
         <div class="empr-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="4" y="2" width="16" height="20" rx="2"/><line x1="8" y1="10" x2="16" y2="10"/><line x1="8" y1="14" x2="16" y2="14"/><line x1="8" y1="18" x2="12" y2="18"/></svg></div>
         <div class="empr-card__info"><h3 class="empr-card__title">Calculadora de costos</h3><p class="empr-card__desc">Calculá el precio de venta: material, electricidad, tiempo y margen de ganancia.</p></div>
-        <div class="empr-card__footer"><span class="empr-card__tag empr-card__tag--free">Gratis</span><span class="empr-card__cta">Abrir →</span></div>
+        <button class="herramienta-card__btn empr-card__btn">Abrir herramienta →</button>
       </div>
 
       <div class="empr-card" onclick="abrirEmprendedor('modal-mejora')" data-empr-id="mejora">
@@ -947,7 +947,7 @@
           <h3 class="empr-card__title">Mejorador de imágenes ✨</h3>
           <p class="empr-card__desc">Subí una foto pixeleada o de baja calidad y aplicá suavizado, nitidez y mejora de contraste para obtener una imagen más limpia y nítida.</p>
         </div>
-        <div class="empr-card__footer"><span class="empr-card__tag empr-card__tag--free">100% Gratis</span><span class="empr-card__cta">Abrir →</span></div>
+        <button class="herramienta-card__btn empr-card__btn">Abrir herramienta →</button>
       </div>
 
       <div class="empr-card" onclick="abrirEmprendedor('modal-presupuesto')" data-empr-id="presupuesto">
@@ -956,7 +956,7 @@
           <h3 class="empr-card__title">Generador de presupuestos 📄</h3>
           <p class="empr-card__desc">Completá los datos de tu cliente y el detalle del trabajo y generá un presupuesto profesional en PDF listo para enviar, con tu logo y datos de contacto.</p>
         </div>
-        <div class="empr-card__footer"><span class="empr-card__tag empr-card__tag--free">100% Gratis</span><span class="empr-card__cta">Abrir →</span></div>
+        <button class="herramienta-card__btn empr-card__btn">Abrir herramienta →</button>
       </div>
     </div>
   </section>
@@ -1296,6 +1296,8 @@
 
   <div class="modal-overlay herramienta-modal-overlay" id="modal-caja">
     <div class="modal herramienta-modal">
+      <div class="herramienta-modal__header">
+        <h2 class="modal__title">Caja con tapa</h2>
         <button class="modal__close" onclick="cerrarHerramienta('modal-caja')">✕</button>
       </div>
       <div class="herramienta-modal__body">
@@ -7065,22 +7067,32 @@
         {id:'marco',    label:'Marco / Porta-foto', modal:'modal-marco'},
         {id:'cortante', label:'Cortantes', modal:'modal-cortante'},
       ]
-      // Load saved order from localStorage
-      function loadOrder() {
+      // ── Orden Laboratorio 3D — Supabase ──────────────────────────
+      function parseOrder(json, tools) {
         try {
-          var saved = localStorage.getItem('herramientas-order')
-          if (saved) {
-            var order = JSON.parse(saved)
-            // Validate all ids are present
-            if (order.length === TOOLS.length && order.every(function(id){ return TOOLS.find(function(t){return t.id===id}) })) {
-              return order.map(function(id){ return TOOLS.find(function(t){return t.id===id}) })
-            }
+          var order = JSON.parse(json)
+          if (order.length === tools.length && order.every(function(id){ return tools.find(function(t){return t.id===id}) })) {
+            return order.map(function(id){ return tools.find(function(t){return t.id===id}) })
           }
         } catch(e) {}
-        return TOOLS.slice()
+        return null
       }
-      function saveOrder(orderedIds) {
-        localStorage.setItem('herramientas-order', JSON.stringify(orderedIds))
+      function loadOrder() { return TOOLS.slice() }  // default; overridden after async load
+      async function loadOrderFromSupabase() {
+        try {
+          var res = await supabase.from('media').select('nombre').eq('tipo','herramientas-order').maybeSingle()
+          if (res.data && res.data.nombre) {
+            var parsed = parseOrder(res.data.nombre, TOOLS)
+            if (parsed) { currentOrder = parsed; applyOrder(parsed) }
+          }
+        } catch(e) { console.warn('loadOrderFromSupabase:', e) }
+      }
+      async function saveOrder(orderedIds) {
+        try {
+          var json = JSON.stringify(orderedIds)
+          await supabase.from('media').delete().eq('tipo','herramientas-order')
+          await supabase.from('media').insert([{tipo:'herramientas-order',url:'',nombre:json}])
+        } catch(e) { console.warn('saveOrder:', e) }
       }
 
       // Apply order to the grid
@@ -7103,13 +7115,11 @@
 
       // Init on load
       tagCards()
-      applyOrder(loadOrder())
-
-      var currentOrder = loadOrder()
+      var currentOrder = TOOLS.slice()
       var dragSrc = null
+      loadOrderFromSupabase()
 
       window.abrirGestionHerramientas = function() {
-        currentOrder = loadOrder()
         renderLista()
         renderEmprLista()
         var modal = document.getElementById('modal-gestion-herramientas')
@@ -7207,15 +7217,13 @@
         })
       }
 
-      window.guardarOrdenHerramientas = function() {
+      window.guardarOrdenHerramientas = async function() {
         syncOrderFromDOM()
         var ids = currentOrder.map(function(t){ return t.id })
-        saveOrder(ids)
         applyOrder(currentOrder)
-        // Save emprendedores order too
         syncEmprOrderFromDOM()
+        await Promise.all([saveOrder(ids), saveEmprOrder(emprCurrentOrder.map(function(t){return t.id}))])
         cerrarGestionHerramientas()
-        // Show confirmation
         var bar = document.getElementById('adminBar')
         if (bar) {
           var msg = document.createElement('span')
@@ -7247,19 +7255,28 @@
         {id:'mejora',      label:'Mejorador de imágenes'},
         {id:'presupuesto', label:'Generador de presupuestos'},
       ]
-      var EMPR_ORDER_KEY = 'empr-order'
-      var EMPR_IMG_KEY   = 'empr-img-'
+      var EMPR_IMG_KEY = 'empr-img-'
 
-      function loadEmprOrder() {
+      function loadEmprOrder() { return EMPR_TOOLS.slice() }  // default
+      async function loadEmprOrderFromSupabase() {
         try {
-          var saved = JSON.parse(localStorage.getItem(EMPR_ORDER_KEY) || '[]')
-          if (saved.length === EMPR_TOOLS.length && saved.every(function(id){ return EMPR_TOOLS.find(function(t){ return t.id===id }) })) {
-            return saved.map(function(id){ return EMPR_TOOLS.find(function(t){ return t.id===id }) })
+          var res = await supabase.from('media').select('nombre').eq('tipo','empr-order').maybeSingle()
+          if (res.data && res.data.nombre) {
+            var order = JSON.parse(res.data.nombre)
+            if (order.length === EMPR_TOOLS.length && order.every(function(id){ return EMPR_TOOLS.find(function(t){return t.id===id}) })) {
+              var parsed = order.map(function(id){ return EMPR_TOOLS.find(function(t){return t.id===id}) })
+              emprCurrentOrder = parsed
+              applyEmprOrder(parsed)
+            }
           }
-        } catch(e) {}
-        return EMPR_TOOLS.slice()
+        } catch(e) { console.warn('loadEmprOrderFromSupabase:', e) }
       }
-      function saveEmprOrder(ids) { localStorage.setItem(EMPR_ORDER_KEY, JSON.stringify(ids)) }
+      async function saveEmprOrder(ids) {
+        try {
+          await supabase.from('media').delete().eq('tipo','empr-order')
+          await supabase.from('media').insert([{tipo:'empr-order',url:'',nombre:JSON.stringify(ids)}])
+        } catch(e) { console.warn('saveEmprOrder:', e) }
+      }
 
       function applyEmprOrder(tools) {
         var grid = document.querySelector('.emprendedores-grid')
@@ -7270,8 +7287,10 @@
         })
       }
 
-      // Apply saved order on load
-      applyEmprOrder(loadEmprOrder())
+      // Apply saved order on load (async from Supabase)
+      var emprCurrentOrder = EMPR_TOOLS.slice()
+      var emprDragSrc = null
+      loadEmprOrderFromSupabase()
 
       function setEmprCardImg(toolId, url) {
         var card = document.querySelector('[data-empr-id="' + toolId + '"]')
@@ -7285,9 +7304,6 @@
         var svg = iconDiv.querySelector('svg')
         if (svg) svg.style.display = 'none'
       }
-
-      var emprCurrentOrder = loadEmprOrder()
-      var emprDragSrc = null
 
       function renderEmprLista() {
         var lista = document.getElementById('gestion-empr-lista')
@@ -7370,8 +7386,7 @@
           var lbl = r.querySelector('span:last-child')
           if (lbl) lbl.textContent = '#' + (i+1)
         })
-        // Persist and apply to DOM
-        saveEmprOrder(emprCurrentOrder.map(function(t){ return t.id }))
+        // Solo aplicar al DOM — guardar en Supabase solo al presionar "Guardar orden"
         applyEmprOrder(emprCurrentOrder)
       }
 
