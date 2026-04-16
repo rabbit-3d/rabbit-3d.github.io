@@ -5965,12 +5965,28 @@
 
     // IDs eliminados manualmente por el admin — persisten en localStorage
     const TEND_OCULTAS_KEY = 'r3d_tend_ocultas'
-    function getTendOcultas() {
-      try { return new Set(JSON.parse(localStorage.getItem(TEND_OCULTAS_KEY)||'[]')) } catch(e){ return new Set() }
+    // Cache local de IDs ocultos (se carga desde Supabase al iniciar)
+    let tendOcultasSet = new Set()
+
+    async function cargarTendOcultas() {
+      try {
+        const { data, error } = await supabase.from('media')
+          .select('nombre').eq('tipo', 'tend-ocultas').maybeSingle()
+        if (!error && data && data.nombre) {
+          tendOcultasSet = new Set(JSON.parse(data.nombre))
+        }
+      } catch(e) { console.warn('cargarTendOcultas:', e) }
     }
-    function addTendOculta(id) {
-      const set = getTendOcultas(); set.add(String(id))
-      localStorage.setItem(TEND_OCULTAS_KEY, JSON.stringify([...set]))
+
+    function getTendOcultas() { return tendOcultasSet }
+
+    async function addTendOculta(id) {
+      tendOcultasSet.add(String(id))
+      try {
+        const json = JSON.stringify([...tendOcultasSet])
+        await supabase.from('media').delete().eq('tipo', 'tend-ocultas')
+        await supabase.from('media').insert([{ tipo: 'tend-ocultas', url: '', nombre: json }])
+      } catch(e) { console.warn('addTendOculta:', e) }
     }
 
     async function fetchPlat(plat) {
@@ -7030,6 +7046,7 @@
       console.info('[Rabbit3D] Productos cargados:', productos.length)
       await verificarSesionUsuario()
       console.info('[Rabbit3D] Sesión verificada, esAdmin:', esAdmin)
+      await cargarTendOcultas()
       // Cargar makers DESPUÉS de verificar sesión — así sabe si el usuario está logueado
       await cargarMakers()
       // Cargar tendencias DESPUÉS de verificar sesión — así esAdmin está definido para el botón eliminar
@@ -7256,12 +7273,6 @@
       // Apply saved order on load
       applyEmprOrder(loadEmprOrder())
 
-      // Load saved portada images for empr-cards
-      EMPR_TOOLS.forEach(function(tool) {
-        var saved = localStorage.getItem(EMPR_IMG_KEY + tool.id)
-        if (saved) setEmprCardImg(tool.id, saved)
-      })
-
       function setEmprCardImg(toolId, url) {
         var card = document.querySelector('[data-empr-id="' + toolId + '"]')
         if (!card) return
@@ -7283,7 +7294,11 @@
         if (!lista) return
         lista.innerHTML = ''
         emprCurrentOrder.forEach(function(tool, idx) {
-          var savedImg = localStorage.getItem(EMPR_IMG_KEY + tool.id) || ''
+          // Obtener URL de la imagen del DOM (ya cargada desde Supabase)
+          var card = document.querySelector('[data-empr-id="' + tool.id + '"]')
+          var iconDiv = card && card.querySelector('.empr-card__icon')
+          var bgImg = iconDiv && iconDiv.style.backgroundImage
+          var savedImg = bgImg ? bgImg.replace(/^url\(["']?/, '').replace(/["']?\)$/, '') : ''
           var row = document.createElement('div')
           row.setAttribute('draggable', 'true')
           row.setAttribute('data-empr-tool-id', tool.id)
@@ -7361,54 +7376,53 @@
       }
 
       // Upload portada for emprendedores card
+      // ── Cargar portadas desde Supabase al iniciar ────────────────
+      async function cargarEmprImgs() {
+        try {
+          var ids = EMPR_TOOLS.map(function(t){ return 'empr-img-'+t.id })
+          var res = await supabase.from('media').select('tipo,url').in('tipo', ids)
+          if (res.error || !res.data) return
+          res.data.forEach(function(row) {
+            var toolId = row.tipo.replace('empr-img-','')
+            if (row.url) setEmprCardImg(toolId, row.url)
+          })
+        } catch(e) { console.warn('cargarEmprImgs:', e) }
+      }
+      cargarEmprImgs()
+
       var emprImgTarget = null
       window.gestionEmprEditarImg = function(toolId) {
         emprImgTarget = toolId
-        // Recrear el input para evitar problemas con el mismo archivo
         var oldInput = document.getElementById('empr-img-file-input')
         if (oldInput) oldInput.remove()
         var inp = document.createElement('input')
         inp.type = 'file'; inp.accept = 'image/*'
-        inp.id = 'empr-img-file-input'
-        inp.style.display = 'none'
+        inp.id = 'empr-img-file-input'; inp.style.display = 'none'
         document.body.appendChild(inp)
-        inp.addEventListener('change', function(e) {
+        inp.addEventListener('change', async function(e) {
           var file = e.target.files[0]
           if (!file || !emprImgTarget) return
-          var reader = new FileReader()
-          reader.onload = function(ev) {
-            // Comprimir imagen antes de guardar en localStorage (máx 400×300)
-            var img = new Image()
-            img.onload = function() {
-              var MAX_W = 400, MAX_H = 300
-              var ratio = Math.min(MAX_W / img.width, MAX_H / img.height, 1)
-              var w = Math.round(img.width * ratio)
-              var h = Math.round(img.height * ratio)
-              var tc = document.createElement('canvas')
-              tc.width = w; tc.height = h
-              var ctx = tc.getContext('2d')
-              ctx.drawImage(img, 0, 0, w, h)
-              var url = tc.toDataURL('image/jpeg', 0.75)
-              try {
-                localStorage.setItem(EMPR_IMG_KEY + emprImgTarget, url)
-              } catch(storErr) {
-                // Si falla por quota, limpiar y reintentar con más compresión
-                try {
-                  url = tc.toDataURL('image/jpeg', 0.4)
-                  localStorage.setItem(EMPR_IMG_KEY + emprImgTarget, url)
-                } catch(e2) {
-                  alert('No se pudo guardar la imagen (almacenamiento lleno). Intentá con una imagen más pequeña.')
-                  emprImgTarget = null
-                  return
-                }
-              }
-              setEmprCardImg(emprImgTarget, url)
-              renderEmprLista()
-              emprImgTarget = null
-            }
-            img.src = ev.target.result
+          var target = emprImgTarget
+          try {
+            // Subir a Supabase Storage
+            var ext  = file.name.split('.').pop()
+            var path = 'emprendedores/empr-' + target + '.' + ext
+            var upRes = await supabase.storage.from('media').upload(path, file, { upsert: true })
+            if (upRes.error) throw upRes.error
+            var urlRes = supabase.storage.from('media').getPublicUrl(path)
+            var cleanUrl = urlRes.data.publicUrl
+            // Guardar referencia en tabla media
+            var tipo = 'empr-img-' + target
+            await supabase.from('media').delete().eq('tipo', tipo)
+            await supabase.from('media').insert([{ tipo: tipo, url: cleanUrl, nombre: path }])
+            setEmprCardImg(target, cleanUrl + '?t=' + Date.now())
+            renderEmprLista()
+            emprImgTarget = null
+          } catch(err) {
+            console.error('Error subiendo portada empr:', err)
+            alert('Error al subir la imagen: ' + (err.message || err))
+            emprImgTarget = null
           }
-          reader.readAsDataURL(file)
         })
         inp.click()
       }
