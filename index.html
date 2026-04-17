@@ -972,6 +972,16 @@
           <button class="herramienta-card__btn">Abrir herramienta →</button>
         </div>
       </div>
+
+      <div class="empr-card" onclick="abrirEmprendedor('modal-fotoproducto')" data-empr-id="fotoproducto">
+        <div class="empr-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="m21 15-5-5L5 21"/><path d="M3 9l4-4"/><path d="M3 15l6-6"/></svg></div>
+        <div class="empr-card__info">
+          <div class="herramienta-card__top"><span class="herramienta-card__badge">🧪 Beta</span></div>
+          <h3 class="empr-card__title">Cambiar fondo de producto 🖼</h3>
+          <p class="empr-card__desc">Subí la foto de tu producto, recortá el fondo automáticamente y colocalo sobre fondos profesionales para tus redes sociales.</p>
+          <button class="herramienta-card__btn">Abrir herramienta →</button>
+        </div>
+      </div>
     </div>
   </section>
 
@@ -1304,6 +1314,204 @@
           Generar y descargar PDF
         </button>
         <p class="form-error" id="presError" style="margin-top:.75rem"></p>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL FOTO DE PRODUCTO -->
+  <div class="modal-overlay" id="modal-fotoproducto" style="display:none">
+    <div class="modal modal-fotoproducto">
+      <button class="modal__close" onclick="cerrarEmprendedor('modal-fotoproducto')">✕</button>
+      <h2 class="modal__title">🖼 Cambiar fondo de producto</h2>
+      <p class="modal__sub">Recortá el fondo y colocá tu producto sobre fondos profesionales</p>
+
+      <div class="foto-layout">
+
+        <!-- Paso 1: subir producto -->
+        <div class="foto-paso" id="fotoPaso1">
+          <p class="foto-paso__num">1 · Subí la foto de tu producto</p>
+          <div class="foto-upload-zone" id="fotoUploadZone">
+            <input type="file" id="fotoProductoFile" accept="image/*" style="display:none"/>
+            <div id="fotoUploadInner" style="display:flex;flex-direction:column;align-items:center;gap:.5rem;pointer-events:none">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="32" height="32" style="color:var(--cyan);opacity:.7"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+              <span style="font-size:.8rem;font-weight:600;color:var(--text)">Clic o arrastrá tu imagen</span>
+              <span style="font-size:.7rem;color:var(--muted)">Mejor resultado con fondo claro o sólido</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Paso 2: recorte + fondos -->
+        <div class="foto-paso" id="fotoPaso2" style="display:none">
+          <p class="foto-paso__num">2 · Elegí un fondo</p>
+
+          <!-- Tabs fondo -->
+          <div class="foto-tabs">
+            <button class="foto-tab foto-tab--active" id="fotoTabImagen" onclick="fotoSwitchTab('imagen')">🖼 Imagen</button>
+            <button class="foto-tab" id="fotoTabColor" onclick="fotoSwitchTab('color')">🎨 Color sólido</button>
+          </div>
+
+          <div id="fotoPanelImagen">
+            <div class="foto-fondos-grid" id="fotoFondosGrid">
+              <div style="color:var(--muted);font-size:.78rem;padding:.5rem">Cargando fondos...</div>
+            </div>
+            <button class="foto-ver-mas-btn" id="fotoVerMasFondos" style="display:none">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="12" height="12"><polyline points="6 9 12 15 18 9"/></svg>
+              Ver todos los fondos
+            </button>
+          </div>
+
+          <div id="fotoPanelColor" style="display:none">
+            <div class="foto-color-panel">
+              <div class="foto-color-presets" id="fotoColorPresets">
+                <button class="foto-color-swatch foto-color-swatch--active" data-color="#ffffff" style="background:#ffffff;border:2px solid #ccc" title="Blanco"></button>
+                <button class="foto-color-swatch" data-color="#000000" style="background:#000000" title="Negro"></button>
+                <button class="foto-color-swatch" data-color="#f5f5f0" style="background:#f5f5f0;border:2px solid #ddd" title="Hueso"></button>
+                <button class="foto-color-swatch" data-color="#1a1a2e" style="background:#1a1a2e" title="Azul noche"></button>
+                <button class="foto-color-swatch" data-color="#2d4a22" style="background:#2d4a22" title="Verde oscuro"></button>
+                <button class="foto-color-swatch" data-color="#8B0000" style="background:#8B0000" title="Rojo oscuro"></button>
+                <button class="foto-color-swatch" data-color="#e8e0d0" style="background:#e8e0d0;border:2px solid #ddd" title="Arena"></button>
+                <button class="foto-color-swatch" data-color="#001520" style="background:#001520" title="Cyan noche"></button>
+              </div>
+              <div style="display:flex;align-items:center;gap:.75rem;margin-top:.6rem">
+                <label class="foto-ctrl-label" style="width:auto">Color personalizado</label>
+                <input type="color" id="fotoColorCustom" value="#ffffff" style="width:40px;height:30px;border:1px solid var(--border);border-radius:6px;cursor:pointer;background:none;padding:2px"/>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Canvas compositor -->
+        <div class="foto-compositor" id="fotoCompositor" style="display:none">
+          <p class="foto-paso__num">3 · Acomodá tu producto</p>
+
+          <div class="foto-compositor-layout">
+
+            <!-- Controles izquierda -->
+            <div class="foto-controles-col">
+
+              <!-- Selector de tamaño -->
+              <div class="foto-size-selector">
+                <button class="foto-size-btn foto-size-btn--active" data-w="1080" data-h="1080" title="Cuadrado">⬛ 1:1</button>
+                <button class="foto-size-btn" data-w="1080" data-h="1350" title="Vertical">▯ 4:5</button>
+                <button class="foto-size-btn" data-w="1200" data-h="628" title="Horizontal">▭ 1.9:1</button>
+                <button class="foto-size-btn" data-w="1080" data-h="1920" title="Story">▮ 9:16</button>
+                <button class="foto-size-btn" id="fotoSizeLibre" title="Libre">✏ Libre</button>
+              </div>
+              <div id="fotoSizeLibrePanel" style="display:none;gap:.5rem;align-items:center;margin-bottom:.5rem;flex-wrap:wrap">
+                <input type="number" id="fotoLibreW" class="form-input" value="1080" min="100" max="4000" style="width:80px;padding:.3rem .5rem;font-size:.8rem"/> px ×
+                <input type="number" id="fotoLibreH" class="form-input" value="1080" min="100" max="4000" style="width:80px;padding:.3rem .5rem;font-size:.8rem"/> px
+                <button class="btn btn--sm" id="fotoBtnAplicarSize">Aplicar</button>
+              </div>
+
+              <div class="foto-controles">
+
+            <div class="foto-ctrl-section">📐 Posición</div>
+            <div class="foto-ctrl-row">
+              <label class="foto-ctrl-label">Escala</label>
+              <input type="range" id="fotoEscala" min="10" max="200" value="80" class="mejora-slider" style="flex:1"/>
+              <span id="fotoEscalaVal" style="font-size:.75rem;color:var(--cyan);width:35px;text-align:right">80%</span>
+            </div>
+            <div class="foto-ctrl-row">
+              <label class="foto-ctrl-label">Rotación</label>
+              <input type="range" id="fotoRotacion" min="-180" max="180" value="0" class="mejora-slider" style="flex:1"/>
+              <span id="fotoRotVal" style="font-size:.75rem;color:var(--cyan);width:35px;text-align:right">0°</span>
+            </div>
+
+            <div class="foto-ctrl-section">🌤 Iluminación del producto</div>
+            <div class="foto-ctrl-row">
+              <label class="foto-ctrl-label">Brillo</label>
+              <input type="range" id="fotoBrillo" min="-100" max="100" value="0" class="mejora-slider" style="flex:1"/>
+              <span id="fotoBrilloVal" style="font-size:.75rem;color:var(--cyan);width:38px;text-align:right">0</span>
+            </div>
+            <div class="foto-ctrl-row">
+              <label class="foto-ctrl-label">Contraste</label>
+              <input type="range" id="fotoContraste" min="-80" max="80" value="0" class="mejora-slider" style="flex:1"/>
+              <span id="fotoContrasteVal" style="font-size:.75rem;color:var(--cyan);width:38px;text-align:right">0</span>
+            </div>
+            <div class="foto-ctrl-row">
+              <label class="foto-ctrl-label">Saturación</label>
+              <input type="range" id="fotoSaturacion" min="-100" max="100" value="0" class="mejora-slider" style="flex:1"/>
+              <span id="fotoSaturacionVal" style="font-size:.75rem;color:var(--cyan);width:38px;text-align:right">0</span>
+            </div>
+
+            <div class="foto-ctrl-section">🎨 Integración con el fondo</div>
+            <div class="foto-ctrl-row" style="background:rgba(21,154,156,.07);border:1px solid rgba(21,154,156,.25);border-radius:8px;padding:.4rem .5rem;margin-bottom:.25rem">
+              <label class="foto-ctrl-label" style="color:var(--cyan);font-size:.6rem">✨ Tinte ambiental</label>
+              <input type="range" id="fotoTinte" min="-40" max="40" value="0" class="mejora-slider" style="flex:1"/>
+              <span id="fotoTinteVal" style="font-size:.75rem;color:var(--cyan);width:38px;text-align:right">0%</span>
+            </div>
+            <p style="font-size:.6rem;color:var(--muted);margin:-.1rem 0 .5rem;text-align:center">← neutral · mezcla el color del fondo al producto →</p>
+            <div class="foto-ctrl-row">
+              <label class="foto-ctrl-label">Suavizar bordes</label>
+              <input type="range" id="fotoBordes" min="0" max="20" value="0" class="mejora-slider" style="flex:1"/>
+              <span id="fotoBordesVal" style="font-size:.75rem;color:var(--cyan);width:38px;text-align:right">0px</span>
+            </div>
+            <div class="foto-ctrl-row">
+              <label class="foto-ctrl-label">Opacidad</label>
+              <input type="range" id="fotoOpacidad" min="10" max="100" value="100" class="mejora-slider" style="flex:1"/>
+              <span id="fotoOpacidadVal" style="font-size:.75rem;color:var(--cyan);width:38px;text-align:right">100%</span>
+            </div>
+
+            <div class="foto-ctrl-section">🌑 Sombra</div>
+            <div class="foto-ctrl-row">
+              <label class="foto-ctrl-label">Intensidad</label>
+              <input type="range" id="fotoSombraOpac" min="0" max="80" value="0" class="mejora-slider" style="flex:1"/>
+              <span id="fotoSombraOpacVal" style="font-size:.75rem;color:var(--cyan);width:38px;text-align:right">0%</span>
+            </div>
+            <div class="foto-ctrl-row">
+              <label class="foto-ctrl-label">Difusión</label>
+              <input type="range" id="fotoSombraBlur" min="0" max="80" value="20" class="mejora-slider" style="flex:1"/>
+              <span id="fotoSombraBlurVal" style="font-size:.75rem;color:var(--cyan);width:38px;text-align:right">20px</span>
+            </div>
+            <div class="foto-ctrl-row">
+              <label class="foto-ctrl-label">Desplazamiento</label>
+              <input type="range" id="fotoSombraOff" min="0" max="60" value="10" class="mejora-slider" style="flex:1"/>
+              <span id="fotoSombraOffVal" style="font-size:.75rem;color:var(--cyan);width:38px;text-align:right">10px</span>
+            </div>
+
+            <div class="foto-ctrl-section">🔮 Fondo</div>
+            <div class="foto-ctrl-row">
+              <label class="foto-ctrl-label">Viñeta</label>
+              <input type="range" id="fotoVignet" min="0" max="100" value="0" class="mejora-slider" style="flex:1"/>
+              <span id="fotoVignetVal" style="font-size:.75rem;color:var(--cyan);width:38px;text-align:right">0%</span>
+            </div>
+            <div class="foto-ctrl-row">
+              <label class="foto-ctrl-label">Desenfoque fondo</label>
+              <input type="range" id="fotoBgBlur" min="0" max="20" value="0" class="mejora-slider" style="flex:1"/>
+              <span id="fotoBgBlurVal" style="font-size:.75rem;color:var(--cyan);width:38px;text-align:right">0px</span>
+            </div>
+
+              <div class="foto-ctrl-row" id="fotoTolRow" style="display:none">
+                <label class="foto-ctrl-label">Tolerancia (fallback)</label>
+                <input type="range" id="fotoTolerancia" min="5" max="100" value="50" class="mejora-slider" style="flex:1"/>
+                <span id="fotoTolVal" style="font-size:.75rem;color:var(--cyan);width:38px;text-align:right">50</span>
+              </div>
+              </div><!-- end foto-controles -->
+
+              <div class="foto-actions" style="margin-top:.75rem;flex-wrap:wrap">
+                <button class="btn" id="fotoBtnRecortar">✂️ Re-recortar</button>
+                <button class="btn" id="fotoBtnCentrar">⊙ Centrar</button>
+                <button class="btn btn--primary" id="fotoBtnDescargar">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                  Descargar PNG
+                </button>
+                <button class="btn" id="fotoBtnNueva">🔄 Nueva foto</button>
+              </div>
+              <p class="form-error" id="fotoError"></p>
+
+            </div><!-- end foto-controles-col -->
+
+            <!-- Canvas derecha -->
+            <div class="foto-canvas-col">
+              <div class="foto-canvas-wrap">
+                <canvas id="fotoCanvas" class="foto-canvas"></canvas>
+                <div class="foto-canvas-hint">Arrastrá · Ruedita para escalar · Doble clic para centrar</div>
+              </div>
+            </div>
+
+          </div><!-- end foto-compositor-layout -->
+        </div>
+
       </div>
     </div>
   </div>
@@ -6231,9 +6439,30 @@
     // ══════════════════════════════════════════
     //  ÁREA DE EMPRENDEDORES
     // ══════════════════════════════════════════
-    window.abrirEmprendedor = function(id) { const el=document.getElementById(id); if(el) el.style.display='flex' }
+    window.abrirEmprendedor = function(id) {
+      const el = document.getElementById(id)
+      if (!el) return
+      el.style.display = 'flex'
+      el.style.alignItems = 'center'
+      el.style.justifyContent = 'center'
+      el.style.position = 'fixed'
+      el.style.inset = '0'
+      el.style.zIndex = '9998'
+      el.style.background = 'rgba(0,0,0,0.82)'
+      el.style.backdropFilter = 'blur(6px)'
+      el.style.padding = '1rem'
+      document.body.style.overflow = 'hidden'
+    }
 
-    // Helper: verificar login antes de descargar
+    window.cerrarEmprendedor = function(id) {
+      const el = document.getElementById(id)
+      if (el) el.style.display = 'none'
+      document.body.style.overflow = ''
+    }
+    ;['modal-tarjetas','modal-potenciador','modal-costos','modal-mejora','modal-presupuesto','modal-fotoproducto'].forEach(id=>{
+      const el=document.getElementById(id)
+      if(el) el.addEventListener('click',e=>{ if(e.target===el) cerrarEmprendedor(id) })
+    })
     window.requireLogin = function(callback) {
       if (usuarioActual) { callback(); return }
       // Mostrar modal de login inmediatamente (z-index: 99999 lo pone sobre cualquier herramienta)
@@ -6258,12 +6487,6 @@
         modalU.classList.add('activo')
       }
     }
-    window.cerrarEmprendedor = function(id) { const el=document.getElementById(id); if(el) el.style.display='none' }
-    ;['modal-tarjetas','modal-potenciador','modal-costos','modal-mejora','modal-presupuesto'].forEach(id=>{
-      const el=document.getElementById(id)
-      if(el) el.addEventListener('click',e=>{ if(e.target===el) el.style.display='none' })
-    })
-
     // ── TARJETAS ─────────────────────────────────────────────────────
     let tarjLogoImg=null, tarjLogoColor=null
     const tarjZone=document.getElementById('tarjUploadZone'),tarjFile=document.getElementById('tarjLogoFile'),tarjInner=document.getElementById('tarjUploadInner'),tarjPrev=document.getElementById('tarjUploadPreview'),tarjPrevImg=document.getElementById('tarjLogoPreviewImg')
@@ -6620,12 +6843,701 @@
     })
 
     // ══════════════════════════════════════════
-    //  GENERADOR DE PRESUPUESTOS PDF
+    //  FOTO DE PRODUCTO — compositor
     // ══════════════════════════════════════════
-    ;['modal-presupuesto'].forEach(id => {
-      const el = document.getElementById(id)
-      if (el) el.addEventListener('click', e => { if (e.target === el) el.style.display = 'none' })
-    })
+    ;(function() {
+      // Estado
+      let fotoOrigImg   = null   // HTMLImageElement original
+      let fotoRecortada = null   // ImageData recortada (sin fondo)
+      let fotoBgImg     = null   // HTMLImageElement fondo seleccionado
+      let fotoFondos    = []     // URLs de fondos cargados desde Supabase
+      let fotoPosX = 0, fotoPosY = 0
+      let fotoEscala = 0.8, fotoRot = 0
+      let fotoDragging = false, fotoDragStartX = 0, fotoDragStartY = 0
+
+      const canvas  = document.getElementById('fotoCanvas')
+      const ctx     = canvas.getContext('2d')
+
+      // ── Cargar fondos desde Supabase ─────────────────────────────
+      async function cargarFotoFondos() {
+        try {
+          const { data, error } = await supabase.from('media')
+            .select('tipo,url').like('tipo','foto-fondo-%')
+          if (error || !data) return
+          let fondos = data.map(r => r.url).filter(Boolean)
+          // Aplicar orden guardado
+          const orderRes = await supabase.from('media').select('nombre').eq('tipo','foto-fondos-order').maybeSingle()
+          if (orderRes.data && orderRes.data.nombre) {
+            try {
+              const order = JSON.parse(orderRes.data.nombre)
+              const map = {}
+              data.forEach(r => { map[r.tipo] = r.url })
+              const ordered = order.map(t => map[t]).filter(Boolean)
+              // Agregar fondos sin orden al final
+              data.forEach(r => { if (!order.includes(r.tipo) && r.url) ordered.push(r.url) })
+              fondos = ordered
+            } catch(e) {}
+          }
+          fotoFondos = fondos
+          renderFondosGrid()
+        } catch(e) { console.warn('cargarFotoFondos:', e) }
+      }
+
+      function renderFondosGrid() {
+        const grid   = document.getElementById('fotoFondosGrid')
+        const verBtn = document.getElementById('fotoVerMasFondos')
+        if (!grid) return
+        if (!fotoFondos.length) {
+          grid.innerHTML = '<p style="color:var(--muted);font-size:.78rem">El administrador aún no cargó fondos. Volvé pronto.</p>'
+          if (verBtn) verBtn.style.display = 'none'
+          return
+        }
+        grid.innerHTML = ''
+        grid.classList.remove('foto-fondos-grid--expanded')
+        fotoFondos.forEach((url, i) => {
+          const btn = document.createElement('div')
+          btn.className = 'foto-fondo-thumb' + (i === 0 ? ' foto-fondo-thumb--active' : '')
+          btn.style.backgroundImage = `url(${url})`
+          btn.addEventListener('click', () => {
+            document.querySelectorAll('.foto-fondo-thumb').forEach(b => b.classList.remove('foto-fondo-thumb--active'))
+            btn.classList.add('foto-fondo-thumb--active')
+            const img = new Image(); img.crossOrigin = 'anonymous'
+            img.onload = () => { fotoSetBgImg(img) }
+            img.src = url
+          })
+          grid.appendChild(btn)
+          if (i === 0) {
+            const img = new Image(); img.crossOrigin = 'anonymous'
+            img.onload = () => { if (!fotoBgImg && !fotoBgColor) fotoSetBgImg(img) }
+            img.src = url
+          }
+        })
+        // Mostrar botón "Ver más" solo si hay más de una fila
+        if (verBtn) {
+          const needsMore = fotoFondos.length > 4
+          verBtn.style.display = needsMore ? 'flex' : 'none'
+          let expanded = false
+          verBtn.onclick = () => {
+            expanded = !expanded
+            grid.classList.toggle('foto-fondos-grid--expanded', expanded)
+            verBtn.innerHTML = expanded
+              ? '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="12" height="12"><polyline points="18 15 12 9 6 15"/></svg> Ver menos'
+              : '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="12" height="12"><polyline points="6 9 12 15 18 9"/></svg> Ver todos los fondos (' + fotoFondos.length + ')'
+          }
+          verBtn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="12" height="12"><polyline points="6 9 12 15 18 9"/></svg> Ver todos los fondos (' + fotoFondos.length + ')'
+        }
+      }
+
+      // ── Upload zona producto ──────────────────────────────────────
+      const uploadZone = document.getElementById('fotoUploadZone')
+      const fileInput  = document.getElementById('fotoProductoFile')
+
+      uploadZone.addEventListener('click', () => fileInput.click())
+      uploadZone.addEventListener('dragover', e => { e.preventDefault(); uploadZone.classList.add('foto-drag') })
+      uploadZone.addEventListener('dragleave', () => uploadZone.classList.remove('foto-drag'))
+      uploadZone.addEventListener('drop', e => { e.preventDefault(); uploadZone.classList.remove('foto-drag'); fotoCargar(e.dataTransfer.files[0]) })
+      fileInput.addEventListener('change', e => fotoCargar(e.target.files[0]))
+
+      function fotoCargar(file) {
+        if (!file || !file.type.startsWith('image/')) return
+        // Mostrar estado de carga prominente
+        const zone = document.getElementById('fotoUploadZone')
+        const inner = document.getElementById('fotoUploadInner')
+        zone.style.minHeight = '140px'
+        zone.style.borderColor = 'var(--cyan)'
+        zone.style.background = 'rgba(21,154,156,.06)'
+        inner.innerHTML = `
+          <div style="display:flex;flex-direction:column;align-items:center;gap:.75rem;padding:1.5rem;pointer-events:none">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#159A9C" stroke-width="2" width="44" height="44" style="animation:potencSpin .8s linear infinite"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>
+            <div style="text-align:center">
+              <p style="margin:0;font-size:1rem;font-weight:700;color:var(--cyan);font-family:var(--font-head);letter-spacing:.05em">PROCESANDO IMAGEN</p>
+              <p style="margin:.3rem 0 0;font-size:.78rem;color:var(--text)">Removiendo el fondo con IA...</p>
+              <p style="margin:.2rem 0 0;font-size:.7rem;color:var(--muted)">${file.name}</p>
+            </div>
+          </div>`
+
+        const reader = new FileReader()
+        reader.onload = e => {
+          const img = new Image()
+          img.onload = () => {
+            fotoOrigImg = img
+            // Actualizar mensaje — ahora esperando API
+            inner.innerHTML = `
+              <div style="display:flex;flex-direction:column;align-items:center;gap:.75rem;padding:1.5rem;pointer-events:none">
+                <svg viewBox="0 0 24 24" fill="none" stroke="#159A9C" stroke-width="2" width="44" height="44" style="animation:potencSpin .8s linear infinite"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>
+                <div style="text-align:center">
+                  <p style="margin:0;font-size:1rem;font-weight:700;color:var(--cyan);font-family:var(--font-head);letter-spacing:.05em">REMOVIENDO FONDO</p>
+                  <p style="margin:.3rem 0 0;font-size:.78rem;color:var(--text)">remove.bg está procesando tu foto...</p>
+                  <p style="margin:.2rem 0 0;font-size:.7rem;color:var(--muted)">Esto puede tardar unos segundos</p>
+                </div>
+              </div>`
+            document.getElementById('fotoPaso2').style.display = 'block'
+            fotoRecortarAuto()
+          }
+          img.onerror = () => {
+            zone.style.borderColor = '#f87171'
+            zone.style.background = 'rgba(248,113,113,.05)'
+            inner.innerHTML = `
+              <div style="display:flex;flex-direction:column;align-items:center;gap:.5rem;padding:1.5rem;pointer-events:none">
+                <svg viewBox="0 0 24 24" fill="none" stroke="#f87171" stroke-width="1.5" width="36" height="36"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
+                <p style="margin:0;font-size:.85rem;font-weight:600;color:#f87171">Error al cargar la imagen</p>
+                <p style="margin:0;font-size:.72rem;color:var(--muted)">Hacé clic para intentar de nuevo</p>
+              </div>`
+          }
+          img.src = e.target.result
+        }
+        reader.readAsDataURL(file)
+      }
+
+      // ── Remove.bg API + fallback Canvas ──────────────────────────
+      const REMOVEBG_KEY = 'VVDeJyHrk8mTDUFQwRgcBPTc'
+
+      async function fotoRecortarConAPI() {
+        if (!fotoOrigImg) return
+        const errEl = document.getElementById('fotoError')
+        const btnRec = document.getElementById('fotoBtnRecortar')
+        errEl.textContent = ''
+        btnRec.textContent = '⏳ Recortando...'
+        btnRec.disabled = true
+
+        try {
+          // Convertir imagen a blob
+          const tc = document.createElement('canvas')
+          tc.width = fotoOrigImg.width; tc.height = fotoOrigImg.height
+          tc.getContext('2d').drawImage(fotoOrigImg, 0, 0)
+          const blob = await new Promise(res => tc.toBlob(res, 'image/png'))
+
+          const formData = new FormData()
+          formData.append('image_file', blob, 'producto.png')
+          formData.append('size', 'preview')
+
+          const resp = await fetch('https://api.remove.bg/v1.0/removebg', {
+            method: 'POST',
+            headers: { 'X-Api-Key': REMOVEBG_KEY },
+            body: formData
+          })
+
+          if (!resp.ok) {
+            const txt = await resp.text()
+            throw new Error(`remove.bg error ${resp.status}: ${txt}`)
+          }
+
+          const resultBlob = await resp.blob()
+          console.log('remove.bg response:', resp.status, resultBlob.type, resultBlob.size)
+
+          // Convertir blob a base64 para evitar problemas de CORS con createObjectURL
+          const base64 = await new Promise((resolve, reject) => {
+            const reader = new FileReader()
+            reader.onload  = e => resolve(e.target.result)
+            reader.onerror = reject
+            reader.readAsDataURL(resultBlob)
+          })
+
+          const img = new Image()
+          img.onload = () => {
+            const rc = document.createElement('canvas')
+            rc.width = img.width; rc.height = img.height
+            rc.getContext('2d').drawImage(img, 0, 0)
+            fotoRecortada = rc.getContext('2d').getImageData(0, 0, rc.width, rc.height)
+            const inner = document.getElementById('fotoUploadInner')
+            const zone  = document.getElementById('fotoUploadZone')
+            if (inner) {
+              zone.style.minHeight = ''
+              zone.style.borderColor = 'rgba(21,154,156,.5)'
+              zone.style.background = 'rgba(21,154,156,.04)'
+              inner.innerHTML = `
+                <div style="display:flex;flex-direction:column;align-items:center;gap:.5rem;padding:1rem;pointer-events:none">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="#4ecca3" stroke-width="2" width="36" height="36"><polyline points="20 6 9 17 4 12"/></svg>
+                  <p style="margin:0;font-size:.9rem;font-weight:700;color:#4ecca3;font-family:var(--font-head)">¡FONDO REMOVIDO!</p>
+                  <p style="margin:0;font-size:.72rem;color:var(--muted)">Elegí un fondo y acomodá tu producto</p>
+                </div>`
+            }
+            document.getElementById('fotoCompositor').style.display = 'block'
+            // Asegurar que el canvas tenga dimensiones
+            if (OUT_W === 0 || OUT_H === 0) { OUT_W = 1080; OUT_H = 1080 }
+            canvas.width = OUT_W; canvas.height = OUT_H
+            fotoPosX = 0; fotoPosY = 0
+            // Pequeño delay para que el DOM actualice antes de renderizar
+            setTimeout(() => { fotoRender() }, 50)
+            btnRec.textContent = '✂️ Re-recortar'
+            btnRec.disabled = false
+          }
+          img.onerror = () => {
+            throw new Error('No se pudo cargar la imagen devuelta por remove.bg')
+          }
+          img.src = base64
+
+        } catch(err) {
+          console.warn('remove.bg falló, usando fallback Canvas:', err)
+          errEl.textContent = '⚠ API no disponible, usando recorte local.'
+          document.getElementById('fotoTolRow').style.display = 'flex'
+          fotoRecortarFallback()
+          btnRec.textContent = '✂️ Re-recortar'
+          btnRec.disabled = false
+        }
+      }
+
+      // Fallback: algoritmo Canvas por si falla la API
+      function fotoRecortarFallback() {
+        if (!fotoOrigImg) return
+        const tol = parseInt(document.getElementById('fotoTolerancia').value) || 50
+        const MAX = 1000
+        const ratio = Math.min(1, MAX / Math.max(fotoOrigImg.width, fotoOrigImg.height))
+        const w = Math.round(fotoOrigImg.width * ratio)
+        const h = Math.round(fotoOrigImg.height * ratio)
+        const tc = document.createElement('canvas'); tc.width = w; tc.height = h
+        const tx = tc.getContext('2d')
+        tx.drawImage(fotoOrigImg, 0, 0, w, h)
+        const imgData = tx.getImageData(0, 0, w, h)
+        const data = imgData.data, orig = new Uint8ClampedArray(data)
+        const borderW = Math.max(3, Math.round(Math.min(w,h)*0.04))
+        const samples = []
+        for (let y=0;y<h;y++) for (let x=0;x<w;x++) {
+          if (x<borderW||x>=w-borderW||y<borderW||y>=h-borderW) {
+            const i=(y*w+x)*4; samples.push([orig[i],orig[i+1],orig[i+2]])
+          }
+        }
+        const n=samples.length
+        const mR=samples.reduce((s,p)=>s+p[0],0)/n
+        const mG=samples.reduce((s,p)=>s+p[1],0)/n
+        const mB=samples.reduce((s,p)=>s+p[2],0)/n
+        const std=Math.max(15,Math.sqrt(samples.reduce((s,p)=>s+(p[0]-mR)**2+(p[1]-mG)**2+(p[2]-mB)**2,0)/(n*3)))
+        const threshold=(tol/100)*std*5
+        const mask=new Uint8Array(w*h)
+        const q=new Int32Array(w*h*2); let qH=0,qT=0
+        for(let x=0;x<w;x++){q[qT++]=x;mask[x]=1;q[qT++]=(h-1)*w+x;mask[(h-1)*w+x]=1}
+        for(let y=1;y<h-1;y++){q[qT++]=y*w;mask[y*w]=1;q[qT++]=y*w+w-1;mask[y*w+w-1]=1}
+        while(qH<qT){
+          const px=q[qH++]; const x=px%w,y=Math.floor(px/w)
+          for(const nb of[px-1,px+1,px-w,px+w]){
+            if(nb<0||nb>=w*h||mask[nb])continue
+            const dr=orig[nb*4]-mR,dg=orig[nb*4+1]-mG,db=orig[nb*4+2]-mB
+            if(Math.sqrt(dr*dr+dg*dg+db*db)<threshold){mask[nb]=1;q[qT++]=nb}
+            else mask[nb]=2
+          }
+        }
+        for(let i=0;i<w*h;i++) if(mask[i]===1) data[i*4+3]=0
+        fotoRecortada=imgData
+        document.getElementById('fotoCompositor').style.display='block'
+        if (OUT_W === 0 || OUT_H === 0) { OUT_W = 1080; OUT_H = 1080 }
+        canvas.width = OUT_W; canvas.height = OUT_H
+        fotoPosX=0;fotoPosY=0
+        setTimeout(() => { fotoRender() }, 50)
+      }
+
+      function fotoRecortarAuto() {
+        fotoRecortarConAPI()
+      }
+
+      // ── Render compositor ─────────────────────────────────────────
+      // OUT_W/OUT_H = tamaño final de exportación
+      // El canvas siempre muestra el fondo a tamaño completo, sin bordes
+      let OUT_W = 1080, OUT_H = 1080
+      let fotoBgColor = null   // null = usar imagen, string = color sólido
+
+      canvas.width = OUT_W; canvas.height = OUT_H
+
+      function fotoSetSize(w, h) {
+        OUT_W = w; OUT_H = h
+        // Si hay fondo imagen, ajustar el canvas a ese ratio recortando/escalando
+        if (fotoBgImg) {
+          // Mantener el tamaño elegido, el fondo se estira para cubrir (cover)
+          canvas.width = w; canvas.height = h
+        } else {
+          canvas.width = w; canvas.height = h
+        }
+        fotoRender()
+      }
+
+      // Cuando se selecciona una imagen de fondo, ajustar OUT_W/OUT_H a su resolución natural
+      function fotoSetBgImg(img) {
+        fotoBgImg = img; fotoBgColor = null
+        // Por defecto adoptar el tamaño de la imagen de fondo
+        OUT_W = img.width; OUT_H = img.height
+        canvas.width = OUT_W; canvas.height = OUT_H
+        // Sync size buttons — ninguno queda activo si el tamaño no coincide
+        document.querySelectorAll('.foto-size-btn').forEach(b => {
+          const match = b.dataset.w == OUT_W && b.dataset.h == OUT_H
+          b.classList.toggle('foto-size-btn--active', match)
+        })
+        fotoRender()
+      }
+
+      // Size buttons
+      document.querySelectorAll('.foto-size-btn:not(#fotoSizeLibre)').forEach(btn => {
+        btn.addEventListener('click', () => {
+          document.querySelectorAll('.foto-size-btn').forEach(b => b.classList.remove('foto-size-btn--active'))
+          btn.classList.add('foto-size-btn--active')
+          document.getElementById('fotoSizeLibrePanel').style.display = 'none'
+          fotoSetSize(parseInt(btn.dataset.w), parseInt(btn.dataset.h))
+        })
+      })
+      document.getElementById('fotoSizeLibre').addEventListener('click', () => {
+        document.querySelectorAll('.foto-size-btn').forEach(b => b.classList.remove('foto-size-btn--active'))
+        document.getElementById('fotoSizeLibre').classList.add('foto-size-btn--active')
+        document.getElementById('fotoSizeLibrePanel').style.display = 'flex'
+        // Pre-cargar con tamaño actual
+        document.getElementById('fotoLibreW').value = OUT_W
+        document.getElementById('fotoLibreH').value = OUT_H
+      })
+      document.getElementById('fotoBtnAplicarSize').addEventListener('click', () => {
+        const w = Math.max(100, Math.min(4000, parseInt(document.getElementById('fotoLibreW').value)||1080))
+        const h = Math.max(100, Math.min(4000, parseInt(document.getElementById('fotoLibreH').value)||1080))
+        fotoSetSize(w, h)
+      })
+
+      // Tabs imagen/color
+      window.fotoSwitchTab = function(tab) {
+        const isImagen = tab === 'imagen'
+        document.getElementById('fotoPanelImagen').style.display = isImagen ? 'block' : 'none'
+        document.getElementById('fotoPanelColor').style.display  = isImagen ? 'none'  : 'block'
+        document.getElementById('fotoTabImagen').classList.toggle('foto-tab--active', isImagen)
+        document.getElementById('fotoTabColor').classList.toggle('foto-tab--active', !isImagen)
+        if (!isImagen) { fotoBgColor = fotoBgColor || '#ffffff'; fotoBgImg = null }
+        else            { fotoBgColor = null }
+        fotoRender()
+      }
+
+      // Color presets
+      document.getElementById('fotoColorPresets').addEventListener('click', e => {
+        const btn = e.target.closest('.foto-color-swatch')
+        if (!btn) return
+        document.querySelectorAll('.foto-color-swatch').forEach(b => b.classList.remove('foto-color-swatch--active'))
+        btn.classList.add('foto-color-swatch--active')
+        fotoBgColor = btn.dataset.color
+        document.getElementById('fotoColorCustom').value = fotoBgColor
+        fotoBgImg = null
+        fotoRender()
+      })
+      document.getElementById('fotoColorCustom').addEventListener('input', function() {
+        document.querySelectorAll('.foto-color-swatch').forEach(b => b.classList.remove('foto-color-swatch--active'))
+        fotoBgColor = this.value
+        fotoBgImg = null
+        fotoRender()
+      })
+
+      function fotoRender() {
+        if (!fotoRecortada) return
+
+        // ── Leer todos los ajustes ────────────────────────────────────
+        const brillo      = parseInt(document.getElementById('fotoBrillo')?.value     || 0)
+        const contraste   = parseInt(document.getElementById('fotoContraste')?.value  || 0)
+        const saturacion  = parseInt(document.getElementById('fotoSaturacion')?.value || 0)
+        const tinte       = parseInt(document.getElementById('fotoTinte')?.value      || 0) / 40  // -1 a 1
+        const bordes      = parseInt(document.getElementById('fotoBordes')?.value     || 0)
+        const opacidad    = parseInt(document.getElementById('fotoOpacidad')?.value   || 100) / 100
+        const sombraOpac  = parseInt(document.getElementById('fotoSombraOpac')?.value || 0) / 100
+        const sombraBlur  = parseInt(document.getElementById('fotoSombraBlur')?.value || 20)
+        const sombraOff   = parseInt(document.getElementById('fotoSombraOff')?.value  || 10)
+        const vignet      = parseInt(document.getElementById('fotoVignet')?.value     || 0) / 100
+        const bgBlur      = parseInt(document.getElementById('fotoBgBlur')?.value     || 0)
+
+        ctx.clearRect(0, 0, OUT_W, OUT_H)
+
+        // ── Fondo con desenfoque opcional ─────────────────────────────
+        ctx.save()
+        if (bgBlur > 0) ctx.filter = `blur(${bgBlur}px)`
+        if (fotoBgColor) {
+          ctx.fillStyle = fotoBgColor
+          ctx.fillRect(0, 0, OUT_W, OUT_H)
+        } else if (fotoBgImg) {
+          const bRatio = fotoBgImg.width / fotoBgImg.height
+          const cRatio = OUT_W / OUT_H
+          let sx = 0, sy = 0, sw = fotoBgImg.width, sh = fotoBgImg.height
+          if (bRatio > cRatio) { sw = fotoBgImg.height * cRatio; sx = (fotoBgImg.width - sw) / 2 }
+          else                 { sh = fotoBgImg.width / cRatio;  sy = (fotoBgImg.height - sh) / 2 }
+          ctx.drawImage(fotoBgImg, sx, sy, sw, sh, 0, 0, OUT_W, OUT_H)
+        } else {
+          ctx.fillStyle = '#e8e8e8'; ctx.fillRect(0, 0, OUT_W, OUT_H)
+        }
+        ctx.filter = 'none'
+        ctx.restore()
+
+        // ── Extraer color promedio del fondo para tinte ambiental ─────
+        let tintR = 128, tintG = 128, tintB = 128
+        if (tinte > 0 && (fotoBgImg || fotoBgColor)) {
+          if (fotoBgColor) {
+            const hex = fotoBgColor.replace('#','')
+            tintR = parseInt(hex.slice(0,2),16)
+            tintG = parseInt(hex.slice(2,4),16)
+            tintB = parseInt(hex.slice(4,6),16)
+          } else {
+            // Samplear centro del fondo
+            const sample = ctx.getImageData(OUT_W/2-50, OUT_H/2-50, 100, 100).data
+            let sr=0,sg=0,sb=0,sn=sample.length/4
+            for(let i=0;i<sample.length;i+=4){sr+=sample[i];sg+=sample[i+1];sb+=sample[i+2]}
+            tintR=sr/sn; tintG=sg/sn; tintB=sb/sn
+          }
+        }
+
+        // ── Preparar producto con ajustes de imagen ───────────────────
+        const tmp = document.createElement('canvas')
+        tmp.width = fotoRecortada.width; tmp.height = fotoRecortada.height
+        const tmpCtx = tmp.getContext('2d')
+        tmpCtx.putImageData(fotoRecortada, 0, 0)
+
+        // Aplicar brillo/contraste/saturación/tinte via pixel manipulation
+        if (brillo !== 0 || contraste !== 0 || saturacion !== 0 || tinte > 0) {
+          const imgd = tmpCtx.getImageData(0, 0, tmp.width, tmp.height)
+          const d    = imgd.data
+          const cf   = contraste !== 0 ? (259*(contraste+255))/(255*(259-contraste)) : 1
+          for (let i = 0; i < d.length; i += 4) {
+            if (d[i+3] === 0) continue
+            let r = d[i], g = d[i+1], b = d[i+2]
+            // Brillo
+            r += brillo; g += brillo; b += brillo
+            // Contraste
+            if (contraste !== 0) {
+              r = cf*(r-128)+128; g = cf*(g-128)+128; b = cf*(b-128)+128
+            }
+            // Saturación
+            if (saturacion !== 0) {
+              const gray = 0.299*r + 0.587*g + 0.114*b
+              const sf   = 1 + saturacion/100
+              r = gray+sf*(r-gray); g = gray+sf*(g-gray); b = gray+sf*(b-gray)
+            }
+            // Tinte ambiental: positivo = mezcla color del fondo, negativo = desatura hacia gris
+            if (tinte > 0) {
+              r = r*(1-tinte) + tintR*tinte
+              g = g*(1-tinte) + tintG*tinte
+              b = b*(1-tinte) + tintB*tinte
+            } else if (tinte < 0) {
+              const absTinte = -tinte
+              const grayVal = 0.299*r + 0.587*g + 0.114*b
+              r = r*(1-absTinte) + grayVal*absTinte
+              g = g*(1-absTinte) + grayVal*absTinte
+              b = b*(1-absTinte) + grayVal*absTinte
+            }
+            d[i]   = Math.max(0,Math.min(255,r))
+            d[i+1] = Math.max(0,Math.min(255,g))
+            d[i+2] = Math.max(0,Math.min(255,b))
+          }
+          tmpCtx.putImageData(imgd, 0, 0)
+        }
+
+        // ── Posición y transformaciones ───────────────────────────────
+        const prodW = tmp.width  * fotoEscala
+        const prodH = tmp.height * fotoEscala
+        const cx    = OUT_W / 2 + fotoPosX
+        const cy    = OUT_H / 2 + fotoPosY
+
+        // ── Sombra proyectada ─────────────────────────────────────────
+        if (sombraOpac > 0) {
+          // Crear silhoueta negra del producto
+          const shadowC = document.createElement('canvas')
+          shadowC.width = fotoRecortada.width; shadowC.height = fotoRecortada.height
+          const sCtx = shadowC.getContext('2d')
+          sCtx.putImageData(fotoRecortada, 0, 0)
+          // Colorear todo negro manteniendo alpha
+          sCtx.globalCompositeOperation = 'source-in'
+          sCtx.fillStyle = 'rgba(0,0,0,1)'
+          sCtx.fillRect(0, 0, shadowC.width, shadowC.height)
+
+          ctx.save()
+          ctx.translate(cx, cy)
+          ctx.rotate(fotoRot * Math.PI / 180)
+          ctx.globalAlpha = sombraOpac
+          ctx.filter = `blur(${sombraBlur}px)`
+          // Desplazar hacia abajo y un poco a la derecha
+          ctx.drawImage(shadowC, -prodW/2 + sombraOff*0.3, -prodH/2 + sombraOff, prodW, prodH)
+          ctx.filter = 'none'
+          ctx.globalAlpha = 1
+          ctx.restore()
+        }
+
+        // ── Producto con suavizado de bordes y opacidad ───────────────
+        ctx.save()
+        ctx.translate(cx, cy)
+        ctx.rotate(fotoRot * Math.PI / 180)
+        ctx.globalAlpha = opacidad
+        if (bordes > 0) {
+          // Suavizar bordes con gradiente en máscara
+          const offC = document.createElement('canvas')
+          offC.width = prodW + bordes*2; offC.height = prodH + bordes*2
+          const offCtx = offC.getContext('2d')
+          offCtx.drawImage(tmp, bordes, bordes, prodW, prodH)
+          // Aplicar blur para suavizar contorno
+          const blurC = document.createElement('canvas')
+          blurC.width = prodW; blurC.height = prodH
+          const blurCtx = blurC.getContext('2d')
+          blurCtx.filter = `blur(${bordes}px)`
+          blurCtx.drawImage(offC, -bordes, -bordes)
+          blurCtx.filter = 'none'
+          ctx.drawImage(blurC, -prodW/2, -prodH/2)
+        } else {
+          ctx.drawImage(tmp, -prodW/2, -prodH/2, prodW, prodH)
+        }
+        ctx.globalAlpha = 1
+        ctx.restore()
+
+        // ── Viñeta sobre todo ─────────────────────────────────────────
+        if (vignet > 0) {
+          const grad = ctx.createRadialGradient(
+            OUT_W/2, OUT_H/2, Math.min(OUT_W,OUT_H)*0.3,
+            OUT_W/2, OUT_H/2, Math.max(OUT_W,OUT_H)*0.8
+          )
+          grad.addColorStop(0, 'rgba(0,0,0,0)')
+          grad.addColorStop(1, `rgba(0,0,0,${vignet})`)
+          ctx.fillStyle = grad
+          ctx.fillRect(0, 0, OUT_W, OUT_H)
+        }
+      }
+
+      // ── Controles sliders ─────────────────────────────────────────
+      document.getElementById('fotoEscala').addEventListener('input', function() {
+        fotoEscala = parseInt(this.value) / 100
+        document.getElementById('fotoEscalaVal').textContent = this.value + '%'
+        fotoRender()
+      })
+      document.getElementById('fotoRotacion').addEventListener('input', function() {
+        fotoRot = parseInt(this.value)
+        document.getElementById('fotoRotVal').textContent = this.value + '°'
+        fotoRender()
+      })
+      document.getElementById('fotoTolerancia').addEventListener('input', function() {
+        document.getElementById('fotoTolVal').textContent = this.value
+      })
+      // Nuevos ajustes — todos llaman fotoRender al cambiar
+      ;[
+        ['fotoBrillo','fotoBrilloVal',''],
+        ['fotoContraste','fotoContrasteVal',''],
+        ['fotoSaturacion','fotoSaturacionVal',''],
+        ['fotoTinte','fotoTinteVal','%', true],
+        ['fotoBordes','fotoBordesVal','px'],
+        ['fotoOpacidad','fotoOpacidadVal','%'],
+        ['fotoSombraOpac','fotoSombraOpacVal','%'],
+        ['fotoSombraBlur','fotoSombraBlurVal','px'],
+        ['fotoSombraOff','fotoSombraOffVal','px'],
+        ['fotoVignet','fotoVignetVal','%'],
+        ['fotoBgBlur','fotoBgBlurVal','px'],
+      ].forEach(([id, valId, suffix, showSign]) => {
+        const el = document.getElementById(id)
+        if (!el) return
+        el.addEventListener('input', function() {
+          const v = parseInt(this.value)
+          const label = showSign && v > 0 ? '+' + v + suffix : v + suffix
+          document.getElementById(valId).textContent = label
+          fotoRender()
+        })
+      })
+
+      // ── Drag para mover el producto ───────────────────────────────
+      canvas.addEventListener('mousedown', e => {
+        fotoDragging = true
+        const r = canvas.getBoundingClientRect()
+        const scaleX = OUT_W / r.width
+        fotoDragStartX = e.clientX * scaleX - fotoPosX
+        fotoDragStartY = e.clientY * scaleX - fotoPosY
+        canvas.style.cursor = 'grabbing'
+      })
+      canvas.addEventListener('mousemove', e => {
+        if (!fotoDragging) return
+        const r = canvas.getBoundingClientRect()
+        const scaleX = OUT_W / r.width
+        fotoPosX = e.clientX * scaleX - fotoDragStartX
+        fotoPosY = e.clientY * scaleX - fotoDragStartY
+        fotoRender()
+      })
+      canvas.addEventListener('mouseup',    () => { fotoDragging = false; canvas.style.cursor = 'grab' })
+      canvas.addEventListener('mouseleave', () => { fotoDragging = false; canvas.style.cursor = 'grab' })
+
+      // Touch drag
+      canvas.addEventListener('touchstart', e => {
+        const t = e.touches[0]
+        fotoDragging = true
+        const r = canvas.getBoundingClientRect()
+        const scaleX = OUT_W / r.width
+        fotoDragStartX = t.clientX * scaleX - fotoPosX
+        fotoDragStartY = t.clientY * scaleX - fotoPosY
+        e.preventDefault()
+      }, { passive: false })
+      canvas.addEventListener('touchmove', e => {
+        if (!fotoDragging) return
+        const t = e.touches[0]
+        const r = canvas.getBoundingClientRect()
+        const scaleX = OUT_W / r.width
+        fotoPosX = t.clientX * scaleX - fotoDragStartX
+        fotoPosY = t.clientY * scaleX - fotoDragStartY
+        fotoRender(); e.preventDefault()
+      }, { passive: false })
+      canvas.addEventListener('touchend', () => { fotoDragging = false })
+
+      // Ruedita para escalar
+      canvas.addEventListener('wheel', e => {
+        e.preventDefault()
+        fotoEscala = Math.max(0.05, Math.min(3, fotoEscala - e.deltaY * 0.001))
+        document.getElementById('fotoEscala').value = Math.round(fotoEscala * 100)
+        document.getElementById('fotoEscalaVal').textContent = Math.round(fotoEscala * 100) + '%'
+        fotoRender()
+      }, { passive: false })
+
+      // Doble clic para centrar
+      canvas.addEventListener('dblclick', () => {
+        fotoPosX = 0; fotoPosY = 0
+        document.getElementById('fotoRotacion').value = 0
+        fotoRot = 0
+        document.getElementById('fotoRotVal').textContent = '0°'
+        fotoRender()
+      })
+
+      // ── Botones ───────────────────────────────────────────────────
+      document.getElementById('fotoBtnRecortar').addEventListener('click', fotoRecortarConAPI)
+      document.getElementById('fotoBtnCentrar').addEventListener('click', () => {
+        fotoPosX = 0; fotoPosY = 0; fotoRender()
+      })
+      document.getElementById('fotoBtnDescargar').addEventListener('click', () => {
+        if (!requireLogin) return
+        window.requireLogin(() => {
+          canvas.toBlob(blob => {
+            const url = URL.createObjectURL(blob)
+            const a = document.createElement('a')
+            a.href = url; a.download = 'foto-producto-lamadriguera.png'; a.click()
+            URL.revokeObjectURL(url)
+          }, 'image/png')
+        })
+      })
+      document.getElementById('fotoBtnNueva').addEventListener('click', () => {
+        fotoOrigImg = null; fotoRecortada = null; fotoBgColor = null
+        fileInput.value = ''
+        document.getElementById('fotoPaso2').style.display = 'none'
+        document.getElementById('fotoCompositor').style.display = 'none'
+        document.getElementById('fotoError').textContent = ''
+        document.getElementById('fotoRotacion').value = 0
+        document.getElementById('fotoEscala').value = 80
+        document.getElementById('fotoTolRow').style.display = 'none'
+        fotoEscala = 0.8; fotoRot = 0; fotoPosX = 0; fotoPosY = 0
+        // Reset tabs
+        fotoSwitchTab('imagen')
+        document.getElementById('fotoTabImagen').classList.add('foto-tab--active')
+        document.getElementById('fotoTabColor').classList.remove('foto-tab--active')
+        // Reset ajustes
+        ;[['fotoBrillo',0],['fotoContraste',0],['fotoSaturacion',0],['fotoTinte',0],
+          ['fotoBordes',0],['fotoOpacidad',100],['fotoSombraOpac',0],['fotoSombraBlur',20],
+          ['fotoSombraOff',10],['fotoVignet',0],['fotoBgBlur',0]
+        ].forEach(([id,val]) => { const el=document.getElementById(id); if(el) el.value=val })
+        ;[['fotoBrilloVal','0'],['fotoContrasteVal','0'],['fotoSaturacionVal','0'],
+          ['fotoTinteVal','0%'],['fotoBordesVal','0px'],['fotoOpacidadVal','100%'],
+          ['fotoSombraOpacVal','0%'],['fotoSombraBlurVal','20px'],['fotoSombraOffVal','10px'],
+          ['fotoVignetVal','0%'],['fotoBgBlurVal','0px']
+        ].forEach(([id,val]) => { const el=document.getElementById(id); if(el) el.textContent=val })
+        fotoSetSize(1080, 1080)
+        document.querySelectorAll('.foto-size-btn').forEach(b => b.classList.remove('foto-size-btn--active'))
+        document.querySelector('.foto-size-btn[data-w="1080"][data-h="1080"]').classList.add('foto-size-btn--active')
+        ctx.clearRect(0, 0, OUT_W, OUT_H)
+      })
+
+      // Cargar fondos al abrir el modal
+      document.getElementById('modal-fotoproducto').addEventListener('click', e => {
+        if (e.target === document.getElementById('modal-fotoproducto') && fotoFondos.length === 0) cargarFotoFondos()
+      })
+      // También cargar al abrir via abrirEmprendedor
+      const _origAbrirEmpr = window.abrirEmprendedor
+      window.abrirEmprendedor = function(id) {
+        _origAbrirEmpr(id)
+        if (id === 'modal-fotoproducto' && fotoFondos.length === 0) cargarFotoFondos()
+      }
+
+    })()
 
     // Fijar fecha de hoy por defecto
     document.getElementById('presFecha').value = new Date().toISOString().split('T')[0]
@@ -7264,10 +8176,11 @@
 
       // ── EMPRENDEDORES: orden + portada ────────────────────────────
       var EMPR_TOOLS = [
-        {id:'tarjetas',    label:'Tarjetas de agradecimiento'},
-        {id:'costos',      label:'Calculadora de costos'},
-        {id:'mejora',      label:'Mejorador de imágenes'},
-        {id:'presupuesto', label:'Generador de presupuestos'},
+        {id:'tarjetas',      label:'Tarjetas de agradecimiento'},
+        {id:'costos',        label:'Calculadora de costos'},
+        {id:'mejora',        label:'Mejorador de imágenes'},
+        {id:'presupuesto',   label:'Generador de presupuestos'},
+        {id:'fotoproducto',  label:'Cambiar fondo de producto'},
       ]
       var EMPR_IMG_KEY = 'empr-img-'
 
@@ -7463,6 +8376,151 @@
         lista.addEventListener('dragover', function(e){ e.preventDefault() })
         lista.addEventListener('drop', function(e){ e.preventDefault(); syncOrderFromDOM() })
       }, 1000)
+
+      // ── Gestión fondos foto de producto ──────────────────────────
+      var fondosAdmin = []
+
+      async function cargarFondosAdmin() {
+        try {
+          var res = await supabase.from('media').select('tipo,url,nombre').like('tipo','foto-fondo-%').order('nombre')
+          fondosAdmin = (res.data || [])
+          // Aplicar orden guardado si existe
+          var orderRes = await supabase.from('media').select('nombre').eq('tipo','foto-fondos-order').maybeSingle()
+          if (orderRes.data && orderRes.data.nombre) {
+            try {
+              var order = JSON.parse(orderRes.data.nombre)
+              var ordered = []
+              order.forEach(function(tipo) {
+                var f = fondosAdmin.find(function(x){ return x.tipo === tipo })
+                if (f) ordered.push(f)
+              })
+              // Agregar los que no están en el orden (nuevos)
+              fondosAdmin.forEach(function(f) {
+                if (!ordered.find(function(x){ return x.tipo === f.tipo })) ordered.push(f)
+              })
+              fondosAdmin = ordered
+            } catch(e) {}
+          }
+          renderFondosAdmin()
+        } catch(e) { console.warn('cargarFondosAdmin:', e) }
+      }
+
+      async function guardarOrdenFondos() {
+        var ids = fondosAdmin.map(function(f){ return f.tipo })
+        try {
+          await supabase.from('media').delete().eq('tipo','foto-fondos-order')
+          await supabase.from('media').insert([{tipo:'foto-fondos-order',url:'',nombre:JSON.stringify(ids)}])
+        } catch(e) { console.warn('guardarOrdenFondos:', e) }
+      }
+
+      function renderFondosAdmin() {
+        var grid = document.getElementById('gestionFondosGrid')
+        if (!grid) return
+        grid.innerHTML = ''
+        if (!fondosAdmin.length) {
+          grid.innerHTML = '<p style="font-size:.7rem;color:var(--muted);grid-column:1/-1">Sin fondos cargados. Hacé clic en "Subir fondos" para agregar.</p>'
+          return
+        }
+        var dragSrcFondo = null
+        fondosAdmin.forEach(function(fondo, idx) {
+          var wrap = document.createElement('div')
+          wrap.setAttribute('draggable','true')
+          wrap.setAttribute('data-tipo', fondo.tipo)
+          wrap.style.cssText = 'position:relative;height:80px;border-radius:8px;overflow:hidden;border:1px solid var(--border);cursor:grab;user-select:none'
+          // Imagen de fondo
+          var imgDiv = document.createElement('div')
+          imgDiv.style.cssText = 'width:100%;height:100%;background-size:cover;background-position:center;background-image:url('+fondo.url+')'
+          // Número de orden
+          var numBadge = document.createElement('div')
+          numBadge.textContent = idx + 1
+          numBadge.style.cssText = 'position:absolute;top:2px;left:4px;background:rgba(0,0,0,.7);color:#fff;font-size:.6rem;font-weight:700;border-radius:3px;padding:1px 4px;pointer-events:none'
+          // Botón eliminar
+          var del = document.createElement('button')
+          del.textContent = '✕'
+          del.style.cssText = 'position:absolute;top:2px;right:2px;background:rgba(0,0,0,.7);color:#fff;border:none;border-radius:4px;width:18px;height:18px;font-size:.6rem;cursor:pointer;display:flex;align-items:center;justify-content:center;line-height:1'
+          del.addEventListener('click', async function(e) {
+            e.stopPropagation()
+            if (!confirm('¿Eliminar este fondo?')) return
+            try {
+              await supabase.storage.from('media').remove([fondo.nombre])
+              await supabase.from('media').delete().eq('tipo', fondo.tipo)
+              fondosAdmin = fondosAdmin.filter(function(f){ return f.tipo !== fondo.tipo })
+              await guardarOrdenFondos()
+              renderFondosAdmin()
+            } catch(e) { console.warn('borrar fondo:', e) }
+          })
+          wrap.appendChild(imgDiv); wrap.appendChild(numBadge); wrap.appendChild(del)
+
+          // Drag para reordenar
+          wrap.addEventListener('dragstart', function(e) {
+            dragSrcFondo = wrap
+            e.dataTransfer.effectAllowed = 'move'
+            setTimeout(function(){ wrap.style.opacity = '0.4' }, 0)
+          })
+          wrap.addEventListener('dragend', function() {
+            wrap.style.opacity = '1'
+            // Sincronizar orden desde el DOM
+            var newOrder = []
+            grid.querySelectorAll('[data-tipo]').forEach(function(el) {
+              var f = fondosAdmin.find(function(x){ return x.tipo === el.getAttribute('data-tipo') })
+              if (f) newOrder.push(f)
+            })
+            fondosAdmin = newOrder
+            guardarOrdenFondos()
+            renderFondosAdmin()  // re-render para actualizar números
+          })
+          wrap.addEventListener('dragover', function(e) {
+            e.preventDefault(); e.dataTransfer.dropEffect = 'move'
+            if (dragSrcFondo && dragSrcFondo !== wrap) {
+              var rect = wrap.getBoundingClientRect()
+              var mid  = rect.left + rect.width / 2
+              if (e.clientX < mid) grid.insertBefore(dragSrcFondo, wrap)
+              else grid.insertBefore(dragSrcFondo, wrap.nextSibling)
+            }
+          })
+          grid.appendChild(wrap)
+        })
+      }
+
+      // Subir múltiples fondos
+      var fondoFileInput = document.getElementById('fondoFileInput')
+      document.getElementById('btnSubirFondo').addEventListener('click', function() {
+        fondoFileInput.value = ''; fondoFileInput.click()
+      })
+      fondoFileInput.addEventListener('change', async function(e) {
+        var files = Array.from(e.target.files)
+        if (!files.length) return
+        var btn = document.getElementById('btnSubirFondo')
+        btn.disabled = true; btn.textContent = 'Subiendo...'
+        var errores = 0
+        for (var i = 0; i < files.length; i++) {
+          var file = files[i]
+          var idx  = Date.now() + i
+          var ext  = file.name.split('.').pop()
+          var path = 'fotoproducto/fondo-' + idx + '.' + ext
+          var tipo = 'foto-fondo-' + idx
+          try {
+            var upRes = await supabase.storage.from('media').upload(path, file, { upsert: true })
+            if (upRes.error) throw upRes.error
+            var urlRes = supabase.storage.from('media').getPublicUrl(path)
+            var url = urlRes.data.publicUrl
+            await supabase.from('media').insert([{ tipo: tipo, url: url, nombre: path }])
+            fondosAdmin.push({ tipo: tipo, url: url, nombre: path })
+          } catch(err) { errores++; console.warn('Error subiendo fondo:', err) }
+        }
+        await guardarOrdenFondos()
+        renderFondosAdmin()
+        btn.disabled = false
+        btn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg> Subir fondos'
+        if (errores) alert(errores + ' archivo(s) no se pudieron subir.')
+      })
+
+      // Cargar fondos al abrir el modal de gestión
+      var _origAbrirGestion = window.abrirGestionHerramientas
+      window.abrirGestionHerramientas = async function() {
+        await _origAbrirGestion()
+        cargarFondosAdmin()
+      }
 
     })()
 
@@ -7667,6 +8725,18 @@
         <div>
           <p style="font-family:var(--font-head);font-size:.62rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--cyan);margin:0 0 .75rem">💼 Área de Emprendedores</p>
           <div id="gestion-empr-lista" style="display:flex;flex-direction:column;gap:0.6rem"></div>
+        </div>
+
+        <!-- Fondos Foto de Producto -->
+        <div>
+          <p style="font-family:var(--font-head);font-size:.62rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--cyan);margin:0 0 .5rem">🖼 Fondos — Cambiar fondo de producto</p>
+          <p style="font-size:.72rem;color:var(--muted);margin:0 0 .75rem">Subí imágenes de fondo para que los usuarios puedan usarlas en la herramienta de cambio de fondo.</p>
+          <div id="gestionFondosGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(90px,1fr));gap:.5rem;margin-bottom:.75rem"></div>
+          <button class="btn btn--sm" id="btnSubirFondo" style="display:flex;align-items:center;gap:.4rem">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+            Subir fondos
+          </button>
+          <input type="file" id="fondoFileInput" accept="image/*" multiple style="display:none"/>
         </div>
 
         <div style="display:flex;justify-content:flex-end;gap:0.75rem;margin-top:.5rem">
