@@ -5498,7 +5498,7 @@
           if (!row.tipo || row.tipo.endsWith('-pos')) return
           const tool = row.tipo.replace('hcard-', '')
           if (row.url) {
-            herramientaSetImg(tool, row.url + '?v=' + Date.now())
+            herramientaSetImg(tool, row.url)
             const pos = posMap['hcard-' + tool]
             if (pos) {
               const img = document.querySelector('#hcard-visual-' + tool + ' img')
@@ -6152,7 +6152,7 @@
     cargarMedia()
     cargarSugerencias()
     cargarYoutube()
-    cargarHcardImgs()
+    setTimeout(cargarHcardImgs, 500)
     // ── TENDENCIAS MULTI-PLATAFORMA ────────────────────────────────────
     let tendPlatActual = 'todas'
     const tendCache = {}
@@ -8008,10 +8008,12 @@
       console.info('[Rabbit3D] Productos cargados:', productos.length)
       await verificarSesionUsuario()
       console.info('[Rabbit3D] Sesión verificada, esAdmin:', esAdmin)
-      await cargarTendOcultas()
-      // Cargar makers DESPUÉS de verificar sesión — así sabe si el usuario está logueado
-      await cargarMakers()
-      // Cargar tendencias DESPUÉS de verificar sesión — así esAdmin está definido para el botón eliminar
+      // Cargar en paralelo todo lo que puede ir junto
+      await Promise.all([
+        cargarTendOcultas(),
+        cargarMakers(),
+      ])
+      // Cargar tendencias sin bloquear — no es crítico para el render inicial
       cargarMakerworld()
       // ── MAKERWORLD TRENDING ─────────────────────────────────────────────
     })()
@@ -8077,7 +8079,7 @@
       tagCards()
       var currentOrder = TOOLS.slice()
       var dragSrc = null
-      loadOrderFromSupabase()
+      setTimeout(loadOrderFromSupabase, 300)
 
       window.abrirGestionHerramientas = function() {
         renderLista()
@@ -8251,7 +8253,7 @@
       // Apply saved order on load (async from Supabase)
       var emprCurrentOrder = EMPR_TOOLS.slice()
       var emprDragSrc = null
-      loadEmprOrderFromSupabase()
+      setTimeout(loadEmprOrderFromSupabase, 400)
 
       function setEmprCardImg(toolId, url) {
         var card = document.querySelector('[data-empr-id="' + toolId + '"]')
@@ -8364,7 +8366,7 @@
           })
         } catch(e) { console.warn('cargarEmprImgs:', e) }
       }
-      cargarEmprImgs()
+      setTimeout(cargarEmprImgs, 600)
 
       var emprImgTarget = null
       window.gestionEmprEditarImg = function(toolId) {
@@ -8569,15 +8571,16 @@
         sessionStorage.setItem('lm_session', sessionId)
       }
 
-      async function trackEvento(tipo, herramienta) {
-        try {
-          await supabase.from('eventos').insert([{
+      function trackEvento(tipo, herramienta) {
+        // Fire-and-forget — no await, no bloqueo
+        setTimeout(() => {
+          supabase.from('eventos').insert([{
             tipo,
             herramienta: herramienta || null,
             user_id: usuarioActual?.id || null,
             session_id: sessionId
-          }])
-        } catch(e) { /* silencioso */ }
+          }]).then(() => {}).catch(() => {})
+        }, 2000)  // Esperar 2s para no competir con el init
       }
 
       // Registrar visita (una vez por sesión)
