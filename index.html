@@ -1331,11 +1331,11 @@
         <div class="foto-paso" id="fotoPaso1">
           <p class="foto-paso__num">1 · Subí la foto de tu producto</p>
           <div class="foto-upload-zone" id="fotoUploadZone">
-            <input type="file" id="fotoProductoFile" accept="image/*" style="display:none"/>
+            <input type="file" id="fotoProductoFile" accept=".jpg,.jpeg,.png,image/jpeg,image/png" style="display:none"/>
             <div id="fotoUploadInner" style="display:flex;flex-direction:column;align-items:center;gap:.5rem;pointer-events:none">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="32" height="32" style="color:var(--cyan);opacity:.7"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
               <span style="font-size:.8rem;font-weight:600;color:var(--text)">Clic o arrastrá tu imagen</span>
-              <span style="font-size:.7rem;color:var(--muted)">Mejor resultado con fondo claro o sólido</span>
+              <span style="font-size:.7rem;color:var(--muted)">JPG o PNG · Mejor resultado con fondo claro o sólido</span>
             </div>
           </div>
         </div>
@@ -1437,10 +1437,10 @@
             <div class="foto-ctrl-section">🎨 Integración con el fondo</div>
             <div class="foto-ctrl-row" style="background:rgba(21,154,156,.07);border:1px solid rgba(21,154,156,.25);border-radius:8px;padding:.4rem .5rem;margin-bottom:.25rem">
               <label class="foto-ctrl-label" style="color:var(--cyan);font-size:.6rem">✨ Tinte ambiental</label>
-              <input type="range" id="fotoTinte" min="-40" max="40" value="0" class="mejora-slider" style="flex:1"/>
+              <input type="range" id="fotoTinte" min="0" max="40" value="0" class="mejora-slider" style="flex:1"/>
               <span id="fotoTinteVal" style="font-size:.75rem;color:var(--cyan);width:38px;text-align:right">0%</span>
             </div>
-            <p style="font-size:.6rem;color:var(--muted);margin:-.1rem 0 .5rem;text-align:center">← neutral · mezcla el color del fondo al producto →</p>
+            <p style="font-size:.6rem;color:var(--muted);margin:-.1rem 0 .5rem;text-align:center">Mezcla el color del fondo al producto para integrarlos</p>
             <div class="foto-ctrl-row">
               <label class="foto-ctrl-label">Suavizar bordes</label>
               <input type="range" id="fotoBordes" min="0" max="20" value="0" class="mejora-slider" style="flex:1"/>
@@ -5979,7 +5979,7 @@
           var tl=[];_buildLid(tl,p.L,p.W,p.tapa,p.wall,p.r,lipH,tol,segs)
           tl.forEach(function(t){tris.push({n:t.n,v:t.v.map(function(v){return[v[0]+offX2,v[1],v[2]]})})})
         }
-        var bytes=writeSTL(tris,'caja.stl')
+        var bytes=writeSTL(tris,'caja.stl'); if(window.trackDescarga) trackDescarga('caja')
         document.getElementById('caja-tris').textContent=tris.length.toLocaleString()
         document.getElementById('caja-size').textContent=(bytes/1024).toFixed(1)+' KB'
         document.getElementById('caja-status').textContent='STL generado — '+tris.length.toLocaleString()+' triángulos'
@@ -6033,7 +6033,7 @@
       window.macetaGenerar=function(){
         var p=macGetP(),tris=[]
         _buildMaceta(tris,p.rTop,p.rBot,p.H,p.wall,p.baseH,p.drenajeD,p.segs)
-        var bytes=writeSTL(tris,'maceta.stl')
+        var bytes=writeSTL(tris,'maceta.stl'); if(window.trackDescarga) trackDescarga('maceta')
         document.getElementById('mac-tris').textContent=tris.length.toLocaleString()
         document.getElementById('mac-size').textContent=(bytes/1024).toFixed(1)+' KB'
         document.getElementById('mac-status').textContent='STL generado — '+tris.length.toLocaleString()+' triángulos'
@@ -6067,7 +6067,7 @@
       window.marcoGenerar=function(){
         var p=marGetP(),tris=[]
         _buildMarco(tris,p.fw,p.fh,p.bw,p.d)
-        var bytes=writeSTL(tris,'marco.stl')
+        var bytes=writeSTL(tris,'marco.stl'); if(window.trackDescarga) trackDescarga('marco')
         document.getElementById('mar-tris').textContent=tris.length.toLocaleString()
         document.getElementById('mar-size').textContent=(bytes/1024).toFixed(1)+' KB'
         document.getElementById('mar-status').textContent='STL generado — '+tris.length.toLocaleString()+' triángulos'
@@ -6137,7 +6137,7 @@
         _wall(tris,outer,0,p.filo,true)
         _wall(tris,inner,0,p.filo,false)
         _ring(tris,outer,inner,p.filo,true)
-        var bytes=writeSTL(tris,'cortante.stl')
+        var bytes=writeSTL(tris,'cortante.stl'); if(window.trackDescarga) trackDescarga('cortante')
         document.getElementById('cort-tris').textContent=tris.length.toLocaleString()
         document.getElementById('cort-size').textContent=(bytes/1024).toFixed(1)+' KB'
         document.getElementById('cort-status').textContent='STL generado — '+tris.length.toLocaleString()+' triángulos'
@@ -6939,7 +6939,33 @@
       fileInput.addEventListener('change', e => fotoCargar(e.target.files[0]))
 
       function fotoCargar(file) {
-        if (!file || !file.type.startsWith('image/')) return
+        if (!file) return
+        // Validar formato
+        const validTypes = ['image/jpeg','image/jpg','image/png']
+        if (!validTypes.includes(file.type) && !file.name.match(/\.(jpe?g|png)$/i)) {
+          const zone  = document.getElementById('fotoUploadZone')
+          const inner = document.getElementById('fotoUploadInner')
+          zone.style.borderColor = '#f87171'
+          zone.style.background  = 'rgba(248,113,113,.05)'
+          inner.innerHTML = `
+            <div style="display:flex;flex-direction:column;align-items:center;gap:.5rem;padding:1.5rem;pointer-events:none">
+              <svg viewBox="0 0 24 24" fill="none" stroke="#f87171" stroke-width="1.5" width="36" height="36"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+              <p style="margin:0;font-size:.9rem;font-weight:700;color:#f87171;font-family:var(--font-head)">FORMATO NO VÁLIDO</p>
+              <p style="margin:0;font-size:.78rem;color:var(--text)">"${file.name}"</p>
+              <p style="margin:0;font-size:.72rem;color:var(--muted)">Usá JPG o PNG · Hacé clic para intentar de nuevo</p>
+            </div>`
+          setTimeout(() => {
+            zone.style.borderColor = ''
+            zone.style.background  = ''
+            inner.innerHTML = `
+              <div style="display:flex;flex-direction:column;align-items:center;gap:.5rem;pointer-events:none">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="32" height="32" style="color:var(--cyan);opacity:.7"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                <span style="font-size:.8rem;font-weight:600;color:var(--text)">Clic o arrastrá tu imagen</span>
+                <span style="font-size:.7rem;color:var(--muted)">JPG o PNG</span>
+              </div>`
+          }, 3000)
+          return
+        }
         // Mostrar estado de carga prominente
         const zone = document.getElementById('fotoUploadZone')
         const inner = document.getElementById('fotoUploadInner')
@@ -7223,7 +7249,7 @@
         const brillo      = parseInt(document.getElementById('fotoBrillo')?.value     || 0)
         const contraste   = parseInt(document.getElementById('fotoContraste')?.value  || 0)
         const saturacion  = parseInt(document.getElementById('fotoSaturacion')?.value || 0)
-        const tinte       = parseInt(document.getElementById('fotoTinte')?.value      || 0) / 40  // -1 a 1
+        const tinte       = parseInt(document.getElementById('fotoTinte')?.value      || 0) / 100  // -0.4 a +0.4
         const bordes      = parseInt(document.getElementById('fotoBordes')?.value     || 0)
         const opacidad    = parseInt(document.getElementById('fotoOpacidad')?.value   || 100) / 100
         const sombraOpac  = parseInt(document.getElementById('fotoSombraOpac')?.value || 0) / 100
@@ -7255,18 +7281,23 @@
 
         // ── Extraer color promedio del fondo para tinte ambiental ─────
         let tintR = 128, tintG = 128, tintB = 128
-        if (tinte > 0 && (fotoBgImg || fotoBgColor)) {
+        if (tinte !== 0 && (fotoBgImg || fotoBgColor)) {
           if (fotoBgColor) {
             const hex = fotoBgColor.replace('#','')
-            tintR = parseInt(hex.slice(0,2),16)
-            tintG = parseInt(hex.slice(2,4),16)
-            tintB = parseInt(hex.slice(4,6),16)
+            tintR = parseInt(hex.slice(0,2),16) || 0
+            tintG = parseInt(hex.slice(2,4),16) || 0
+            tintB = parseInt(hex.slice(4,6),16) || 0
           } else {
-            // Samplear centro del fondo
-            const sample = ctx.getImageData(OUT_W/2-50, OUT_H/2-50, 100, 100).data
-            let sr=0,sg=0,sb=0,sn=sample.length/4
-            for(let i=0;i<sample.length;i+=4){sr+=sample[i];sg+=sample[i+1];sb+=sample[i+2]}
-            tintR=sr/sn; tintG=sg/sn; tintB=sb/sn
+            // Samplear esquinas del fondo (evitar el centro donde puede estar el producto)
+            const pts = [[10,10],[OUT_W-60,10],[10,OUT_H-60],[OUT_W-60,OUT_H-60]]
+            let sr=0,sg=0,sb=0,sn=0
+            pts.forEach(([px,py]) => {
+              try {
+                const s = ctx.getImageData(px, py, 50, 50).data
+                for(let i=0;i<s.length;i+=4){sr+=s[i];sg+=s[i+1];sb+=s[i+2];sn++}
+              } catch(e){}
+            })
+            if (sn > 0) { tintR=sr/sn; tintG=sg/sn; tintB=sb/sn }
           }
         }
 
@@ -7277,40 +7308,42 @@
         tmpCtx.putImageData(fotoRecortada, 0, 0)
 
         // Aplicar brillo/contraste/saturación/tinte via pixel manipulation
-        if (brillo !== 0 || contraste !== 0 || saturacion !== 0 || tinte > 0) {
+        if (brillo !== 0 || contraste !== 0 || saturacion !== 0 || tinte !== 0) {
           const imgd = tmpCtx.getImageData(0, 0, tmp.width, tmp.height)
           const d    = imgd.data
           const cf   = contraste !== 0 ? (259*(contraste+255))/(255*(259-contraste)) : 1
           for (let i = 0; i < d.length; i += 4) {
             if (d[i+3] === 0) continue
             let r = d[i], g = d[i+1], b = d[i+2]
-            // Brillo
-            r += brillo; g += brillo; b += brillo
-            // Contraste
-            if (contraste !== 0) {
-              r = cf*(r-128)+128; g = cf*(g-128)+128; b = cf*(b-128)+128
+            // Brillo — clamp inmediato
+            if (brillo !== 0) {
+              r = Math.max(0, Math.min(255, r + brillo))
+              g = Math.max(0, Math.min(255, g + brillo))
+              b = Math.max(0, Math.min(255, b + brillo))
             }
-            // Saturación
+            // Contraste — clamp inmediato
+            if (contraste !== 0) {
+              r = Math.max(0, Math.min(255, cf*(r-128)+128))
+              g = Math.max(0, Math.min(255, cf*(g-128)+128))
+              b = Math.max(0, Math.min(255, cf*(b-128)+128))
+            }
+            // Saturación — clamp inmediato
             if (saturacion !== 0) {
               const gray = 0.299*r + 0.587*g + 0.114*b
               const sf   = 1 + saturacion/100
-              r = gray+sf*(r-gray); g = gray+sf*(g-gray); b = gray+sf*(b-gray)
+              r = Math.max(0, Math.min(255, gray + sf*(r-gray)))
+              g = Math.max(0, Math.min(255, gray + sf*(g-gray)))
+              b = Math.max(0, Math.min(255, gray + sf*(b-gray)))
             }
-            // Tinte ambiental: positivo = mezcla color del fondo, negativo = desatura hacia gris
+            // Tinte ambiental — mezcla el color del fondo al producto
             if (tinte > 0) {
               r = r*(1-tinte) + tintR*tinte
               g = g*(1-tinte) + tintG*tinte
               b = b*(1-tinte) + tintB*tinte
-            } else if (tinte < 0) {
-              const absTinte = -tinte
-              const grayVal = 0.299*r + 0.587*g + 0.114*b
-              r = r*(1-absTinte) + grayVal*absTinte
-              g = g*(1-absTinte) + grayVal*absTinte
-              b = b*(1-absTinte) + grayVal*absTinte
             }
-            d[i]   = Math.max(0,Math.min(255,r))
-            d[i+1] = Math.max(0,Math.min(255,g))
-            d[i+2] = Math.max(0,Math.min(255,b))
+            d[i]   = Math.max(0, Math.min(255, r))
+            d[i+1] = Math.max(0, Math.min(255, g))
+            d[i+2] = Math.max(0, Math.min(255, b))
           }
           tmpCtx.putImageData(imgd, 0, 0)
         }
@@ -7402,7 +7435,7 @@
         ['fotoBrillo','fotoBrilloVal',''],
         ['fotoContraste','fotoContrasteVal',''],
         ['fotoSaturacion','fotoSaturacionVal',''],
-        ['fotoTinte','fotoTinteVal','%', true],
+        ['fotoTinte','fotoTinteVal','%'],
         ['fotoBordes','fotoBordesVal','px'],
         ['fotoOpacidad','fotoOpacidadVal','%'],
         ['fotoSombraOpac','fotoSombraOpacVal','%'],
@@ -7488,6 +7521,7 @@
       document.getElementById('fotoBtnDescargar').addEventListener('click', () => {
         if (!requireLogin) return
         window.requireLogin(() => {
+          if(window.trackDescarga) trackDescarga('fotoproducto')
           canvas.toBlob(blob => {
             const url = URL.createObjectURL(blob)
             const a = document.createElement('a')
@@ -8525,6 +8559,233 @@
     })()
 
     // ══════════════════════════════════════════
+    //  TRACKING DE EVENTOS
+    // ══════════════════════════════════════════
+    ;(function() {
+      // Generar o recuperar session_id para anónimos
+      let sessionId = sessionStorage.getItem('lm_session')
+      if (!sessionId) {
+        sessionId = 'sess_' + Date.now() + '_' + Math.random().toString(36).slice(2,8)
+        sessionStorage.setItem('lm_session', sessionId)
+      }
+
+      async function trackEvento(tipo, herramienta) {
+        try {
+          await supabase.from('eventos').insert([{
+            tipo,
+            herramienta: herramienta || null,
+            user_id: usuarioActual?.id || null,
+            session_id: sessionId
+          }])
+        } catch(e) { /* silencioso */ }
+      }
+
+      // Registrar visita (una vez por sesión)
+      if (!sessionStorage.getItem('lm_visited')) {
+        sessionStorage.setItem('lm_visited', '1')
+        trackEvento('visit', null)
+      }
+
+      // Exponer función global para registrar usos y descargas
+      window.trackUso      = (herramienta) => trackEvento('tool_use', herramienta)
+      window.trackDescarga = (herramienta) => trackEvento('download', herramienta)
+
+      // Auto-trackear apertura de herramientas del Laboratorio 3D
+      const _origAbrirH = window.abrirHerramienta
+      window.abrirHerramienta = function(id) {
+        _origAbrirH(id)
+        trackEvento('tool_use', id.replace('modal-',''))
+      }
+
+      // Auto-trackear apertura de herramientas de Emprendedores
+      const _origAbrirE = window.abrirEmprendedor
+      window.abrirEmprendedor = function(id) {
+        _origAbrirE(id)
+        trackEvento('tool_use', id.replace('modal-',''))
+      }
+
+    })()
+
+    // ══════════════════════════════════════════
+    //  ESTADÍSTICAS ADMIN
+    // ══════════════════════════════════════════
+    ;(function() {
+
+      const NOMBRES = {
+        'visit':         'Visita',
+        'stl':           'Cuadros 2D',
+        'llavero':       'Llavero',
+        'caja':          'Caja con tapa',
+        'maceta':        'Maceta',
+        'marco':         'Marco',
+        'cortante':      'Cortante',
+        'tarjetas':      'Tarjetas',
+        'costos':        'Calculadora costos',
+        'mejora':        'Mejorador imágenes',
+        'presupuesto':   'Presupuesto PDF',
+        'fotoproducto':  'Cambiar fondo producto',
+      }
+
+      window.abrirEstadisticas = function() {
+        const el = document.getElementById('modalEstadisticas')
+        if (!el) return
+        el.style.display = 'flex'
+        document.body.style.overflow = 'hidden'
+        cargarStats(1)
+      }
+      window.cerrarEstadisticas = function() {
+        const el = document.getElementById('modalEstadisticas')
+        if (el) el.style.display = 'none'
+        document.body.style.overflow = ''
+      }
+      document.getElementById('modalEstadisticas')?.addEventListener('click', e => {
+        if (e.target === document.getElementById('modalEstadisticas')) cerrarEstadisticas()
+      })
+
+      window.cargarStats = async function(days) {
+        // Actualizar botones activos
+        document.querySelectorAll('.stats-period-btn').forEach(b => {
+          b.classList.toggle('stats-period-btn--active', parseInt(b.dataset.days) === days)
+        })
+
+        const desde = new Date()
+        desde.setDate(desde.getDate() - days + 1)
+        desde.setHours(0,0,0,0)
+        const desdeISO = desde.toISOString()
+
+        try {
+          // Traer todos los eventos del período
+          const { data, error } = await supabase
+            .from('eventos')
+            .select('tipo, herramienta, session_id, user_id, created_at')
+            .gte('created_at', desdeISO)
+            .order('created_at', { ascending: true })
+
+          if (error) throw error
+
+          // ── KPIs ───────────────────────────────────────────────
+          const visitas    = new Set(data.filter(e => e.tipo==='visit').map(e => e.session_id))
+          const usos       = data.filter(e => e.tipo==='tool_use')
+          const descargas  = data.filter(e => e.tipo==='download')
+
+          document.getElementById('kpiVisitas').textContent   = visitas.size
+          document.getElementById('kpiUsos').textContent      = usos.length
+          document.getElementById('kpiDescargas').textContent = descargas.length
+
+          // KPI usuarios — usar tabla correcta 'profiles'
+          const { count: countUsers } = await supabase.from('profiles').select('*', { count: 'exact', head: true })
+          document.getElementById('kpiUsuarios').textContent = countUsers ?? '—'
+
+          // Datos históricos adicionales (siempre, sin filtro de fecha)
+          const { count: countProductos } = await supabase.from('productos').select('*', { count: 'exact', head: true })
+          const { count: countMakers }    = await supabase.from('makers').select('*', { count: 'exact', head: true })
+          document.getElementById('kpiProductos').textContent = countProductos ?? '—'
+          document.getElementById('kpiMakers').textContent    = countMakers ?? '—'
+
+          // ── Gráfico de actividad ───────────────────────────────
+          const byDay = {}
+          data.filter(e => e.tipo==='visit').forEach(e => {
+            const day = e.created_at.slice(0,10)
+            byDay[day] = (byDay[day] || 0) + 1
+          })
+          drawChart(byDay, days)
+
+          // ── Herramientas más usadas ────────────────────────────
+          const toolCount = {}
+          usos.forEach(e => {
+            if (!e.herramienta) return
+            toolCount[e.herramienta] = (toolCount[e.herramienta] || 0) + 1
+          })
+          renderBarras('statsHerramientas', toolCount, 'usos')
+
+          // ── Descargas por herramienta ──────────────────────────
+          const dlCount = {}
+          descargas.forEach(e => {
+            if (!e.herramienta) return
+            dlCount[e.herramienta] = (dlCount[e.herramienta] || 0) + 1
+          })
+          renderBarras('statsDescargas', dlCount, 'descargas')
+
+          document.getElementById('statsLastUpdate').textContent =
+            'Actualizado: ' + new Date().toLocaleTimeString('es-AR')
+
+        } catch(e) {
+          console.error('cargarStats:', e)
+        }
+      }
+
+      function renderBarras(containerId, countObj, sufijo) {
+        const el = document.getElementById(containerId)
+        if (!el) return
+        const entries = Object.entries(countObj).sort((a,b) => b[1]-a[1])
+        if (!entries.length) { el.innerHTML = '<p style="color:var(--muted);font-size:.75rem">Sin datos en este período</p>'; return }
+        const max = entries[0][1]
+        el.innerHTML = entries.map(([key, val]) => {
+          const pct = Math.round(val/max*100)
+          const label = NOMBRES[key] || key
+          return `<div style="display:grid;grid-template-columns:140px 1fr 40px;gap:.5rem;align-items:center">
+            <span style="font-size:.72rem;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${label}">${label}</span>
+            <div style="background:var(--bg3);border-radius:4px;height:8px;overflow:hidden">
+              <div style="background:var(--cyan);height:100%;width:${pct}%;border-radius:4px;transition:width .4s"></div>
+            </div>
+            <span style="font-size:.72rem;color:var(--cyan);text-align:right">${val}</span>
+          </div>`
+        }).join('')
+      }
+
+      function drawChart(byDay, days) {
+        const canvas = document.getElementById('statsChartCanvas')
+        if (!canvas) return
+        const wrap = canvas.parentElement
+        canvas.width  = wrap.clientWidth  || 600
+        canvas.height = wrap.clientHeight || 100
+        const ctx = canvas.getContext('2d')
+        ctx.clearRect(0, 0, canvas.width, canvas.height)
+
+        // Generar todos los días del período
+        const labels = [], values = []
+        for (let i = days-1; i >= 0; i--) {
+          const d = new Date(); d.setDate(d.getDate()-i)
+          const key = d.toISOString().slice(0,10)
+          labels.push(key.slice(5))  // MM-DD
+          values.push(byDay[key] || 0)
+        }
+        if (!values.some(v => v > 0)) return
+
+        const max = Math.max(...values, 1)
+        const W = canvas.width, H = canvas.height
+        const padL = 10, padR = 10, padT = 10, padB = 20
+        const chartW = W - padL - padR
+        const chartH = H - padT - padB
+        const barW = Math.max(2, chartW / values.length - 2)
+
+        // Grid line
+        ctx.strokeStyle = 'rgba(255,255,255,.06)'; ctx.lineWidth = 1
+        ctx.beginPath(); ctx.moveTo(padL, padT); ctx.lineTo(W-padR, padT); ctx.stroke()
+
+        // Barras
+        values.forEach((v, i) => {
+          const x = padL + i * (chartW / values.length)
+          const bh = (v / max) * chartH
+          const y = padT + chartH - bh
+          const alpha = v > 0 ? 0.85 : 0.15
+          ctx.fillStyle = `rgba(21,154,156,${alpha})`
+          ctx.beginPath()
+          ctx.roundRect(x, y, barW, bh, 2)
+          ctx.fill()
+        })
+
+        // Labels (cada N días para no solapar)
+        ctx.fillStyle = 'rgba(255,255,255,.4)'; ctx.font = '9px sans-serif'; ctx.textAlign = 'center'
+        const step = Math.ceil(labels.length / 8)
+        labels.forEach((l, i) => {
+          if (i % step === 0) ctx.fillText(l, padL + i*(chartW/values.length) + barW/2, H - 4)
+        })
+      }
+
+    })()
+
+    // ══════════════════════════════════════════
     //  ADMIN PANEL FLOTANTE — toggle collapse
     // ══════════════════════════════════════════
     ;(function() {
@@ -8811,7 +9072,61 @@
       <button class="btn btn--sm" id="btnGestionarHerramientas" onclick="abrirGestionHerramientas()">🔧 Herramientas</button>
       <button class="btn btn--sm" id="btnActualizarMW" onclick="actualizarMakerworld()">🔄 Tendencias</button>
       <button class="btn btn--sm" id="btnVerReportes" onclick="abrirReportesAdmin()">🐛 Reportes</button>
+      <button class="btn btn--sm" id="btnEstadisticas" onclick="abrirEstadisticas()">📊 Estadísticas</button>
       <button class="btn btn--sm btn--danger" id="btnLogout">🚪 Cerrar sesión</button>
+    </div>
+  </div>
+
+  <!-- MODAL ESTADÍSTICAS ADMIN -->
+  <div class="modal-overlay" id="modalEstadisticas" style="display:none;z-index:9999">
+    <div class="modal" style="max-width:820px;width:95%;max-height:90vh;overflow-y:auto;gap:.75rem">
+      <button class="modal__close" onclick="cerrarEstadisticas()">✕</button>
+      <h2 class="modal__title">📊 Estadísticas</h2>
+
+      <!-- Selector de período -->
+      <div style="display:flex;gap:.4rem;flex-wrap:wrap">
+        <button class="stats-period-btn stats-period-btn--active" data-days="1" onclick="cargarStats(1)">Hoy</button>
+        <button class="stats-period-btn" data-days="7" onclick="cargarStats(7)">7 días</button>
+        <button class="stats-period-btn" data-days="30" onclick="cargarStats(30)">30 días</button>
+        <button class="stats-period-btn" data-days="90" onclick="cargarStats(90)">3 meses</button>
+        <button class="stats-period-btn" data-days="365" onclick="cargarStats(365)">1 año</button>
+      </div>
+
+      <!-- KPIs -->
+      <div class="stats-kpi-grid" id="statsKpis">
+        <div class="stats-kpi"><div class="stats-kpi__val" id="kpiVisitas">—</div><div class="stats-kpi__label">Visitas únicas</div></div>
+        <div class="stats-kpi"><div class="stats-kpi__val" id="kpiUsos">—</div><div class="stats-kpi__label">Usos de herramientas</div></div>
+        <div class="stats-kpi"><div class="stats-kpi__val" id="kpiDescargas">—</div><div class="stats-kpi__label">Descargas</div></div>
+        <div class="stats-kpi"><div class="stats-kpi__val" id="kpiUsuarios">—</div><div class="stats-kpi__label">Usuarios registrados</div></div>
+        <div class="stats-kpi" style="border-color:rgba(21,154,156,.3)"><div class="stats-kpi__val" id="kpiProductos" style="font-size:1.4rem">—</div><div class="stats-kpi__label">Productos en catálogo</div></div>
+        <div class="stats-kpi" style="border-color:rgba(21,154,156,.3)"><div class="stats-kpi__val" id="kpiMakers" style="font-size:1.4rem">—</div><div class="stats-kpi__label">Makers en comunidad</div></div>
+      </div>
+
+      <!-- Gráfico de visitas por día -->
+      <div>
+        <p style="font-family:var(--font-head);font-size:.62rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--cyan);margin:0 0 .5rem">Actividad diaria</p>
+        <div id="statsChart" style="width:100%;height:120px;position:relative;background:var(--bg3);border-radius:8px;overflow:hidden;padding:.5rem">
+          <canvas id="statsChartCanvas" style="width:100%;height:100%"></canvas>
+        </div>
+      </div>
+
+      <!-- Herramientas más usadas -->
+      <div>
+        <p style="font-family:var(--font-head);font-size:.62rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--cyan);margin:0 0 .5rem">Herramientas más usadas</p>
+        <div id="statsHerramientas" style="display:flex;flex-direction:column;gap:.35rem">
+          <div style="color:var(--muted);font-size:.78rem">Cargando...</div>
+        </div>
+      </div>
+
+      <!-- Descargas por herramienta -->
+      <div>
+        <p style="font-family:var(--font-head);font-size:.62rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--cyan);margin:0 0 .5rem">Descargas por herramienta</p>
+        <div id="statsDescargas" style="display:flex;flex-direction:column;gap:.35rem">
+          <div style="color:var(--muted);font-size:.78rem">Cargando...</div>
+        </div>
+      </div>
+
+      <p style="font-size:.65rem;color:var(--muted);text-align:right;margin:0" id="statsLastUpdate"></p>
     </div>
   </div>
 
