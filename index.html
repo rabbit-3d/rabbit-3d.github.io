@@ -8476,9 +8476,8 @@
           del.style.cssText = 'position:absolute;top:2px;right:2px;background:rgba(0,0,0,.7);color:#fff;border:none;border-radius:4px;width:18px;height:18px;font-size:.6rem;cursor:pointer;display:flex;align-items:center;justify-content:center;line-height:1'
           del.addEventListener('click', async function(e) {
             e.stopPropagation()
-            if (!confirm('¿Eliminar este fondo?')) return
+            if (!confirm('¿Eliminar este fondo? Recordá también borrar el archivo de tu repo de GitHub.')) return
             try {
-              await supabase.storage.from('media').remove([fondo.nombre])
               await supabase.from('media').delete().eq('tipo', fondo.tipo)
               fondosAdmin = fondosAdmin.filter(function(f){ return f.tipo !== fondo.tipo })
               await guardarOrdenFondos()
@@ -8519,36 +8518,92 @@
       }
 
       // Subir múltiples fondos
-      var fondoFileInput = document.getElementById('fondoFileInput')
+      var fondoFileInput   = document.getElementById('fondoFileInput')
+      var fondoFolderInput = document.getElementById('fondoFolderInput')
+
       document.getElementById('btnSubirFondo').addEventListener('click', function() {
         fondoFileInput.value = ''; fondoFileInput.click()
+      })
+      document.getElementById('btnSubirCarpeta').addEventListener('click', function() {
+        fondoFolderInput.value = ''; fondoFolderInput.click()
+      })
+
+      // Mismo handler para archivos y carpeta
+      function procesarFondos(e) { fondoFileInput.dispatchEvent(Object.assign(new Event('change'), { target: e.target })) }
+      fondoFolderInput.addEventListener('change', async function(e) {
+        // Reusar el mismo handler pasando los archivos
+        var files = Array.from(e.target.files).filter(function(f){ return f.type.startsWith('image/') })
+        if (!files.length) return
+        var btn = document.getElementById('btnSubirFondo')
+        var btn2 = document.getElementById('btnSubirCarpeta')
+        btn.disabled = true; btn2.disabled = true; btn2.textContent = 'Registrando...'
+
+        var instrDiv = document.getElementById('fondoGithubInstr')
+        var nombres = files.map(function(f){ return f.name }).join(', ')
+        if (instrDiv) {
+          instrDiv.style.display = 'block'
+          instrDiv.innerHTML = '<p style="font-size:.72rem;color:var(--cyan);margin:0 0 .4rem;font-weight:600">📁 Subí estos archivos a GitHub:</p>' +
+            '<ol style="font-size:.7rem;color:var(--text);margin:0 0 .5rem;padding-left:1.2rem;line-height:1.8">' +
+            '<li>En tu repo de GitHub, subí la carpeta <strong>fondos</strong> completa</li>' +
+            '<li>Esperá que se publiquen (~2 min) y los fondos estarán disponibles</li>' +
+            '</ol>' +
+            '<p style="font-size:.7rem;color:var(--muted);margin:0">Archivos detectados: ' + files.length + '</p>'
+        }
+
+        var errores = 0
+        for (var i = 0; i < files.length; i++) {
+          var file = files[i]
+          var idx  = Date.now() + i
+          var tipo = 'foto-fondo-' + idx
+          var url  = 'https://rabbit-3d.github.io/fondos/' + file.name
+          try {
+            await supabase.from('media').insert([{ tipo: tipo, url: url, nombre: file.name }])
+            fondosAdmin.push({ tipo: tipo, url: url, nombre: file.name })
+          } catch(err) { errores++; console.warn('Error registrando fondo:', err) }
+        }
+        await guardarOrdenFondos()
+        renderFondosAdmin()
+        btn.disabled = false; btn2.disabled = false
+        btn2.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1-2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg> Subir fondos (carpeta)'
+        if (errores) alert(errores + ' archivo(s) no se pudieron registrar.')
       })
       fondoFileInput.addEventListener('change', async function(e) {
         var files = Array.from(e.target.files)
         if (!files.length) return
         var btn = document.getElementById('btnSubirFondo')
-        btn.disabled = true; btn.textContent = 'Subiendo...'
+
+        // Mostrar instrucciones para subir a GitHub
+        var nombres = files.map(function(f){ return f.name }).join(', ')
+        var instrDiv = document.getElementById('fondoGithubInstr')
+        if (instrDiv) {
+          instrDiv.style.display = 'block'
+          instrDiv.innerHTML = '<p style="font-size:.72rem;color:var(--cyan);margin:0 0 .4rem;font-weight:600">📁 Subí estos archivos a GitHub:</p>' +
+            '<ol style="font-size:.7rem;color:var(--text);margin:0 0 .5rem;padding-left:1.2rem;line-height:1.8">' +
+            '<li>En tu repo de GitHub, creá la carpeta <code>fondos/</code> si no existe</li>' +
+            '<li>Subí los archivos: <strong>' + nombres + '</strong></li>' +
+            '<li>Esperá que se publiquen (~2 min) y después hacé clic en "Registrar fondos" abajo</li>' +
+            '</ol>'
+        }
+
+        // Generar las URLs de GitHub Pages y registrarlas en Supabase
+        btn.disabled = true; btn.textContent = 'Registrando...'
         var errores = 0
         for (var i = 0; i < files.length; i++) {
           var file = files[i]
           var idx  = Date.now() + i
-          var ext  = file.name.split('.').pop()
-          var path = 'fotoproducto/fondo-' + idx + '.' + ext
+          var nombre = file.name  // El admin sube el archivo con este nombre a /fondos/
           var tipo = 'foto-fondo-' + idx
+          var url  = 'https://rabbit-3d.github.io/fondos/' + nombre
           try {
-            var upRes = await supabase.storage.from('media').upload(path, file, { upsert: true })
-            if (upRes.error) throw upRes.error
-            var urlRes = supabase.storage.from('media').getPublicUrl(path)
-            var url = urlRes.data.publicUrl
-            await supabase.from('media').insert([{ tipo: tipo, url: url, nombre: path }])
-            fondosAdmin.push({ tipo: tipo, url: url, nombre: path })
-          } catch(err) { errores++; console.warn('Error subiendo fondo:', err) }
+            await supabase.from('media').insert([{ tipo: tipo, url: url, nombre: nombre }])
+            fondosAdmin.push({ tipo: tipo, url: url, nombre: nombre })
+          } catch(err) { errores++; console.warn('Error registrando fondo:', err) }
         }
         await guardarOrdenFondos()
         renderFondosAdmin()
         btn.disabled = false
         btn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg> Subir fondos'
-        if (errores) alert(errores + ' archivo(s) no se pudieron subir.')
+        if (errores) alert(errores + ' archivo(s) no se pudieron registrar.')
       })
 
       // Cargar fondos al abrir el modal de gestión
@@ -8994,13 +9049,19 @@
         <!-- Fondos Foto de Producto -->
         <div>
           <p style="font-family:var(--font-head);font-size:.62rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--cyan);margin:0 0 .5rem">🖼 Fondos — Cambiar fondo de producto</p>
-          <p style="font-size:.72rem;color:var(--muted);margin:0 0 .75rem">Subí imágenes de fondo para que los usuarios puedan usarlas en la herramienta de cambio de fondo.</p>
+          <p style="font-size:.72rem;color:var(--muted);margin:0 0 .75rem">Los fondos se sirven desde GitHub Pages. Subí las imágenes a la carpeta <code>fondos/</code> de tu repo y registralas acá.</p>
+          <div id="fondoGithubInstr" style="display:none;background:rgba(21,154,156,.08);border:1px solid rgba(21,154,156,.3);border-radius:8px;padding:.75rem;margin-bottom:.75rem"></div>
           <div id="gestionFondosGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(90px,1fr));gap:.5rem;margin-bottom:.75rem"></div>
           <button class="btn btn--sm" id="btnSubirFondo" style="display:flex;align-items:center;gap:.4rem">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-            Subir fondos
+            Subir fondos (archivos)
+          </button>
+          <button class="btn btn--sm" id="btnSubirCarpeta" style="display:flex;align-items:center;gap:.4rem">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1-2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+            Subir fondos (carpeta)
           </button>
           <input type="file" id="fondoFileInput" accept="image/*" multiple style="display:none"/>
+          <input type="file" id="fondoFolderInput" accept="image/*" multiple webkitdirectory style="display:none"/>
         </div>
 
         <div style="display:flex;justify-content:flex-end;gap:0.75rem;margin-top:.5rem">
