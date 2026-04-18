@@ -8555,7 +8555,7 @@
           var file = files[i]
           var idx  = Date.now() + i
           var tipo = 'foto-fondo-' + idx
-          var url  = 'https://rabbit-3d.github.io/fondos/' + file.name
+          var url  = 'https://rabbit-3d.github.io/fondos/' + encodeURIComponent(file.name)
           try {
             await supabase.from('media').insert([{ tipo: tipo, url: url, nombre: file.name }])
             fondosAdmin.push({ tipo: tipo, url: url, nombre: file.name })
@@ -8591,9 +8591,9 @@
         for (var i = 0; i < files.length; i++) {
           var file = files[i]
           var idx  = Date.now() + i
-          var nombre = file.name  // El admin sube el archivo con este nombre a /fondos/
+          var nombre = file.name
           var tipo = 'foto-fondo-' + idx
-          var url  = 'https://rabbit-3d.github.io/fondos/' + nombre
+          var url  = 'https://rabbit-3d.github.io/fondos/' + encodeURIComponent(nombre)
           try {
             await supabase.from('media').insert([{ tipo: tipo, url: url, nombre: nombre }])
             fondosAdmin.push({ tipo: tipo, url: url, nombre: nombre })
