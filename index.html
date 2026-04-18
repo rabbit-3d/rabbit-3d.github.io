@@ -6897,7 +6897,7 @@
         fotoFondos.forEach((url, i) => {
           const btn = document.createElement('div')
           btn.className = 'foto-fondo-thumb' + (i === 0 ? ' foto-fondo-thumb--active' : '')
-          btn.style.backgroundImage = `url(${url})`
+          btn.style.backgroundImage = `url("${url}")`
           btn.addEventListener('click', () => {
             document.querySelectorAll('.foto-fondo-thumb').forEach(b => b.classList.remove('foto-fondo-thumb--active'))
             btn.classList.add('foto-fondo-thumb--active')
@@ -8465,7 +8465,7 @@
           wrap.style.cssText = 'position:relative;height:80px;border-radius:8px;overflow:hidden;border:1px solid var(--border);cursor:grab;user-select:none'
           // Imagen de fondo
           var imgDiv = document.createElement('div')
-          imgDiv.style.cssText = 'width:100%;height:100%;background-size:cover;background-position:center;background-image:url('+fondo.url+')'
+          imgDiv.style.cssText = 'width:100%;height:100%;background-size:cover;background-position:center;background-image:url("'+fondo.url+'")'
           // Número de orden
           var numBadge = document.createElement('div')
           numBadge.textContent = idx + 1
@@ -8557,7 +8557,7 @@
           var tipo = 'foto-fondo-' + idx
           var url  = 'https://rabbit-3d.github.io/fondos/' + encodeURIComponent(file.name)
           try {
-            await supabase.from('media').insert([{ tipo: tipo, url: url, nombre: file.name }])
+            await supabase.from('media').upsert([{ tipo: tipo, url: url, nombre: file.name }], { onConflict: 'nombre' })
             fondosAdmin.push({ tipo: tipo, url: url, nombre: file.name })
           } catch(err) { errores++; console.warn('Error registrando fondo:', err) }
         }
@@ -8595,7 +8595,7 @@
           var tipo = 'foto-fondo-' + idx
           var url  = 'https://rabbit-3d.github.io/fondos/' + encodeURIComponent(nombre)
           try {
-            await supabase.from('media').insert([{ tipo: tipo, url: url, nombre: nombre }])
+            await supabase.from('media').upsert([{ tipo: tipo, url: url, nombre: nombre }], { onConflict: 'nombre' })
             fondosAdmin.push({ tipo: tipo, url: url, nombre: nombre })
           } catch(err) { errores++; console.warn('Error registrando fondo:', err) }
         }
