@@ -8,6 +8,86 @@
   <link rel="icon" type="image/png" sizes="32x32" href="favicon.svg"/>
   <link rel="apple-touch-icon" href="favicon.svg"/>
   <link rel="stylesheet" href="styles.css" />
+  <style>
+    /* ── Carrusel de novedades ─────────────────────────── */
+
+    /* Slide base */
+    .carrusel-novedad {
+      position: relative;
+      width: 100%; height: 100%;
+      display: flex;
+      align-items: flex-end;
+      overflow: hidden;
+      border-radius: inherit;
+    }
+
+    /* Gradiente oscuro de abajo hacia arriba para leer el texto */
+    .carrusel-novedad__overlay {
+      position: absolute; inset: 0; z-index: 1;
+      background: linear-gradient(
+        to top,
+        rgba(0,5,12,.95) 0%,
+        rgba(0,5,12,.5)  35%,
+        rgba(0,5,12,.05) 70%,
+        transparent      100%
+      );
+    }
+
+    /* Contenido: pegado al borde inferior izquierdo */
+    .carrusel-novedad__content {
+      position: relative; z-index: 2;
+      padding: 1.1rem 1.3rem 1.4rem;
+      width: 100%;
+      text-align: left;
+    }
+
+    /* Badge colored pill */
+    .carrusel-novedad__badge {
+      display: inline-block;
+      background: var(--cyan, #159A9C);
+      color: #fff;
+      font-size: .58rem; font-weight: 700;
+      letter-spacing: .12em; text-transform: uppercase;
+      padding: .18rem .55rem; border-radius: 3px;
+      margin-bottom: .45rem;
+    }
+
+    /* Ícono emoji — oculto, la imagen lo reemplaza */
+    .carrusel-novedad__icono { display: none; }
+
+    /* Título compacto y legible */
+    .carrusel-novedad__titulo {
+      font-family: var(--font-head, 'Orbitron'), monospace;
+      font-size: clamp(.95rem, 2.8vw, 1.5rem);
+      font-weight: 900; color: #fff;
+      margin: 0 0 .35rem;
+      text-shadow: 0 1px 10px rgba(0,0,0,.9);
+      letter-spacing: .04em; text-transform: uppercase;
+      line-height: 1.2;
+    }
+
+    /* Subtítulo */
+    .carrusel-novedad__sub {
+      font-size: clamp(.72rem, 1.6vw, .85rem);
+      color: rgba(255,255,255,.72);
+      margin: 0 0 .75rem; line-height: 1.45;
+    }
+
+    /* Botón CTA */
+    .carrusel-novedad__btn {
+      display: inline-flex; align-items: center; gap: .3rem;
+      background: var(--cyan, #159A9C); color: #fff;
+      padding: .38rem .95rem; border-radius: 5px;
+      font-weight: 700; font-size: .75rem;
+      text-decoration: none;
+      transition: background .2s, transform .15s;
+      cursor: pointer; border: none;
+    }
+    .carrusel-novedad__btn:hover { background: #0e7678; transform: translateY(-1px); }
+
+    /* Quitar clases viejas que no se usan */
+    .carrusel-novedad__header, .carrusel-novedad__label { display: none; }
+  </style>
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Syne:wght@300;400;500&family=Rajdhani:wght@400;600;700&family=Fredoka+One&family=Paytone+One&family=Righteous&family=Titan+One&family=Boogaloo&family=Lilita+One&family=Passion+One&family=Russo+One&family=Squada+One&family=Black+Ops+One&display=swap" rel="stylesheet"/>
   <script type="importmap">
     {
@@ -529,16 +609,23 @@
       <a href="#catalogo" class="btn btn--primary">Ver catálogo</a>
     </div>
 
-    <!-- CARRUSEL DE VIDEOS (dinámico desde Supabase) -->
-    <div class="hero__carousel" id="heroCarousel">
+    <!-- CARRUSEL DE NOVEDADES -->
+    <div class="hero__carousel" id="heroCarousel" style="position:relative">
       <div class="carousel__track" id="carouselTrack">
         <div class="carousel__placeholder">
-          <span>Cargando videos...</span>
+          <span>Cargando...</span>
         </div>
       </div>
       <button class="carousel__btn carousel__btn--prev" id="carouselPrev" aria-label="Anterior">&#8249;</button>
       <button class="carousel__btn carousel__btn--next" id="carouselNext" aria-label="Siguiente">&#8250;</button>
       <div class="carousel__dots" id="carouselDots"></div>
+      <!-- Badge NOVEDADES flotante sobre el carrusel -->
+      <div style="position:absolute;top:-1px;left:50%;transform:translateX(-50%);z-index:20;pointer-events:none">
+        <span style="display:inline-flex;align-items:center;gap:.35rem;background:var(--cyan,#159A9C);color:#fff;font-family:var(--font-head,'Orbitron'),monospace;font-size:.58rem;font-weight:700;letter-spacing:.18em;padding:.28rem .9rem;border-radius:0 0 8px 8px;box-shadow:0 4px 18px rgba(21,154,156,.45);text-transform:uppercase">
+          <svg viewBox="0 0 24 24" fill="currentColor" width="10" height="10"><path d="M13 2L3 14h9l-1 8 10-12h-9z"/></svg>
+          NOVEDADES
+        </span>
+      </div>
     </div>
   </section>
 
@@ -1008,6 +1095,52 @@
           <div class="form-group"><label class="form-label">Nombre de tu negocio</label><input type="text" id="tarjNegocio" class="form-input" placeholder="Ej: Rabbit3D" maxlength="40"/></div>
           <div class="form-group"><label class="form-label">Mensaje <span style="color:var(--muted);font-size:.7rem">(opcional)</span></label><textarea id="tarjMensaje" class="form-input" rows="2" placeholder="Ej: ¡Gracias por tu compra! ✨" style="resize:vertical;min-height:55px" maxlength="120"></textarea></div>
           <div class="form-group"><label class="form-label">Instagram / web <span style="color:var(--muted);font-size:.7rem">(opcional)</span></label><input type="text" id="tarjContacto" class="form-input" placeholder="Ej: @rabbit3d · rabbit3d.com" maxlength="50"/></div>
+          <div class="form-group">
+            <label class="form-label">Colores de la tarjeta <span style="color:var(--muted);font-size:.7rem">Se detectan del logo automáticamente</span></label>
+            <div style="display:flex;gap:.6rem;align-items:center;flex-wrap:wrap">
+              <div style="display:flex;flex-direction:column;align-items:center;gap:.25rem">
+                <input type="color" id="tarjColor0" value="#159A9C" title="Color principal" style="width:40px;height:36px;border:2px solid var(--cyan);border-radius:6px;cursor:pointer;padding:2px;background:none"/>
+                <span style="font-size:.58rem;color:var(--muted);text-transform:uppercase;letter-spacing:.05em">Principal</span>
+              </div>
+              <div style="display:flex;flex-direction:column;align-items:center;gap:.25rem">
+                <input type="color" id="tarjColor1" value="#001520" title="Color secundario" style="width:40px;height:36px;border:1px solid var(--border);border-radius:6px;cursor:pointer;padding:2px;background:none"/>
+                <span style="font-size:.58rem;color:var(--muted);text-transform:uppercase;letter-spacing:.05em">Secundario</span>
+              </div>
+              <div style="display:flex;flex-direction:column;align-items:center;gap:.25rem">
+                <input type="color" id="tarjColor2" value="#ffffff" title="Color terciario" style="width:40px;height:36px;border:1px solid var(--border);border-radius:6px;cursor:pointer;padding:2px;background:none"/>
+                <span style="font-size:.58rem;color:var(--muted);text-transform:uppercase;letter-spacing:.05em">Terciario</span>
+              </div>
+              <div style="display:flex;flex-direction:column;align-items:center;gap:.25rem">
+                <input type="color" id="tarjColor3" value="#f0a028" title="Color de acento" style="width:40px;height:36px;border:1px solid var(--border);border-radius:6px;cursor:pointer;padding:2px;background:none"/>
+                <span style="font-size:.58rem;color:var(--muted);text-transform:uppercase;letter-spacing:.05em">Acento</span>
+              </div>
+              <button class="btn btn--sm" id="tarjResetColores" title="Restaurar colores del logo" style="font-size:.65rem;padding:.3rem .6rem">↺ Reset</button>
+            </div>
+          </div>
+          <div class="form-group" id="tarjLogoOpacityGroup" style="display:none">
+            <label class="form-label" style="display:flex;justify-content:space-between;align-items:center">
+              Transparencia del fondo del logo
+              <span id="tarjLogoOpacityVal" style="font-family:var(--font-head);font-size:.7rem;color:var(--cyan)">0%</span>
+            </label>
+            <input type="range" id="tarjLogoOpacity" min="0" max="100" value="0" step="5"
+              style="width:100%;accent-color:var(--cyan);cursor:pointer"/>
+          </div>
+          <div class="form-group" id="tarjLogoScaleGroup" style="display:none">
+            <label class="form-label" style="display:flex;justify-content:space-between;align-items:center">
+              Tamaño del logo
+              <span id="tarjLogoScaleVal" style="font-family:var(--font-head);font-size:.7rem;color:var(--cyan)">100%</span>
+            </label>
+            <input type="range" id="tarjLogoScaleInput" min="30" max="160" value="100" step="5"
+              style="width:100%;accent-color:var(--cyan);cursor:pointer"/>
+          </div>
+          <div class="form-group" id="tarjLogoScaleGroup" style="display:none">
+            <label class="form-label" style="display:flex;justify-content:space-between;align-items:center">
+              Tamaño del logo
+              <span id="tarjLogoScaleVal" style="font-family:var(--font-head);font-size:.7rem;color:var(--cyan)">100%</span>
+            </label>
+            <input type="range" id="tarjLogoScaleInput" min="30" max="160" value="100" step="5"
+              style="width:100%;accent-color:var(--cyan);cursor:pointer"/>
+          </div>
         </div>
         <button class="btn btn--primary" id="btnGenerarTarjetas" style="width:100%;margin-top:1rem;display:flex;align-items:center;justify-content:center;gap:.5rem">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg>
@@ -2642,7 +2775,7 @@
           <div class="card__img-wrap">
             ${p.imagen_url
               ? (p.imagen_url.match(/\.mp4(\?|$)/i)
-                ? `<video src="${p.imagen_url}" class="card__img card__video" muted loop playsinline preload="metadata" onmouseenter="this.play()" onmouseleave="this.pause();this.currentTime=0"></video>`
+                ? `<video src="${p.imagen_url}" class="card__img card__video lazy-video" muted loop playsinline preload="none" onmouseenter="this.play()" onmouseleave="this.pause();this.currentTime=0"></video>`
                 : `<img src="${p.imagen_url}" alt="${p.nombre}" class="card__img"/>`)
               : `<div class="card__placeholder">3D</div>`}
             <span class="card__num">${String(i+1).padStart(2,'0')}</span>
@@ -2714,7 +2847,7 @@
               <div class="card__img-wrap">
                 ${p.imagen_url
                   ? (p.imagen_url.match(/\.mp4(\?|$)/i)
-                    ? `<video src="${p.imagen_url}" class="card__img card__video" muted loop playsinline preload="metadata" onmouseenter="this.play()" onmouseleave="this.pause();this.currentTime=0"></video>`
+                    ? `<video src="${p.imagen_url}" class="card__img card__video lazy-video" muted loop playsinline preload="none" onmouseenter="this.play()" onmouseleave="this.pause();this.currentTime=0"></video>`
                     : `<img src="${p.imagen_url}" alt="${p.nombre}" class="card__img"/>`)
                   : `<div class="card__placeholder">3D</div>`}
                 <span class="card__num">${String(i+1).padStart(2,'0')}</span>
@@ -3327,27 +3460,113 @@
         if (entry) { platLogosUrl[plat] = entry.url }
       })
       videosMedia = data.filter(m => m.tipo === 'video')
-      renderCarrusel()
+      // Mapear portadas de herramientas (hcard-* y empr-img-*) para usarlas en carrusel
+      window._portadasMap = {}
+      const _isGHUrl = url => url && (url.includes('raw.githubusercontent.com') || url.includes('github.io') || (!url.includes('supabase')))
+      data.forEach(m => {
+        if (m.tipo && m.tipo.startsWith('hcard-') && !m.tipo.endsWith('-pos')) {
+          const tool = m.tipo.replace('hcard-', '')
+          if (m.url && _isGHUrl(m.url)) window._portadasMap[tool] = m.url
+        }
+        if (m.tipo && m.tipo.startsWith('empr-img-')) {
+          const tool = m.tipo.replace('empr-img-', '')
+          if (m.url && _isGHUrl(m.url)) window._portadasMap[tool] = m.url
+        }
+      })
+      console.log('[Portadas]', window._portadasMap)
+      // Cargar slides de novedades configurados por admin
+      const rawItems = data.filter(m => m.tipo === 'carrusel_item')
+      // nombre contiene JSON con herramienta_id, titulo_custom, subtitulo, badge, imagen_url, orden
+      carruselItems = rawItems
+        .map(m => { try { 
+          const parsed = JSON.parse(m.nombre)
+          // Siempre limpiar imagen_url — usar _portadasMap como única fuente de portadas
+          parsed.imagen_url = ''
+          return {...parsed, id: m.id}
+        } catch(e) { return null } })
+        .filter(Boolean)
+        .sort((a,b) => (a.orden||0)-(b.orden||0))
+      // NO llamar renderCarrusel() aquí — se llama después de cargarHcardImgs()
     }
+
+    // Catálogo de herramientas disponibles para el carrusel
+    const CARRUSEL_HERRAMIENTAS = {
+      stl:        {titulo:'Cuadros 2D',               seccion:'#herramientas', icono:'🖼',  badge:'Próximamente'},
+      llavero:    {titulo:'Llaveros con nombre',       seccion:'#herramientas', icono:'🔑',  badge:'Beta'},
+      caja:       {titulo:'Caja con tapa',             seccion:'#herramientas', icono:'📦',  badge:'Beta'},
+      maceta:     {titulo:'Macetas',                   seccion:'#herramientas', icono:'🪴',  badge:'Beta'},
+      marco:      {titulo:'Marco / Porta-foto',        seccion:'#herramientas', icono:'🖼',  badge:'Beta'},
+      cortante:   {titulo:'Cortantes',                 seccion:'#herramientas', icono:'✂️',  badge:'Beta'},
+      tarjetas:   {titulo:'Tarjetas de agradecimiento',seccion:'#emprendedores',icono:'💌', badge:'Nuevo'},
+      costos:     {titulo:'Calculadora de costos',     seccion:'#emprendedores',icono:'🧮', badge:''},
+      mejora:     {titulo:'Mejorador de imágenes',     seccion:'#emprendedores',icono:'✨',  badge:'IA'},
+      presupuesto:{titulo:'Generador de presupuestos', seccion:'#emprendedores',icono:'📄', badge:''},
+      fotoproducto:{titulo:'Cambiar fondo de producto',seccion:'#emprendedores',icono:'🛍', badge:'Nuevo'},
+    }
+
+    let carruselItems = []  // slides configurados desde Supabase
 
     function renderCarrusel() {
       const track = document.getElementById('carouselTrack')
       const dots  = document.getElementById('carouselDots')
 
-      if (videosMedia.length === 0) {
-        track.innerHTML = '<div class="carousel__placeholder"><span>Sin videos aún</span></div>'
+      // Usar slides de novedades si hay, sino fallback a videos legacy
+      const usarNovedades = carruselItems.length > 0
+      const slides = usarNovedades ? carruselItems : videosMedia
+
+      if (slides.length === 0) {
+        track.innerHTML = '<div class="carousel__placeholder"><span>Configurá el carrusel desde el panel de administración</span></div>'
         dots.innerHTML = ''
         return
       }
 
-      track.innerHTML = videosMedia.map((v, i) => `
-        <div class="carousel__slide ${i === 0 ? 'active' : ''}">
-          <video class="carousel__video" ${i === 0 ? 'autoplay' : ''} muted loop playsinline>
-            <source src="${v.url}" type="video/mp4"/>
-          </video>
-        </div>`).join('')
+      if (usarNovedades) {
+        console.log('[Carrusel] _portadasMap:', JSON.stringify(window._portadasMap))
+        track.innerHTML = slides.map((item, i) => {
+          const h = CARRUSEL_HERRAMIENTAS[item.herramienta_id] || {}
+          // URL: siempre del mapa de portadas (fuente única de verdad)
+          const imgUrl = (window._portadasMap && window._portadasMap[item.herramienta_id]) || ''
+          console.log(`[Slide ${i}] herramienta=${item.herramienta_id} imgUrl=${imgUrl}`)
+          const titulo = item.titulo_custom || h.titulo || 'Novedad'
+          const subtitulo = item.subtitulo || ''
+          const badge = item.badge || h.badge || ''
+          const seccion = h.seccion || '#'
+          const icono = h.icono || '✨'
+          const bgStyle = `background-color:#061520`
+          return `
+          <div class="carousel__slide ${i === 0 ? 'active' : ''}" style="${bgStyle}" id="carrusel-slide-${i}">
+            ${imgUrl ? `<img src="${imgUrl}" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:0;display:block" alt="">` : ''}
+            <div style="position:absolute;inset:0;z-index:1;background:linear-gradient(to top,rgba(0,5,12,.95) 0%,rgba(0,5,12,.5) 35%,transparent 70%)"></div>
+            <div style="position:absolute;bottom:0;left:0;right:0;z-index:2;padding:1rem 1.2rem 1.3rem;text-align:left">
+              ${badge ? `<span style="display:inline-block;background:var(--cyan,#159A9C);color:#fff;font-size:.58rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:.18rem .55rem;border-radius:3px;margin-bottom:.4rem">${badge}</span><br>` : ''}
+              <div style="font-family:var(--font-head,'Orbitron'),monospace;font-size:clamp(.9rem,2.5vw,1.4rem);font-weight:900;color:#fff;text-shadow:0 1px 8px rgba(0,0,0,.9);letter-spacing:.04em;text-transform:uppercase;line-height:1.2;margin-bottom:.3rem">${titulo}</div>
+              ${subtitulo ? `<div style="font-size:clamp(.7rem,1.5vw,.82rem);color:rgba(255,255,255,.75);margin-bottom:.6rem;line-height:1.4">${subtitulo}</div>` : ''}
+              <a href="${seccion}" style="display:inline-flex;align-items:center;background:var(--cyan,#159A9C);color:#fff;padding:.35rem .9rem;border-radius:5px;font-weight:700;font-size:.73rem;text-decoration:none;cursor:pointer" onclick="document.querySelector('${seccion}')?.scrollIntoView({behavior:'smooth'});return false">Ver herramienta →</a>
+            </div>
+          </div>`
+        }).join('')
 
-      dots.innerHTML = videosMedia.map((_, i) => `
+        // Aplicar imágenes via JS también (doble seguridad)
+        slides.forEach((item, i) => {
+          if (!item.imagen_url) return
+          const el = document.getElementById(`carrusel-slide-${i}`)
+          if (el) {
+            el.style.backgroundImage = `url('${item.imagen_url}')`
+            el.style.backgroundSize = 'cover'
+            el.style.backgroundPosition = 'center'
+          }
+        })
+      } else {
+        // Fallback: videos legacy
+        track.innerHTML = slides.map((v, i) => `
+          <div class="carousel__slide ${i === 0 ? 'active' : ''}">
+            <video class="carousel__video" ${i === 0 ? 'autoplay' : ''} muted loop playsinline>
+              <source src="${v.url}" type="video/mp4"/>
+            </video>
+          </div>`).join('')
+      }
+
+      dots.innerHTML = slides.map((_, i) => `
         <button class="carousel__dot ${i === 0 ? 'active' : ''}" data-idx="${i}"></button>`).join('')
 
       iniciarCarrusel()
@@ -3378,7 +3597,7 @@
       document.getElementById('carouselPrev').onclick = () => goTo(current - 1)
       document.getElementById('carouselNext').onclick = () => goTo(current + 1)
       dots.forEach(d => d.addEventListener('click', () => goTo(+d.dataset.idx)))
-      timer = setInterval(() => goTo(current + 1), 6000)
+      // timer ya se inicia dentro de goTo() — no duplicar aquí
     }
 
     // Modal media
@@ -5432,81 +5651,85 @@
     let hcardEditTarget = null
 
     window.herramientaEditImg = function(tool) {
-      hcardEditTarget = tool
-      // Recrear el input para evitar problema de mismo archivo
-      const old = document.getElementById('hcard-file-input')
-      if (old) old.remove()
-      const inp = document.createElement('input')
-      inp.type = 'file'; inp.accept = 'image/*'
-      inp.id = 'hcard-file-input'; inp.style.display = 'none'
-      document.body.appendChild(inp)
-      inp.addEventListener('change', async (e) => {
-        const file = e.target.files[0]
-        if (!file || !hcardEditTarget) return
-        const overlay = document.getElementById('hcard-edit-' + hcardEditTarget)
-        if (overlay) overlay.textContent = 'Subiendo...'
-        try {
-          const ext  = file.name.split('.').pop()
-          const path = `herramientas/hcard-${hcardEditTarget}.${ext}`
-          const { error: upErr } = await supabase.storage.from('media').upload(path, file, { upsert: true })
-          if (upErr) throw upErr
-          const { data: urlData } = supabase.storage.from('media').getPublicUrl(path)
-          const cleanUrl = urlData.publicUrl
-          herramientaSetImg(hcardEditTarget, cleanUrl + '?t=' + Date.now())
-          const tipoKey = 'hcard-' + hcardEditTarget
-          await supabase.from('media').delete().eq('tipo', tipoKey)
-          await supabase.from('media').insert([{ tipo: tipoKey, url: cleanUrl, nombre: path }])
-          if (overlay) overlay.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20"><path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"/><circle cx="12" cy="13" r="4"/></svg> Cambiar imagen'
-          hcardEditTarget = null
-        } catch(err) {
-          console.error('Error subiendo miniatura:', err)
-          if (overlay) overlay.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20"><path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"/><circle cx="12" cy="13" r="4"/></svg> Error — intentá de nuevo'
-        }
+      // Obtener URL actual
+      var currentImg = document.querySelector('#hcard-visual-' + tool + ' img')
+      var currentUrl = currentImg ? currentImg.src.split('?')[0] : ''
+
+      var overlay = document.createElement('div')
+      overlay.style.cssText = 'position:fixed;inset:0;z-index:99999;background:rgba(0,8,15,.92);display:flex;align-items:center;justify-content:center'
+      overlay.innerHTML = `
+        <div style="background:var(--bg-card,#0a2535);border:1px solid var(--border);border-radius:12px;padding:1.5rem;width:min(480px,95vw);display:flex;flex-direction:column;gap:.75rem">
+          <h3 style="font-family:var(--font-head);font-size:.75rem;font-weight:700;letter-spacing:.1em;color:var(--cyan);margin:0;text-transform:uppercase">Portada de herramienta</h3>
+          <div>
+            <label style="font-size:.7rem;color:var(--muted)">URL de imagen (GitHub)</label>
+            <input type="text" id="_hcardImgUrl" value="${currentUrl}"
+              placeholder="https://raw.githubusercontent.com/rabbit-3d/rabbit-3d.github.io/main/portadas/llaveros.png"
+              style="width:100%;margin-top:.25rem;background:var(--bg3);color:var(--text);border:1px solid var(--border);border-radius:6px;padding:.45rem .5rem;font-size:.72rem;box-sizing:border-box"/>
+            <div id="_hcardImgPreview" style="margin-top:.5rem;height:80px;border-radius:6px;background-size:cover;background-position:center;background-color:rgba(255,255,255,.04);${currentUrl ? 'background-image:url(' + currentUrl + ')' : ''}"></div>
+          </div>
+          <div style="display:flex;gap:.5rem;justify-content:flex-end">
+            <button id="_hcardImgCancel" style="background:none;border:1px solid var(--border);color:var(--muted);border-radius:6px;padding:.38rem .85rem;cursor:pointer;font-size:.77rem">Cancelar</button>
+            <button id="_hcardImgGuardar" style="background:var(--cyan);border:none;color:#fff;border-radius:6px;padding:.38rem .85rem;cursor:pointer;font-size:.77rem;font-weight:600">Guardar</button>
+          </div>
+        </div>`
+      document.body.appendChild(overlay)
+
+      var input = document.getElementById('_hcardImgUrl')
+      var preview = document.getElementById('_hcardImgPreview')
+      input.addEventListener('input', function() {
+        preview.style.backgroundImage = this.value ? 'url(' + this.value + ')' : ''
       })
-      inp.click()
+      input.focus(); input.select()
+
+      document.getElementById('_hcardImgCancel').onclick = function() { overlay.remove() }
+      document.getElementById('_hcardImgGuardar').onclick = async function() {
+        var cleanUrl = input.value.trim()
+        overlay.remove()
+        herramientaSetImg(tool, cleanUrl)
+        const tipo = 'hcard-' + tool
+        await supabase.from('media').delete().eq('tipo', tipo)
+        if (cleanUrl) {
+          await supabase.from('media').insert([{ tipo: tipo, url: cleanUrl, nombre: cleanUrl }])
+        }
+      }
     }
 
     function herramientaSetImg(tool, url) {
       const visual = document.getElementById('hcard-visual-' + tool)
+      if (!visual) return
       const overlay = document.getElementById('hcard-edit-' + tool)
-      // Replace SVG with img, keep overlay
+      visual.querySelectorAll('img').forEach(i => i.remove())
+      if (!url) return
       const img = document.createElement('img')
       img.src = url
       img.style.cssText = 'width:100%;height:100%;object-fit:cover;display:block;'
-      img.onerror = () => {} // keep SVG if image fails
-      // Remove any existing img
-      visual.querySelectorAll('img').forEach(i => i.remove())
-      // Remove SVG
-      visual.querySelectorAll('svg').forEach(s => s.remove())
-      visual.insertBefore(img, overlay)
+      img.onerror = () => img.remove()
+      visual.insertBefore(img, overlay || null)
     }
 
     async function cargarHcardImgs() {
       try {
-        const allTipos = ['hcard-stl','hcard-llavero','hcard-caja','hcard-maceta','hcard-marco','hcard-cortante',
-                          'hcard-stl-pos','hcard-llavero-pos','hcard-caja-pos','hcard-maceta-pos','hcard-marco-pos','hcard-cortante-pos']
-        const { data, error } = await supabase.from('media')
-          .select('tipo, url')
-          .in('tipo', allTipos)
-        if (error) { console.warn('cargarHcardImgs error:', error); return }
-        if (!data || !data.length) return
-        const posMap = {}
-        data.forEach(row => {
-          if (row.tipo && row.tipo.endsWith('-pos')) posMap[row.tipo.replace('-pos','')] = row.url
-        })
-        data.forEach(row => {
-          if (!row.tipo || row.tipo.endsWith('-pos')) return
-          const tool = row.tipo.replace('hcard-', '')
-          if (row.url) {
-            herramientaSetImg(tool, row.url)
-            const pos = posMap['hcard-' + tool]
-            if (pos) {
-              const img = document.querySelector('#hcard-visual-' + tool + ' img')
-              if (img) img.style.objectPosition = pos
+        // Cargar portadas de laboratorio Y emprendedores en un solo query
+        const { data } = await supabase.from('media').select('tipo, url')
+          .or('tipo.like.hcard-%,tipo.like.empr-img-%')
+        if (data) {
+          window._portadasMap = window._portadasMap || {}
+          const _isGH = url => url && !url.includes('supabase.co/storage')
+          data.forEach(row => {
+            if (!row.url || !_isGH(row.url)) return
+            if (row.tipo.startsWith('hcard-') && !row.tipo.endsWith('-pos')) {
+              const tool = row.tipo.replace('hcard-', '')
+              window._portadasMap[tool] = row.url
+              herramientaSetImg(tool, row.url)
             }
-          }
-        })
-      } catch(e) { console.warn('hcard imgs:', e) }
+            if (row.tipo.startsWith('empr-img-')) {
+              const tool = row.tipo.replace('empr-img-', '')
+              window._portadasMap[tool] = row.url
+            }
+          })
+          console.log('[Portadas mapa]', window._portadasMap)
+        }
+      } catch(e) { console.warn('cargarHcardImgs:', e) }
     }
 
     // ── Drag to reposition image (admin only) ────────────────────────────
@@ -5518,6 +5741,8 @@
       if (_hcardGlobalListenersAdded) return
       _hcardGlobalListenersAdded = true
       document.addEventListener('mousemove', function(e) {
+        // Early return si ningún tool está siendo arrastrado
+        if (!Object.values(_hcardDragState).some(s=>s.dragging)) return
         for (const tool in _hcardDragState) {
           const s = _hcardDragState[tool]
           if (!s.dragging) continue
@@ -6149,10 +6374,14 @@
 
     cargarPerfil()
     cargarDisenador()
-    cargarMedia()
     cargarSugerencias()
     cargarYoutube()
-    setTimeout(cargarHcardImgs, 500)
+    // Cargar media y portadas en secuencia: primero portadas, luego carrusel
+    ;(async () => {
+      await cargarMedia()      // carga logo, carruselItems
+      await cargarHcardImgs()  // construye _portadasMap con URLs de GitHub
+      renderCarrusel()         // renderiza con el mapa completo
+    })()
     // ── TENDENCIAS MULTI-PLATAFORMA ────────────────────────────────────
     let tendPlatActual = 'todas'
     const tendCache = {}
@@ -6326,7 +6555,7 @@
         if (!rawUrl) return '<img src="' + fallback + '" alt=""/>'
         const parsed = parseImagen(rawUrl)
         if (parsed.type === 'video') {
-          return '<video src="' + parsed.src + '" muted loop playsinline preload="metadata"'
+          return '<video src="' + parsed.src + '" muted loop playsinline preload="none"'
             + ' style="width:100%;height:100%;object-fit:cover;display:block;"'
             + ' onmouseenter="this.play()" onmouseleave="this.pause();this.currentTime=0"'
             + ' onerror="this.style.display=&quot;none&quot;;var i=document.createElement(&quot;img&quot;);i.src=window._tendFallback;i.style.cssText=&quot;width:100%;height:100%;object-fit:cover&quot;;this.parentNode.appendChild(i)"'
@@ -6488,70 +6717,677 @@
       }
     }
     // ── TARJETAS ─────────────────────────────────────────────────────
-    let tarjLogoImg=null, tarjLogoColor=null
-    const tarjZone=document.getElementById('tarjUploadZone'),tarjFile=document.getElementById('tarjLogoFile'),tarjInner=document.getElementById('tarjUploadInner'),tarjPrev=document.getElementById('tarjUploadPreview'),tarjPrevImg=document.getElementById('tarjLogoPreviewImg')
-    function tarjLoadLogo(file){if(!file||!file.type.startsWith('image/'))return;const r=new FileReader();r.onload=e=>{const img=new Image();img.onload=()=>{tarjLogoImg=img;tarjPrevImg.src=e.target.result;tarjInner.style.display='none';tarjPrev.style.display='flex';document.getElementById('tarjError').textContent='';
-      // Extraer color dominante del logo para usarlo en las tarjetas
-      try {
-        const tc=document.createElement('canvas'); tc.width=40; tc.height=40
-        const tx=tc.getContext('2d'); tx.drawImage(img,0,0,40,40)
-        const pixels=tx.getImageData(0,0,40,40).data
-        const colorMap={}
-        for(let i=0;i<pixels.length;i+=4){
-          const a=pixels[i+3]; if(a<80) continue // skip transparent
-          const rv=pixels[i],gv=pixels[i+1],bv=pixels[i+2]
-          const bright=rv*0.299+gv*0.587+bv*0.114
-          if(bright>220) continue // skip near-white
-          if(bright<20) continue // skip near-black
-          const key=`${Math.round(rv/32)*32},${Math.round(gv/32)*32},${Math.round(bv/32)*32}`
-          colorMap[key]=(colorMap[key]||0)+1
+    // Agrega contorno del color del fondo original al logo recortado
+    async function tarjAgregarContorno(src, color) {
+      return new Promise((resolve) => {
+        const img = new Image()
+        img.onload = () => {
+          const pad = Math.round(Math.max(img.width, img.height) * 0.04)
+          const W = img.width + pad*2, H = img.height + pad*2
+          const canvas = document.createElement('canvas'); canvas.width = W; canvas.height = H
+          const ctx = canvas.getContext('2d')
+          ctx.drawImage(img, pad, pad)
+          resolve(canvas.toDataURL('image/png'))
         }
-        const top=Object.entries(colorMap).sort((a,b)=>b[1]-a[1])[0]
-        if(top){const[r2,g2,b2]=top[0].split(',').map(Number); tarjLogoColor=`rgb(${r2},${g2},${b2})`}
-        else tarjLogoColor=null
-      } catch(e){ tarjLogoColor=null }
-    };img.src=e.target.result};r.readAsDataURL(file)}
+        img.src = src
+      })
+    }
+
+    let tarjLogoImg=null, tarjLogoColor=null, tarjColores=['#159A9C','#001520','#ffffff','#f0a028']
+    let tarjBgRemoval = 0  // 0 = sin remoción, 1 = remoción total del fondo
+    let tarjLogoScale = 1.0  // 1 = tamaño base
+
+    function tarjLoadLogo(file) {
+      if (!file || !file.type.startsWith('image/')) return
+      const r = new FileReader()
+      r.onload = e => {
+        const img = new Image()
+        img.onload = () => {
+          tarjLogoImg = img
+          tarjPrevImg.src = e.target.result
+          tarjInner.style.display = 'none'
+          tarjPrev.style.display = 'flex'
+          document.getElementById('tarjError').textContent = ''
+          document.getElementById('tarjLogoOpacityGroup').style.display = 'block'
+          document.getElementById('tarjLogoScaleGroup').style.display = 'block'
+
+          // Extraer los 4 colores más destacados del logo
+          try {
+            const tc = document.createElement('canvas'); tc.width = 80; tc.height = 80
+            const tx = tc.getContext('2d'); tx.drawImage(img, 0, 0, 80, 80)
+            const pixels = tx.getImageData(0, 0, 80, 80).data
+            const colorMap = {}
+            for (let i = 0; i < pixels.length; i += 4) {
+              const a = pixels[i+3]; if (a < 80) continue
+              const rv = pixels[i], gv = pixels[i+1], bv = pixels[i+2]
+              const bright = rv*0.299 + gv*0.587 + bv*0.114
+              if (bright > 235 || bright < 15) continue
+              // Cuantizar a grupos de 32
+              const key = `${Math.round(rv/32)*32},${Math.round(gv/32)*32},${Math.round(bv/32)*32}`
+              colorMap[key] = (colorMap[key] || 0) + 1
+            }
+            const sorted = Object.entries(colorMap).sort((a,b) => b[1]-a[1])
+            // Tomar los 4 más frecuentes y distintos entre sí
+            const picked = []
+            for (const [key] of sorted) {
+              const [r2,g2,b2] = key.split(',').map(Number)
+              const esDistinto = picked.every(([pr,pg,pb]) =>
+                Math.abs(r2-pr)+Math.abs(g2-pg)+Math.abs(b2-pb) > 60
+              )
+              if (esDistinto) picked.push([r2,g2,b2])
+              if (picked.length === 4) break
+            }
+            // Completar con defaults si hay menos de 4
+            const defaults = [[21,154,156],[0,21,32],[255,255,255],[240,160,40]]
+            while (picked.length < 4) picked.push(defaults[picked.length])
+            tarjColores = picked.map(([r2,g2,b2]) => `rgb(${r2},${g2},${b2})`)
+            tarjLogoColor = tarjColores[0]
+            tarjActualizarSelectores()
+          } catch(e) { tarjLogoColor = null }
+
+          if (typeof tarjGenerarTodas === 'function') tarjGenerarTodas_throttled()
+        }
+        img.src = e.target.result
+      }
+      r.readAsDataURL(file)
+    }
+
+    function tarjActualizarSelectores() {
+      tarjColores.forEach((color, i) => {
+        const el = document.getElementById('tarjColor' + i)
+        if (el) {
+          // Convertir rgb() a hex para el input color
+          const m = color.match(/\d+/g)
+          if (m && m.length >= 3) el.value = '#' + m.slice(0,3).map(v => Math.min(255,parseInt(v)).toString(16).padStart(2,'0')).join('')
+        }
+      })
+    }
+    const tarjZone=document.getElementById('tarjUploadZone'),tarjFile=document.getElementById('tarjLogoFile'),tarjInner=document.getElementById('tarjUploadInner'),tarjPrev=document.getElementById('tarjUploadPreview'),tarjPrevImg=document.getElementById('tarjLogoPreviewImg')
     tarjZone.addEventListener('click',e=>{if(!e.target.closest('#tarjChangeLogo'))tarjFile.click()})
     document.getElementById('tarjChangeLogo').addEventListener('click',e=>{e.stopPropagation();tarjFile.click()})
     tarjFile.addEventListener('change',e=>tarjLoadLogo(e.target.files[0]))
     tarjZone.addEventListener('dragover',e=>{e.preventDefault();tarjZone.classList.add('vec-drag')});tarjZone.addEventListener('dragleave',()=>tarjZone.classList.remove('vec-drag'));tarjZone.addEventListener('drop',e=>{e.preventDefault();tarjZone.classList.remove('vec-drag');tarjLoadLogo(e.dataTransfer.files[0])})
+
+    // Color inputs
+    ;[0,1,2,3].forEach(i => {
+      document.getElementById('tarjColor'+i)?.addEventListener('input', function() {
+        const hex = this.value
+        const r2 = parseInt(hex.slice(1,3),16), g2 = parseInt(hex.slice(3,5),16), b2 = parseInt(hex.slice(5,7),16)
+        tarjColores[i] = `rgb(${r2},${g2},${b2})`
+        if (i === 0) tarjLogoColor = tarjColores[0]
+        if (typeof tarjGenerarTodas === 'function') tarjGenerarTodas_throttled()
+      })
+    })
+    document.getElementById('tarjResetColores')?.addEventListener('click', () => {
+      if (tarjLogoImg) tarjLoadLogo(tarjFile.files[0]) // re-detectar del logo
+    })
+    document.getElementById('tarjLogoOpacity')?.addEventListener('input', function() {
+      tarjBgRemoval = this.value / 100
+      document.getElementById('tarjLogoOpacityVal').textContent = this.value + '%'
+      if (typeof tarjGenerarTodas === 'function') tarjGenerarTodas_throttled()
+    })
+    document.getElementById('tarjLogoScaleInput')?.addEventListener('input', function() {
+      tarjLogoScale = this.value / 100
+      document.getElementById('tarjLogoScaleVal').textContent = this.value + '%'
+      if (typeof tarjGenerarTodas === 'function') tarjGenerarTodas_throttled()
+    })
     const TARJ_W=1063,TARJ_H=650
+    function tarjColorAlpha(color, alpha) {
+      color = (color || '#000000').trim()
+      if (color.startsWith('rgba')) return color.replace(/[\d.]+\)$/, alpha + ')')
+      if (color.startsWith('rgb')) return color.replace('rgb(', 'rgba(').replace(')', ',' + alpha + ')')
+      let hex = color.replace('#','')
+      if (hex.length === 3) hex = hex.split('').map(c=>c+c).join('')
+      const r=parseInt(hex.slice(0,2),16),g=parseInt(hex.slice(2,4),16),b=parseInt(hex.slice(4,6),16)
+      return `rgba(${r},${g},${b},${alpha})`
+    }
     function tarjWrapText(ctx,text,x,y,maxW,lineH,color,font,align='left'){ctx.font=font;ctx.fillStyle=color;ctx.textAlign=align;const words=text.split(' ');let line='',ly=y;for(let w of words){const t=line+(line?'\u00a0':'')+w;if(ctx.measureText(t).width>maxW&&line){ctx.fillText(line,x,ly);line=w;ly+=lineH}else line=t}if(line)ctx.fillText(line,x,ly);ctx.textAlign='left'}
     function roundRect(ctx,x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.lineTo(x+w-r,y);ctx.arcTo(x+w,y,x+w,y+r,r);ctx.lineTo(x+w,y+h-r);ctx.arcTo(x+w,y+h,x+w-r,y+h,r);ctx.lineTo(x+r,y+h);ctx.arcTo(x,y+h,x,y+h-r,r);ctx.lineTo(x,y+r);ctx.arcTo(x,y,x+r,y,r);ctx.closePath()}
     const TARJ_DISENOS=[
       // 1 — Minimalista oscuro
-      {nombre:'Minimalista oscuro',render(ctx,W,H,logo,neg,msg,con,ac){const accent=ac||'#159A9C';const bg=ctx.createLinearGradient(0,0,W,H);bg.addColorStop(0,'#001520');bg.addColorStop(1,'#002535');ctx.fillStyle=bg;ctx.fillRect(0,0,W,H);ctx.fillStyle=accent;ctx.fillRect(0,0,5,H);ctx.fillStyle='rgba(21,154,156,0.08)';ctx.fillRect(0,0,W,H*0.35);if(logo){const lh=H*0.30,lw=logo.width*(lh/logo.height);ctx.drawImage(logo,W*0.07,H*0.12,Math.min(lw,W*0.35),lh)}ctx.font=`900 ${H*0.11}px Arial`;ctx.fillStyle='#ffffff';ctx.textAlign='left';ctx.fillText(neg||'Tu Negocio',W*0.07,H*0.58);ctx.fillStyle=accent;ctx.fillRect(W*0.07,H*0.63,W*0.15,2);tarjWrapText(ctx,msg||'\u00a1Gracias por tu compra!',W*0.07,H*0.72,W*0.86,H*0.062,'#DEEFE7',`${H*0.062}px Arial`);ctx.font=`${H*0.055}px Arial`;ctx.fillStyle=accent;ctx.fillText(con||'',W*0.07,H*0.92);ctx.font=`${H*0.18}px Arial`;ctx.fillStyle='rgba(21,154,156,0.12)';ctx.textAlign='right';ctx.fillText('\u2665',W*0.95,H*0.55);ctx.textAlign='left'}},
+      {nombre:'Minimalista oscuro',render(ctx,W,H,logo,neg,msg,con,ac,c2,c3,c4){const accent=ac||'#159A9C';const col2=c2||'#001520';const col3=c3||'#ffffff';const col4=c4||'#f0a028';const bg=ctx.createLinearGradient(0,0,W,H);bg.addColorStop(0,col2);bg.addColorStop(1,tarjColorAlpha(col2,0.87));ctx.fillStyle=bg;ctx.fillRect(0,0,W,H);ctx.fillStyle=accent;ctx.fillRect(0,0,5,H);ctx.fillStyle=tarjColorAlpha(accent,0.08);ctx.fillRect(0,0,W,H*0.35);if(logo){const lh=H*0.30*(tarjLogoScale||1),lw=logo.width*(lh/logo.height);ctx.drawImage(logo,W*0.07,H*0.12,Math.min(lw,W*0.35*(tarjLogoScale||1)),lh)}ctx.font=`900 ${H*0.11}px Arial`;ctx.fillStyle='#ffffff';ctx.textAlign='left';ctx.fillText(neg||'Tu Negocio',W*0.07,H*0.58);ctx.fillStyle=accent;ctx.fillRect(W*0.07,H*0.63,W*0.15,2);tarjWrapText(ctx,msg||'\u00a1Gracias por tu compra!',W*0.07,H*0.72,W*0.86,H*0.062,'#DEEFE7',`${H*0.062}px Arial`);ctx.font=`${H*0.055}px Arial`;ctx.fillStyle=accent;ctx.fillText(con||'',W*0.07,H*0.92);ctx.font=`${H*0.18}px Arial`;ctx.fillStyle='rgba(21,154,156,0.12)';ctx.textAlign='right';ctx.fillText('\u2665',W*0.95,H*0.55);ctx.textAlign='left'}},
       // 2 — Cálido con flores
-      {nombre:'Calido con flores',render(ctx,W,H,logo,neg,msg,con,ac){ctx.fillStyle='#FDF6EC';ctx.fillRect(0,0,W,H);ctx.strokeStyle='#C8956C';ctx.lineWidth=3;ctx.strokeRect(12,12,W-24,H-24);ctx.strokeStyle='#E8C4A0';ctx.lineWidth=1;ctx.strokeRect(20,20,W-40,H-40);['\ud83c\udf38','\ud83c\udf38','\ud83c\udf3f','\ud83c\udf3f'].forEach((e,i)=>{ctx.font=`${H*0.13}px Arial`;ctx.textAlign=i%2?'right':'left';ctx.fillText(e,i%2?W*0.98:W*0.02,i<2?H*0.22:H*0.92)});if(logo){const lh=H*0.25,lw=logo.width*(lh/logo.height);ctx.drawImage(logo,(W-Math.min(lw,W*0.4))/2,H*0.07,Math.min(lw,W*0.4),lh)}ctx.font=`bold ${H*0.10}px Georgia,serif`;ctx.fillStyle='#7B4F2E';ctx.textAlign='center';ctx.fillText(neg||'Tu Negocio',W/2,H*0.46);ctx.strokeStyle='#C8956C';ctx.lineWidth=1.5;ctx.beginPath();ctx.moveTo(W*0.25,H*0.52);ctx.lineTo(W*0.75,H*0.52);ctx.stroke();tarjWrapText(ctx,msg||'Gracias por tu compra!',W/2,H*0.64,W*0.75,H*0.068,'#5C3D2E',`italic ${H*0.068}px Georgia,serif`,'center');ctx.font=`${H*0.053}px Arial`;ctx.fillStyle='#C8956C';ctx.fillText(con||'',W/2,H*0.89);ctx.textAlign='left'}},
+      {nombre:'Calido con flores',render(ctx,W,H,logo,neg,msg,con,ac,c2,c3,c4){ctx.fillStyle='#FDF6EC';ctx.fillRect(0,0,W,H);ctx.strokeStyle='#C8956C';ctx.lineWidth=3;ctx.strokeRect(12,12,W-24,H-24);ctx.strokeStyle='#E8C4A0';ctx.lineWidth=1;ctx.strokeRect(20,20,W-40,H-40);['\ud83c\udf38','\ud83c\udf38','\ud83c\udf3f','\ud83c\udf3f'].forEach((e,i)=>{ctx.font=`${H*0.13}px Arial`;ctx.textAlign=i%2?'right':'left';ctx.fillText(e,i%2?W*0.98:W*0.02,i<2?H*0.22:H*0.92)});if(logo){const lh=H*0.25*(tarjLogoScale||1),lw=logo.width*(lh/logo.height);ctx.drawImage(logo,(W-Math.min(lw,W*0.4*(tarjLogoScale||1)))/2,H*0.07,Math.min(lw,W*0.4*(tarjLogoScale||1)),lh)}ctx.font=`bold ${H*0.10}px Georgia,serif`;ctx.fillStyle='#7B4F2E';ctx.textAlign='center';ctx.fillText(neg||'Tu Negocio',W/2,H*0.46);ctx.strokeStyle='#C8956C';ctx.lineWidth=1.5;ctx.beginPath();ctx.moveTo(W*0.25,H*0.52);ctx.lineTo(W*0.75,H*0.52);ctx.stroke();tarjWrapText(ctx,msg||'Gracias por tu compra!',W/2,H*0.64,W*0.75,H*0.068,'#5C3D2E',`italic ${H*0.068}px Georgia,serif`,'center');ctx.font=`${H*0.053}px Arial`;ctx.fillStyle='#C8956C';ctx.fillText(con||'',W/2,H*0.89);ctx.textAlign='left'}},
       // 3 — Moderno degradado
-      {nombre:'Moderno degradado',render(ctx,W,H,logo,neg,msg,con,ac){const accent=ac||'#159A9C';ctx.fillStyle='#ffffff';ctx.fillRect(0,0,W,H);const grad=ctx.createLinearGradient(0,0,W*0.42,H);grad.addColorStop(0,accent);grad.addColorStop(1,'#0d6e70');ctx.fillStyle=grad;ctx.fillRect(0,0,W*0.42,H);ctx.beginPath();ctx.arc(W*0.42,H/2,H*0.55,0,Math.PI*2);ctx.fillStyle='rgba(255,255,255,0.06)';ctx.fill();if(logo){const lh=H*0.28,lw=logo.width*(lh/logo.height);ctx.drawImage(logo,(W*0.42-Math.min(lw,W*0.35))/2,H*0.10,Math.min(lw,W*0.35),lh)}ctx.font=`bold ${H*0.085}px Arial`;ctx.fillStyle='#fff';ctx.textAlign='center';ctx.fillText(neg||'Tu Negocio',W*0.21,H*0.52);ctx.font=`${H*0.06}px Arial`;ctx.fillText('\u2726 \u2726 \u2726',W*0.21,H*0.64);ctx.font=`${H*0.05}px Arial`;ctx.fillStyle='rgba(255,255,255,0.8)';ctx.fillText(con||'',W*0.21,H*0.87);ctx.textAlign='left';ctx.font=`${H*0.075}px Arial`;ctx.fillStyle=accent;ctx.fillText('\u00a1Gracias!',W*0.50,H*0.22);ctx.fillStyle='#f0a028';ctx.fillRect(W*0.50,H*0.27,W*0.18,3);tarjWrapText(ctx,msg||'Gracias por elegirnos.',W*0.50,H*0.42,W*0.47,H*0.072,'#333',`${H*0.068}px Arial`)}},
+      {nombre:'Moderno degradado',render(ctx,W,H,logo,neg,msg,con,ac,c2,c3,c4){const accent=ac||'#159A9C';const col2=c2||'#001520';const col3=c3||'#ffffff';const col4=c4||'#f0a028';ctx.fillStyle='#ffffff';ctx.fillRect(0,0,W,H);const grad=ctx.createLinearGradient(0,0,W*0.42,H);grad.addColorStop(0,accent);grad.addColorStop(1,col2);ctx.fillStyle=grad;ctx.fillRect(0,0,W*0.42,H);ctx.beginPath();ctx.arc(W*0.42,H/2,H*0.55,0,Math.PI*2);ctx.fillStyle='rgba(255,255,255,0.06)';ctx.fill();if(logo){const lh=H*0.28*(tarjLogoScale||1),lw=logo.width*(lh/logo.height);ctx.drawImage(logo,(W*0.42-Math.min(lw,W*0.35*(tarjLogoScale||1)))/2,H*0.10,Math.min(lw,W*0.35*(tarjLogoScale||1)),lh)}ctx.font=`bold ${H*0.085}px Arial`;ctx.fillStyle='#fff';ctx.textAlign='center';ctx.fillText(neg||'Tu Negocio',W*0.21,H*0.52);ctx.font=`${H*0.06}px Arial`;ctx.fillText('\u2726 \u2726 \u2726',W*0.21,H*0.64);ctx.font=`${H*0.05}px Arial`;ctx.fillStyle='rgba(255,255,255,0.8)';ctx.fillText(con||'',W*0.21,H*0.87);ctx.textAlign='left';ctx.font=`${H*0.075}px Arial`;ctx.fillStyle=accent;ctx.fillText('\u00a1Gracias!',W*0.50,H*0.22);ctx.fillStyle=col4;ctx.fillRect(W*0.50,H*0.27,W*0.18,3);tarjWrapText(ctx,msg||'Gracias por elegirnos.',W*0.50,H*0.42,W*0.47,H*0.072,'#333',`${H*0.068}px Arial`)}},
       // 4 — Festivo con confetti
-      {nombre:'Festivo con confetti',render(ctx,W,H,logo,neg,msg,con,ac){ctx.fillStyle='#ffffff';ctx.fillRect(0,0,W,H);const cc=['#FF6B6B','#FFD93D','#6BCB77','#4D96FF','#FF6BD6','#FF9F43'];const rng=s=>{let x=Math.sin(s)*10000;return x-Math.floor(x)};for(let i=0;i<55;i++){ctx.save();ctx.fillStyle=cc[Math.floor(rng(i*7+1)*cc.length)];ctx.globalAlpha=0.55;const cx2=rng(i*3+1)*W,cy2=rng(i*5+2)*H,sz=6+rng(i*11+3)*12;ctx.translate(cx2,cy2);ctx.rotate(rng(i*13+4)*Math.PI*2);if(i%3===0)ctx.fillRect(-sz/2,-sz/6,sz,sz/3);else if(i%3===1){ctx.beginPath();ctx.arc(0,0,sz/2.5,0,Math.PI*2);ctx.fill()}else{ctx.beginPath();ctx.moveTo(0,-sz/2);ctx.lineTo(sz/2,sz/2);ctx.lineTo(-sz/2,sz/2);ctx.closePath();ctx.fill()};ctx.restore()};ctx.globalAlpha=1;const bx=W*0.08,by=H*0.06,bw=W*0.84,bh=H*0.88;ctx.fillStyle='rgba(255,255,255,0.92)';roundRect(ctx,bx,by,bw,bh,16);ctx.fill();ctx.strokeStyle='#FFD93D';ctx.lineWidth=3;roundRect(ctx,bx,by,bw,bh,16);ctx.stroke();if(logo){const lh=H*0.24,lw=logo.width*(lh/logo.height);ctx.drawImage(logo,(W-Math.min(lw,W*0.40))/2,H*0.10,Math.min(lw,W*0.40),lh)}ctx.font=`900 ${H*0.095}px Arial`;ctx.fillStyle='#FF6B6B';ctx.textAlign='center';ctx.fillText('\u00a1GRACIAS!',W/2,H*0.46);ctx.font=`bold ${H*0.075}px Arial`;ctx.fillStyle='#4D96FF';ctx.fillText(neg||'Tu Negocio',W/2,H*0.58);tarjWrapText(ctx,msg||'Tu compra nos alegra el dia!',W/2,H*0.72,W*0.72,H*0.062,'#555',`${H*0.062}px Arial`,'center');ctx.font=`${H*0.052}px Arial`;ctx.fillStyle='#888';ctx.fillText(con||'',W/2,H*0.90);ctx.textAlign='left'}},
+      {nombre:'Festivo con confetti',render(ctx,W,H,logo,neg,msg,con,ac,c2,c3,c4){ctx.fillStyle='#ffffff';ctx.fillRect(0,0,W,H);const cc=['#FF6B6B','#FFD93D','#6BCB77','#4D96FF','#FF6BD6','#FF9F43'];const rng=s=>{let x=Math.sin(s)*10000;return x-Math.floor(x)};for(let i=0;i<55;i++){ctx.save();ctx.fillStyle=cc[Math.floor(rng(i*7+1)*cc.length)];ctx.globalAlpha=0.55;const cx2=rng(i*3+1)*W,cy2=rng(i*5+2)*H,sz=6+rng(i*11+3)*12;ctx.translate(cx2,cy2);ctx.rotate(rng(i*13+4)*Math.PI*2);if(i%3===0)ctx.fillRect(-sz/2,-sz/6,sz,sz/3);else if(i%3===1){ctx.beginPath();ctx.arc(0,0,sz/2.5,0,Math.PI*2);ctx.fill()}else{ctx.beginPath();ctx.moveTo(0,-sz/2);ctx.lineTo(sz/2,sz/2);ctx.lineTo(-sz/2,sz/2);ctx.closePath();ctx.fill()};ctx.restore()};ctx.globalAlpha=1;const bx=W*0.08,by=H*0.06,bw=W*0.84,bh=H*0.88;ctx.fillStyle='rgba(255,255,255,0.92)';roundRect(ctx,bx,by,bw,bh,16);ctx.fill();ctx.strokeStyle='#FFD93D';ctx.lineWidth=3;roundRect(ctx,bx,by,bw,bh,16);ctx.stroke();if(logo){const lh=H*0.24*(tarjLogoScale||1),lw=logo.width*(lh/logo.height);ctx.drawImage(logo,(W-Math.min(lw,W*0.40*(tarjLogoScale||1)))/2,H*0.10,Math.min(lw,W*0.40*(tarjLogoScale||1)),lh)}ctx.font=`900 ${H*0.095}px Arial`;ctx.fillStyle='#FF6B6B';ctx.textAlign='center';ctx.fillText('\u00a1GRACIAS!',W/2,H*0.46);ctx.font=`bold ${H*0.075}px Arial`;ctx.fillStyle='#4D96FF';ctx.fillText(neg||'Tu Negocio',W/2,H*0.58);tarjWrapText(ctx,msg||'Tu compra nos alegra el dia!',W/2,H*0.72,W*0.72,H*0.062,'#555',`${H*0.062}px Arial`,'center');ctx.font=`${H*0.052}px Arial`;ctx.fillStyle='#888';ctx.fillText(con||'',W/2,H*0.90);ctx.textAlign='left'}},
       // 5 — Elegante negro y dorado
-      {nombre:'Elegante negro y dorado',render(ctx,W,H,logo,neg,msg,con,ac){ctx.fillStyle='#0a0a0a';ctx.fillRect(0,0,W,H);const gBorder=ctx.createLinearGradient(0,0,W,H);gBorder.addColorStop(0,'#c9a84c');gBorder.addColorStop(0.5,'#f0d060');gBorder.addColorStop(1,'#c9a84c');ctx.strokeStyle=gBorder;ctx.lineWidth=3;ctx.strokeRect(10,10,W-20,H-20);ctx.strokeStyle='rgba(201,168,76,0.3)';ctx.lineWidth=1;ctx.strokeRect(18,18,W-36,H-36);if(logo){const lh=H*0.28,lw=logo.width*(lh/logo.height);ctx.drawImage(logo,W*0.06,H*0.10,Math.min(lw,W*0.35),lh)}ctx.font=`bold ${H*0.095}px Georgia,serif`;ctx.fillStyle='#f0d060';ctx.textAlign='left';ctx.fillText(neg||'Tu Negocio',W*0.06,H*0.55);const gLine=ctx.createLinearGradient(W*0.06,0,W*0.5,0);gLine.addColorStop(0,'#f0d060');gLine.addColorStop(1,'transparent');ctx.strokeStyle=gLine;ctx.lineWidth=1.5;ctx.beginPath();ctx.moveTo(W*0.06,H*0.60);ctx.lineTo(W*0.55,H*0.60);ctx.stroke();tarjWrapText(ctx,msg||'Gracias por tu confianza.',W*0.06,H*0.71,W*0.88,H*0.065,'#d4c5a0',`italic ${H*0.065}px Georgia,serif`);ctx.font=`${H*0.052}px Arial`;ctx.fillStyle='rgba(201,168,76,0.7)';ctx.fillText(con||'',W*0.06,H*0.90);ctx.font=`${H*0.22}px Arial`;ctx.fillStyle='rgba(201,168,76,0.06)';ctx.textAlign='right';ctx.fillText('\u2605',W*0.97,H*0.65);ctx.textAlign='left'}},
+      {nombre:'Elegante negro y dorado',render(ctx,W,H,logo,neg,msg,con,ac,c2,c3,c4){ctx.fillStyle='#0a0a0a';ctx.fillRect(0,0,W,H);const gBorder=ctx.createLinearGradient(0,0,W,H);gBorder.addColorStop(0,'#c9a84c');gBorder.addColorStop(0.5,'#f0d060');gBorder.addColorStop(1,'#c9a84c');ctx.strokeStyle=gBorder;ctx.lineWidth=3;ctx.strokeRect(10,10,W-20,H-20);ctx.strokeStyle='rgba(201,168,76,0.3)';ctx.lineWidth=1;ctx.strokeRect(18,18,W-36,H-36);if(logo){const lh=H*0.28*(tarjLogoScale||1),lw=logo.width*(lh/logo.height);ctx.drawImage(logo,W*0.06,H*0.10,Math.min(lw,W*0.35*(tarjLogoScale||1)),lh)}ctx.font=`bold ${H*0.095}px Georgia,serif`;ctx.fillStyle='#f0d060';ctx.textAlign='left';ctx.fillText(neg||'Tu Negocio',W*0.06,H*0.55);const gLine=ctx.createLinearGradient(W*0.06,0,W*0.5,0);gLine.addColorStop(0,'#f0d060');gLine.addColorStop(1,'transparent');ctx.strokeStyle=gLine;ctx.lineWidth=1.5;ctx.beginPath();ctx.moveTo(W*0.06,H*0.60);ctx.lineTo(W*0.55,H*0.60);ctx.stroke();tarjWrapText(ctx,msg||'Gracias por tu confianza.',W*0.06,H*0.71,W*0.88,H*0.065,'#d4c5a0',`italic ${H*0.065}px Georgia,serif`);ctx.font=`${H*0.052}px Arial`;ctx.fillStyle='rgba(201,168,76,0.7)';ctx.fillText(con||'',W*0.06,H*0.90);ctx.font=`${H*0.22}px Arial`;ctx.fillStyle='rgba(201,168,76,0.06)';ctx.textAlign='right';ctx.fillText('\u2605',W*0.97,H*0.65);ctx.textAlign='left'}},
       // 6 — Naturaleza verde
-      {nombre:'Naturaleza verde',render(ctx,W,H,logo,neg,msg,con,ac){const accent=ac||'#2d7a4f';const bg=ctx.createLinearGradient(0,0,W,H);bg.addColorStop(0,'#f0f7f0');bg.addColorStop(1,'#e0f0e8');ctx.fillStyle=bg;ctx.fillRect(0,0,W,H);ctx.fillStyle=accent;ctx.fillRect(0,0,W*0.06,H);const av=ctx.createLinearGradient(0,0,0,H);av.addColorStop(0,'#4ade80');av.addColorStop(1,accent);ctx.fillStyle=av;ctx.fillRect(0,0,6,H);['\ud83c\udf3f','\ud83c\udf43','\ud83c\udf3f','\ud83c\udf43'].forEach((e,i)=>{ctx.font=`${H*(i<2?0.10:0.08)}px Arial`;ctx.textAlign='right';ctx.fillText(e,W*0.99,i<2?H*(0.15+i*0.12):H*(0.78+i*0.08))});if(logo){const lh=H*0.28,lw=logo.width*(lh/logo.height);ctx.drawImage(logo,W*0.10,H*0.10,Math.min(lw,W*0.38),lh)}ctx.font=`bold ${H*0.10}px Arial`;ctx.fillStyle='#1a5c38';ctx.textAlign='left';ctx.fillText(neg||'Tu Negocio',W*0.10,H*0.55);ctx.fillStyle=accent;ctx.fillRect(W*0.10,H*0.60,W*0.12,2.5);tarjWrapText(ctx,msg||'Gracias por elegirnos!',W*0.10,H*0.70,W*0.82,H*0.062,'#2d5a3d',`${H*0.062}px Arial`);ctx.font=`${H*0.052}px Arial`;ctx.fillStyle=accent;ctx.fillText(con||'',W*0.10,H*0.90)}},
+      {nombre:'Naturaleza verde',render(ctx,W,H,logo,neg,msg,con,ac,c2,c3,c4){const accent=ac||'#2d7a4f';const col2=c2||'#f0f7f0';const col3=c3||'#ffffff';const col4=c4||'#4ade80';const bg=ctx.createLinearGradient(0,0,W,H);bg.addColorStop(0,'#f0f7f0');bg.addColorStop(1,'#e0f0e8');ctx.fillStyle=bg;ctx.fillRect(0,0,W,H);ctx.fillStyle=accent;ctx.fillRect(0,0,W*0.06,H);const av=ctx.createLinearGradient(0,0,0,H);av.addColorStop(0,'#4ade80');av.addColorStop(1,accent);ctx.fillStyle=av;ctx.fillRect(0,0,6,H);['\ud83c\udf3f','\ud83c\udf43','\ud83c\udf3f','\ud83c\udf43'].forEach((e,i)=>{ctx.font=`${H*(i<2?0.10:0.08)}px Arial`;ctx.textAlign='right';ctx.fillText(e,W*0.99,i<2?H*(0.15+i*0.12):H*(0.78+i*0.08))});if(logo){const lh=H*0.28*(tarjLogoScale||1),lw=logo.width*(lh/logo.height);ctx.drawImage(logo,W*0.10,H*0.10,Math.min(lw,W*0.38*(tarjLogoScale||1)),lh)}ctx.font=`bold ${H*0.10}px Arial`;ctx.fillStyle='#1a5c38';ctx.textAlign='left';ctx.fillText(neg||'Tu Negocio',W*0.10,H*0.55);ctx.fillStyle=accent;ctx.fillRect(W*0.10,H*0.60,W*0.12,2.5);tarjWrapText(ctx,msg||'Gracias por elegirnos!',W*0.10,H*0.70,W*0.82,H*0.062,'#2d5a3d',`${H*0.062}px Arial`);ctx.font=`${H*0.052}px Arial`;ctx.fillStyle=accent;ctx.fillText(con||'',W*0.10,H*0.90)}},
       // 7 — Pastel rosado
-      {nombre:'Pastel rosado',render(ctx,W,H,logo,neg,msg,con,ac){const bg=ctx.createLinearGradient(0,0,W,H);bg.addColorStop(0,'#fff0f5');bg.addColorStop(1,'#ffe4ef');ctx.fillStyle=bg;ctx.fillRect(0,0,W,H);ctx.fillStyle='rgba(255,182,193,0.4)';ctx.beginPath();ctx.arc(W*0.85,H*0.15,H*0.4,0,Math.PI*2);ctx.fill();ctx.beginPath();ctx.arc(W*0.1,H*0.85,H*0.3,0,Math.PI*2);ctx.fill();ctx.strokeStyle='#e8a0b0';ctx.lineWidth=2;ctx.strokeRect(12,12,W-24,H-24);['\ud83c\udf39','\ud83c\udf37','\ud83d\udc9d','\u2728'].forEach((e,i)=>{ctx.font=`${H*(i<2?0.10:0.09)}px Arial`;ctx.fillText(e,W*(0.06+i*0.22),H*0.96)});if(logo){const lh=H*0.25,lw=logo.width*(lh/logo.height);ctx.drawImage(logo,(W-Math.min(lw,W*0.4))/2,H*0.07,Math.min(lw,W*0.4),lh)}ctx.font=`bold ${H*0.095}px Georgia,serif`;ctx.fillStyle='#c0406a';ctx.textAlign='center';ctx.fillText(neg||'Tu Negocio',W/2,H*0.47);ctx.strokeStyle='#f4a0b8';ctx.lineWidth=1.5;ctx.beginPath();ctx.moveTo(W*0.2,H*0.52);ctx.lineTo(W*0.8,H*0.52);ctx.stroke();tarjWrapText(ctx,msg||'Gracias por tu compra!',W/2,H*0.64,W*0.78,H*0.065,'#8b3a5a',`italic ${H*0.065}px Georgia,serif`,'center');ctx.font=`${H*0.052}px Arial`;ctx.fillStyle='#c0406a';ctx.fillText(con||'',W/2,H*0.84);ctx.textAlign='left'}},
+      {nombre:'Pastel rosado',render(ctx,W,H,logo,neg,msg,con,ac,c2,c3,c4){const bg=ctx.createLinearGradient(0,0,W,H);bg.addColorStop(0,'#fff0f5');bg.addColorStop(1,'#ffe4ef');ctx.fillStyle=bg;ctx.fillRect(0,0,W,H);ctx.fillStyle='rgba(255,182,193,0.4)';ctx.beginPath();ctx.arc(W*0.85,H*0.15,H*0.4,0,Math.PI*2);ctx.fill();ctx.beginPath();ctx.arc(W*0.1,H*0.85,H*0.3,0,Math.PI*2);ctx.fill();ctx.strokeStyle='#e8a0b0';ctx.lineWidth=2;ctx.strokeRect(12,12,W-24,H-24);['\ud83c\udf39','\ud83c\udf37','\ud83d\udc9d','\u2728'].forEach((e,i)=>{ctx.font=`${H*(i<2?0.10:0.09)}px Arial`;ctx.fillText(e,W*(0.06+i*0.22),H*0.96)});if(logo){const lh=H*0.25*(tarjLogoScale||1),lw=logo.width*(lh/logo.height);ctx.drawImage(logo,(W-Math.min(lw,W*0.4*(tarjLogoScale||1)))/2,H*0.07,Math.min(lw,W*0.4*(tarjLogoScale||1)),lh)}ctx.font=`bold ${H*0.095}px Georgia,serif`;ctx.fillStyle='#c0406a';ctx.textAlign='center';ctx.fillText(neg||'Tu Negocio',W/2,H*0.47);ctx.strokeStyle='#f4a0b8';ctx.lineWidth=1.5;ctx.beginPath();ctx.moveTo(W*0.2,H*0.52);ctx.lineTo(W*0.8,H*0.52);ctx.stroke();tarjWrapText(ctx,msg||'Gracias por tu compra!',W/2,H*0.64,W*0.78,H*0.065,'#8b3a5a',`italic ${H*0.065}px Georgia,serif`,'center');ctx.font=`${H*0.052}px Arial`;ctx.fillStyle='#c0406a';ctx.fillText(con||'',W/2,H*0.84);ctx.textAlign='left'}},
       // 8 — Geométrico moderno
-      {nombre:'Geometrico moderno',render(ctx,W,H,logo,neg,msg,con,ac){const accent=ac||'#e94560';ctx.fillStyle='#f8f9fa';ctx.fillRect(0,0,W,H);ctx.fillStyle='#1a1a2e';ctx.beginPath();ctx.moveTo(0,0);ctx.lineTo(W*0.45,0);ctx.lineTo(W*0.35,H);ctx.lineTo(0,H);ctx.closePath();ctx.fill();ctx.fillStyle=accent;ctx.beginPath();ctx.moveTo(W*0.45,0);ctx.lineTo(W*0.52,0);ctx.lineTo(W*0.42,H);ctx.lineTo(W*0.35,H);ctx.closePath();ctx.fill();ctx.fillStyle='rgba(21,154,156,0.15)';ctx.beginPath();ctx.moveTo(W*0.52,0);ctx.lineTo(W,0);ctx.lineTo(W,H*0.5);ctx.closePath();ctx.fill();if(logo){const lh=H*0.28,lw=logo.width*(lh/logo.height);ctx.drawImage(logo,(W*0.38/2-Math.min(lw,W*0.32)/2),H*0.10,Math.min(lw,W*0.32),lh)}ctx.font=`bold ${H*0.09}px Arial`;ctx.fillStyle='#ffffff';ctx.textAlign='center';ctx.fillText(neg||'Tu Negocio',W*0.19,H*0.55);ctx.font=`${H*0.052}px Arial`;ctx.fillStyle='rgba(255,255,255,0.7)';ctx.fillText(con||'',W*0.19,H*0.68);ctx.font=`${H*0.08}px Arial`;ctx.fillStyle='#1a1a2e';ctx.textAlign='left';ctx.fillText('\u00a1Gracias!',W*0.58,H*0.30);ctx.fillStyle=accent;ctx.fillRect(W*0.58,H*0.35,W*0.12,3);tarjWrapText(ctx,msg||'Gracias por elegirnos.',W*0.58,H*0.46,W*0.38,H*0.062,'#333',`${H*0.058}px Arial`);ctx.font=`${H*0.20}px Arial`;ctx.fillStyle=accent.replace(')',',0.07)').replace('rgb','rgba');ctx.textAlign='right';ctx.fillText('\u25b2',W*0.99,H*0.92);ctx.textAlign='left'}}
+      {nombre:'Geometrico moderno',render(ctx,W,H,logo,neg,msg,con,ac,c2,c3,c4){const accent=ac||'#e94560';const col2=c2||'#1a1a2e';const col3=c3||'#f8f9fa';const col4=c4||'#159A9C';ctx.fillStyle='#f8f9fa';ctx.fillRect(0,0,W,H);ctx.fillStyle=col2;ctx.beginPath();ctx.moveTo(0,0);ctx.lineTo(W*0.45,0);ctx.lineTo(W*0.35,H);ctx.lineTo(0,H);ctx.closePath();ctx.fill();ctx.fillStyle=accent;ctx.beginPath();ctx.moveTo(W*0.45,0);ctx.lineTo(W*0.52,0);ctx.lineTo(W*0.42,H);ctx.lineTo(W*0.35,H);ctx.closePath();ctx.fill();ctx.fillStyle=tarjColorAlpha(accent,0.15);ctx.beginPath();ctx.moveTo(W*0.52,0);ctx.lineTo(W,0);ctx.lineTo(W,H*0.5);ctx.closePath();ctx.fill();if(logo){const lh=H*0.28*(tarjLogoScale||1),lw=logo.width*(lh/logo.height);ctx.drawImage(logo,(W*0.38/2-Math.min(lw,W*0.32*(tarjLogoScale||1))/2),H*0.10,Math.min(lw,W*0.32*(tarjLogoScale||1)),lh)}ctx.font=`bold ${H*0.09}px Arial`;ctx.fillStyle='#ffffff';ctx.textAlign='center';ctx.fillText(neg||'Tu Negocio',W*0.19,H*0.55);ctx.font=`${H*0.052}px Arial`;ctx.fillStyle='rgba(255,255,255,0.7)';ctx.fillText(con||'',W*0.19,H*0.68);ctx.font=`${H*0.08}px Arial`;ctx.fillStyle=col2;ctx.textAlign='left';ctx.fillText('\u00a1Gracias!',W*0.58,H*0.30);ctx.fillStyle=accent;ctx.fillRect(W*0.58,H*0.35,W*0.12,3);tarjWrapText(ctx,msg||'Gracias por elegirnos.',W*0.58,H*0.46,W*0.38,H*0.062,'#333',`${H*0.058}px Arial`);ctx.font=`${H*0.20}px Arial`;ctx.fillStyle=tarjColorAlpha(accent,0.07);ctx.textAlign='right';ctx.fillText('\u25b2',W*0.99,H*0.92);ctx.textAlign='left'}},
+      {nombre:'Bicolor clásico',render(ctx,W,H,logo,neg,msg,con,ac,c2,c3,c4){
+        // Mitad izquierda oscura con logo, mitad derecha clara con mensaje — como la imagen de referencia
+        const accent=ac||'#159A9C'
+        const leftW=W*0.38
+        // Fondo derecho
+        ctx.fillStyle=c3||'#f5f5f5';ctx.fillRect(0,0,W,H)
+        // Panel izquierdo
+        ctx.fillStyle=c2||'#1a1a2e';ctx.fillRect(0,0,leftW,H)
+        // Línea de acento
+        ctx.fillStyle=accent;ctx.fillRect(leftW-4,0,4,H)
+        // Logo en panel izquierdo
+        if(logo){const lh=H*0.30*(tarjLogoScale||1),lw=logo.width*(lh/logo.height);const lx=(leftW-Math.min(lw,leftW*0.75*(tarjLogoScale||1)))/2;ctx.drawImage(logo,lx,H*0.18,Math.min(lw,leftW*0.75*(tarjLogoScale||1)),lh)}
+        // Nombre negocio en panel izquierdo
+        ctx.font=`bold ${H*0.075}px Arial`;ctx.fillStyle='#ffffff';ctx.textAlign='center';ctx.fillText(neg||'Tu Negocio',leftW/2,H*0.65)
+        // Línea decorativa
+        ctx.fillStyle=accent;ctx.fillRect(leftW*0.2,H*0.70,leftW*0.6,2)
+        // Contacto
+        ctx.font=`${H*0.048}px Arial`;ctx.fillStyle='rgba(255,255,255,0.6)';ctx.fillText(con||'',leftW/2,H*0.80)
+        // Panel derecho — mensaje
+        ctx.textAlign='left'
+        ctx.font=`bold ${H*0.10}px Georgia,serif`;ctx.fillStyle='#1a1a2e'
+        ctx.fillText('\u00a1Gracias!',leftW+W*0.07,H*0.35)
+        ctx.fillStyle=accent;ctx.fillRect(leftW+W*0.07,H*0.40,W*0.15,2.5)
+        tarjWrapText(ctx,msg||'Gracias por elegirnos.',leftW+W*0.07,H*0.53,W*0.50,H*0.068,'#444',`${H*0.065}px Georgia,serif`)
+        // Punto decorativo
+        ctx.font=`${H*0.22}px Arial`;ctx.fillStyle='rgba(21,154,156,0.07)';ctx.textAlign='right';ctx.fillText('\u25cf',W*0.97,H*0.95);ctx.textAlign='left'
+      }},
+      {nombre:'Franjas de color',render(ctx,W,H,logo,neg,msg,con,ac,c2,c3,c4){
+        const accent=ac||'#f0a028'
+        // Fondo blanco
+        ctx.fillStyle=c3||'#ffffff';ctx.fillRect(0,0,W,H)
+        // Franja superior
+        ctx.fillStyle=c2||'#1a1a2e';ctx.fillRect(0,0,W,H*0.42)
+        // Franja de acento
+        ctx.fillStyle=accent;ctx.fillRect(0,H*0.42,W,H*0.045)
+        // Logo centrado en franja oscura
+        if(logo){const lh=H*0.22*(tarjLogoScale||1),lw=logo.width*(lh/logo.height);ctx.drawImage(logo,(W-Math.min(lw,W*0.45*(tarjLogoScale||1)))/2,H*0.06,Math.min(lw,W*0.45*(tarjLogoScale||1)),lh)}
+        // Nombre en franja oscura
+        ctx.font=`bold ${H*0.085}px Arial`;ctx.fillStyle='#ffffff';ctx.textAlign='center'
+        ctx.fillText(neg||'Tu Negocio',W/2,H*0.37)
+        // Mensaje en parte clara
+        ctx.font=`${H*0.082}px Georgia,serif`;ctx.fillStyle=c2||'#1a1a2e'
+        ctx.fillText('\u00a1Gracias!',W/2,H*0.60)
+        tarjWrapText(ctx,msg||'Gracias por tu compra.',W/2,H*0.72,W*0.80,H*0.062,'#555',`${H*0.058}px Arial`,'center')
+        ctx.font=`${H*0.048}px Arial`;ctx.fillStyle=accent
+        ctx.fillText(con||'',W/2,H*0.90);ctx.textAlign='left'
+      }},
+      {nombre:'Marco redondeado',render(ctx,W,H,logo,neg,msg,con,ac,c2,c3,c4){
+        const accent=ac||'#5b4fcf'
+        // Fondo con color suave
+        ctx.fillStyle=c3||'#f0eeff';ctx.fillRect(0,0,W,H)
+        // Marco exterior redondeado relleno
+        ctx.fillStyle=accent
+        roundRect(ctx,0,0,W,H*0.45,0);ctx.fill()
+        // Círculo decorativo
+        ctx.beginPath();ctx.arc(W*0.85,H*0.05,H*0.28,0,Math.PI*2)
+        ctx.fillStyle='rgba(255,255,255,0.08)';ctx.fill()
+        // Logo
+        if(logo){const lh=H*0.22*(tarjLogoScale||1),lw=logo.width*(lh/logo.height);ctx.drawImage(logo,W*0.07,H*0.07,Math.min(lw,W*0.38*(tarjLogoScale||1)),lh)}
+        // Nombre
+        ctx.font=`bold ${H*0.085}px Arial`;ctx.fillStyle='#ffffff';ctx.textAlign='left'
+        ctx.fillText(neg||'Tu Negocio',W*0.07,H*0.36)
+        // Separador curvo
+        ctx.fillStyle='#f0eeff'
+        ctx.beginPath();ctx.ellipse(W/2,H*0.45,W*0.6,H*0.08,0,0,Math.PI*2);ctx.fill()
+        // Mensaje
+        ctx.font=`bold ${H*0.082}px Georgia,serif`;ctx.fillStyle=accent
+        ctx.fillText('\u00a1Gracias!',W*0.07,H*0.60)
+        ctx.fillStyle=accent;ctx.fillRect(W*0.07,H*0.65,W*0.14,2.5)
+        tarjWrapText(ctx,msg||'Gracias por elegirnos.',W*0.07,H*0.75,W*0.86,H*0.060,'#333',`${H*0.057}px Arial`)
+        ctx.font=`${H*0.048}px Arial`;ctx.fillStyle='#888'
+        ctx.fillText(con||'',W*0.07,H*0.91);ctx.textAlign='left'
+      }},
+      {nombre:'Lateral degradado',render(ctx,W,H,logo,neg,msg,con,ac,c2,c3,c4){
+        const accent=ac||'#c0392b'
+        const rightW=W*0.40
+        const leftW=W-rightW
+        // Panel izquierdo claro
+        ctx.fillStyle=c3||'#ffffff';ctx.fillRect(0,0,leftW,H)
+        // Panel derecho degradado
+        const gr=ctx.createLinearGradient(leftW,0,W,H)
+        gr.addColorStop(0,accent);gr.addColorStop(1,c2||'#1a1a2e')
+        ctx.fillStyle=gr;ctx.fillRect(leftW,0,rightW,H)
+        // Línea divisoria
+        ctx.fillStyle=accent;ctx.fillRect(leftW,0,3,H)
+        // Panel izquierdo — mensaje
+        ctx.font=`bold ${H*0.095}px Georgia,serif`;ctx.fillStyle=c2||'#1a1a2e';ctx.textAlign='left'
+        ctx.fillText('\u00a1Gracias!',W*0.06,H*0.28)
+        ctx.fillStyle=accent;ctx.fillRect(W*0.06,H*0.33,W*0.16,2.5)
+        tarjWrapText(ctx,msg||'Gracias por tu compra.',W*0.06,H*0.46,leftW*0.85,H*0.065,'#444',`${H*0.060}px Arial`)
+        ctx.font=`${H*0.048}px Arial`;ctx.fillStyle='#888'
+        ctx.fillText(con||'',W*0.06,H*0.90)
+        // Panel derecho — logo y nombre
+        ctx.textAlign='center'
+        if(logo){const lh=H*0.30*(tarjLogoScale||1),lw=logo.width*(lh/logo.height);ctx.drawImage(logo,leftW+(rightW-Math.min(lw,rightW*0.75*(tarjLogoScale||1)))/2,H*0.10,Math.min(lw,rightW*0.75*(tarjLogoScale||1)),lh)}
+        ctx.font=`bold ${H*0.080}px Arial`;ctx.fillStyle='#ffffff'
+        ctx.fillText(neg||'Tu Negocio',leftW+rightW/2,H*0.60)
+        ctx.fillStyle='rgba(255,255,255,0.4)';ctx.fillRect(leftW+rightW*0.2,H*0.65,rightW*0.6,1.5)
+        ctx.font=`${H*0.046}px Arial`;ctx.fillStyle='rgba(255,255,255,0.6)'
+        ctx.fillText(con||'',leftW+rightW/2,H*0.76);ctx.textAlign='left'
+      }}
+      ,{nombre:'Acuarela pastel',render(ctx,W,H,logo,neg,msg,con,ac,c2,c3,c4){
+        const accent=ac||'#9b59b6';const col2=c2||'#6c3483';const col3=c3||'#fce4ec'
+        // Fondo degradado con colores del logo
+        const bg=ctx.createLinearGradient(0,0,W,H)
+        bg.addColorStop(0,tarjColorAlpha(accent,0.15));bg.addColorStop(0.5,tarjColorAlpha(col2,0.10));bg.addColorStop(1,tarjColorAlpha(accent,0.08))
+        ctx.fillStyle=col3||'#fff3e0';ctx.fillRect(0,0,W,H)
+        ctx.fillStyle=bg;ctx.fillRect(0,0,W,H)
+        // Manchas de acuarela con colores del logo
+        const manchas=[[W*0.1,H*0.15,H*0.55,tarjColorAlpha(accent,0.18)],[W*0.85,H*0.3,H*0.45,tarjColorAlpha(col2,0.15)],[W*0.5,H*0.8,H*0.5,tarjColorAlpha(accent,0.12)],[W*0.7,H*0.1,H*0.3,tarjColorAlpha(col2,0.14)]]
+        manchas.forEach(([mx,my,mr,mc])=>{const rg=ctx.createRadialGradient(mx,my,0,mx,my,mr);rg.addColorStop(0,mc);rg.addColorStop(1,'transparent');ctx.fillStyle=rg;ctx.fillRect(0,0,W,H)})
+        // Marco fino con color del logo
+        ctx.strokeStyle=tarjColorAlpha(accent,0.5);ctx.lineWidth=2;ctx.strokeRect(10,10,W-20,H-20)
+        // Logo centrado arriba
+        const lScale=tarjLogoScale||1
+        if(logo){const lh=H*0.28*(tarjLogoScale||1)*lScale,lw=logo.width*(lh/logo.height);ctx.drawImage(logo,(W-Math.min(lw,W*0.5*(tarjLogoScale||1)*lScale))/2,H*0.05,Math.min(lw,W*0.5*(tarjLogoScale||1)*lScale),lh)}
+        // Nombre
+        ctx.font=`bold ${H*0.10}px Georgia,serif`;ctx.fillStyle=col2;ctx.textAlign='center'
+        ctx.fillText(neg||'Tu Negocio',W/2,H*0.47)
+        // Separador floral
+        ctx.font=`${H*0.07}px Arial`;ctx.fillStyle=tarjColorAlpha(accent,0.7)
+        ctx.fillText('\u273f \u2665 \u273f',W/2,H*0.57)
+        // Mensaje
+        tarjWrapText(ctx,msg||'\u00a1Gracias por tu compra!',W/2,H*0.68,W*0.78,H*0.065,col2,`italic ${H*0.062}px Georgia,serif`,'center')
+        ctx.font=`${H*0.048}px Arial`;ctx.fillStyle=tarjColorAlpha(col2,0.7)
+        ctx.fillText(con||'',W/2,H*0.88);ctx.textAlign='left'
+      }}
+      ,{nombre:'Neon oscuro',render(ctx,W,H,logo,neg,msg,con,ac,c2,c3,c4){
+        const accent=ac||'#00f5c4'
+        // Fondo muy oscuro
+        ctx.fillStyle=c2||'#050d12';ctx.fillRect(0,0,W,H)
+        // Rejilla sutil (grid lines)
+        ctx.strokeStyle='rgba(0,245,196,0.06)';ctx.lineWidth=1
+        for(let x=0;x<W;x+=W*0.08){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,H);ctx.stroke()}
+        for(let y=0;y<H;y+=H*0.12){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(W,y);ctx.stroke()}
+        // Borde neon brillante
+        ctx.shadowColor=accent;ctx.shadowBlur=18
+        ctx.strokeStyle=accent;ctx.lineWidth=2;ctx.strokeRect(8,8,W-16,H-16)
+        ctx.shadowBlur=0
+        // Línea horizontal acento
+        const lg=ctx.createLinearGradient(0,0,W,0)
+        lg.addColorStop(0,'transparent');lg.addColorStop(0.5,accent);lg.addColorStop(1,'transparent')
+        ctx.strokeStyle=lg;ctx.lineWidth=1.5
+        ctx.beginPath();ctx.moveTo(0,H*0.50);ctx.lineTo(W,H*0.50);ctx.stroke()
+        // Logo arriba izquierda
+        const lScale=tarjLogoScale||1
+        if(logo){const lh=H*0.28*(tarjLogoScale||1)*lScale,lw=logo.width*(lh/logo.height);ctx.drawImage(logo,W*0.06,H*0.08,Math.min(lw,W*0.40*(tarjLogoScale||1)*lScale),lh)}
+        // Nombre con glow
+        ctx.shadowColor=accent;ctx.shadowBlur=12
+        ctx.font=`900 ${H*0.105}px Arial`;ctx.fillStyle=accent;ctx.textAlign='left'
+        ctx.fillText(neg||'Tu Negocio',W*0.06,H*0.44)
+        ctx.shadowBlur=0
+        // Separador
+        ctx.fillStyle=accent;ctx.fillRect(W*0.06,H*0.48,W*0.20,1.5)
+        // Mensaje
+        tarjWrapText(ctx,msg||'\u00a1Gracias por tu compra!',W*0.06,H*0.62,W*0.88,H*0.065,'#b0e8e0',`${H*0.060}px Arial`)
+        ctx.font=`${H*0.050}px Arial`;ctx.fillStyle='rgba(0,245,196,0.55)'
+        ctx.fillText(con||'',W*0.06,H*0.90)
+        // Triángulo decorativo esquina
+        ctx.fillStyle='rgba(0,245,196,0.08)';ctx.beginPath()
+        ctx.moveTo(W,H);ctx.lineTo(W,H*0.45);ctx.lineTo(W*0.55,H);ctx.closePath();ctx.fill()
+      }}
+      ,{nombre:'Retro vintage',render(ctx,W,H,logo,neg,msg,con,ac,c2,c3,c4){
+        const accent=ac||'#8B5E3C';const col2=c2||'#5a3510';const col3=c3||'#f5e6c8'
+        // Fondo papel con tono del logo
+        const bg=ctx.createLinearGradient(0,0,W,H)
+        bg.addColorStop(0,col3);bg.addColorStop(1,tarjColorAlpha(accent,0.3))
+        ctx.fillStyle=bg;ctx.fillRect(0,0,W,H)
+        // Textura de ruido
+        for(let i=0;i<800;i++){const px=Math.random()*W,py=Math.random()*H;ctx.fillStyle=tarjColorAlpha(col2,Math.random()*0.04);ctx.fillRect(px,py,1.5,1.5)}
+        // Marco doble con colores del logo
+        ctx.strokeStyle=col2;ctx.lineWidth=4;ctx.strokeRect(10,10,W-20,H-20)
+        ctx.strokeStyle=accent;ctx.lineWidth=1.5;ctx.strokeRect(18,18,W-36,H-36)
+        // Banda central decorativa
+        ctx.fillStyle=col2;ctx.fillRect(0,H*0.40,W,H*0.02)
+        ctx.fillStyle=accent;ctx.fillRect(0,H*0.43,W,H*0.01)
+        // Logo arriba centrado
+        const lScale=tarjLogoScale||1
+        if(logo){const lh=H*0.22*(tarjLogoScale||1)*lScale,lw=logo.width*(lh/logo.height);ctx.drawImage(logo,(W-Math.min(lw,W*0.42*(tarjLogoScale||1)*lScale))/2,H*0.07,Math.min(lw,W*0.42*(tarjLogoScale||1)*lScale),lh)}
+        // Nombre estilo letras de sello
+        ctx.font=`bold ${H*0.095}px Georgia,serif`;ctx.fillStyle=col2;ctx.textAlign='center'
+        ctx.fillText(neg||'Tu Negocio',W/2,H*0.35)
+        // Estrellitas decorativas
+        ctx.font=`${H*0.055}px Arial`;ctx.fillStyle=accent
+        ctx.fillText('\u2605 \u2605 \u2605',W/2,H*0.50)
+        // Mensaje
+        tarjWrapText(ctx,msg||'\u00a1Gracias por su preferencia!',W/2,H*0.64,W*0.75,H*0.068,col2,`italic ${H*0.065}px Georgia,serif`,'center')
+        ctx.font=`${H*0.050}px Arial`;ctx.fillStyle=accent
+        ctx.fillText(con||'',W/2,H*0.86);ctx.textAlign='left'
+      }}
+      ,{nombre:'Ondas dinamicas',render(ctx,W,H,logo,neg,msg,con,ac,c2,c3,c4){
+        const accent=ac||'#6c63ff'
+        const col2u=c2||'#1a1a3e'
+        // Fondo claro
+        ctx.fillStyle=c3||'#f8f8ff';ctx.fillRect(0,0,W,H)
+        // Onda superior
+        ctx.fillStyle=col2u
+        ctx.beginPath();ctx.moveTo(0,0);ctx.lineTo(W,0);ctx.lineTo(W,H*0.38)
+        ctx.bezierCurveTo(W*0.75,H*0.52,W*0.25,H*0.28,0,H*0.42)
+        ctx.closePath();ctx.fill()
+        // Onda acento
+        ctx.fillStyle=accent
+        ctx.beginPath();ctx.moveTo(0,H*0.36)
+        ctx.bezierCurveTo(W*0.25,H*0.22,W*0.75,H*0.48,W,H*0.34)
+        ctx.lineTo(W,H*0.40);ctx.bezierCurveTo(W*0.75,H*0.54,W*0.25,H*0.30,0,H*0.44)
+        ctx.closePath();ctx.fill()
+        // Logo arriba centrado en zona oscura
+        const lScale=tarjLogoScale||1
+        if(logo){const lh=H*0.24*(tarjLogoScale||1)*lScale,lw=logo.width*(lh/logo.height);ctx.drawImage(logo,(W-Math.min(lw,W*0.45*(tarjLogoScale||1)*lScale))/2,H*0.04,Math.min(lw,W*0.45*(tarjLogoScale||1)*lScale),lh)}
+        // Nombre en zona oscura
+        ctx.font=`bold ${H*0.085}px Arial`;ctx.fillStyle='#ffffff';ctx.textAlign='center'
+        ctx.fillText(neg||'Tu Negocio',W/2,H*0.31)
+        // Zona clara — mensaje
+        ctx.font=`bold ${H*0.082}px Georgia,serif`;ctx.fillStyle=accent
+        ctx.fillText('\u00a1Gracias!',W/2,H*0.58)
+        ctx.fillStyle=tarjColorAlpha(accent,0.4);ctx.fillRect(W*0.35,H*0.63,W*0.30,2)
+        tarjWrapText(ctx,msg||'Tu compra nos hace felices.',W/2,H*0.74,W*0.78,H*0.062,'#333',`${H*0.058}px Arial`,'center')
+        ctx.font=`${H*0.048}px Arial`;ctx.fillStyle='#888'
+        ctx.fillText(con||'',W/2,H*0.90);ctx.textAlign='left'
+        // Círculos decorativos esquina inferior izquierda
+        ;[[W*0.06,H*0.88,H*0.10],[W*0.02,H*0.92,H*0.06]].forEach(([cx,cy,cr])=>{
+          ctx.beginPath();ctx.arc(cx,cy,cr,0,Math.PI*2)
+          ctx.fillStyle=tarjColorAlpha(accent,0.12);ctx.fill()
+        })
+      }}
+      ,{nombre:'Acuarela pastel',render(ctx,W,H,logo,neg,msg,con,ac,c2,c3,c4){
+        // Fondo degradado suave lavanda-melocotón
+        const bg=ctx.createLinearGradient(0,0,W,H)
+        bg.addColorStop(0,'#e8e0f8');bg.addColorStop(0.5,'#fce4ec');bg.addColorStop(1,'#fff3e0')
+        ctx.fillStyle=bg;ctx.fillRect(0,0,W,H)
+        // Manchas de acuarela (círculos borrosos semitransparentes)
+        const manchas=[[W*0.1,H*0.15,H*0.55,'rgba(200,180,240,0.25)'],[W*0.85,H*0.3,H*0.45,'rgba(255,180,180,0.22)'],[W*0.5,H*0.8,H*0.5,'rgba(255,220,150,0.20)'],[W*0.7,H*0.1,H*0.3,'rgba(180,220,255,0.22)']]
+        manchas.forEach(([mx,my,mr,mc])=>{const rg=ctx.createRadialGradient(mx,my,0,mx,my,mr);rg.addColorStop(0,mc);rg.addColorStop(1,'transparent');ctx.fillStyle=rg;ctx.fillRect(0,0,W,H)})
+        // Marco fino
+        ctx.strokeStyle='rgba(180,140,200,0.4)';ctx.lineWidth=2;ctx.strokeRect(10,10,W-20,H-20)
+        // Logo centrado arriba
+        const lScale=tarjLogoScale||1
+        if(logo){const lh=H*0.28*(tarjLogoScale||1)*lScale,lw=logo.width*(lh/logo.height);ctx.drawImage(logo,(W-Math.min(lw,W*0.5*(tarjLogoScale||1)*lScale))/2,H*0.05,Math.min(lw,W*0.5*(tarjLogoScale||1)*lScale),lh)}
+        // Nombre
+        ctx.font=`bold ${H*0.10}px Georgia,serif`;ctx.fillStyle='#5a3a7e';ctx.textAlign='center'
+        ctx.fillText(neg||'Tu Negocio',W/2,H*0.47)
+        // Separador floral
+        ctx.font=`${H*0.07}px Arial`;ctx.fillStyle='rgba(180,100,180,0.7)'
+        ctx.fillText('\u273f \u2665 \u273f',W/2,H*0.57)
+        // Mensaje
+        tarjWrapText(ctx,msg||'\u00a1Gracias por tu compra!',W/2,H*0.68,W*0.78,H*0.065,'#7a4a6a',`italic ${H*0.062}px Georgia,serif`,'center')
+        ctx.font=`${H*0.048}px Arial`;ctx.fillStyle='rgba(120,80,160,0.7)'
+        ctx.fillText(con||'',W/2,H*0.88);ctx.textAlign='left'
+      }}
+      ,{nombre:'Neon oscuro',render(ctx,W,H,logo,neg,msg,con,ac,c2,c3,c4){
+        const accent=ac||'#00f5c4'
+        // Fondo muy oscuro
+        ctx.fillStyle='#050d12';ctx.fillRect(0,0,W,H)
+        // Rejilla sutil (grid lines)
+        ctx.strokeStyle='rgba(0,245,196,0.06)';ctx.lineWidth=1
+        for(let x=0;x<W;x+=W*0.08){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,H);ctx.stroke()}
+        for(let y=0;y<H;y+=H*0.12){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(W,y);ctx.stroke()}
+        // Borde neon brillante
+        ctx.shadowColor=accent;ctx.shadowBlur=18
+        ctx.strokeStyle=accent;ctx.lineWidth=2;ctx.strokeRect(8,8,W-16,H-16)
+        ctx.shadowBlur=0
+        // Línea horizontal acento
+        const lg=ctx.createLinearGradient(0,0,W,0)
+        lg.addColorStop(0,'transparent');lg.addColorStop(0.5,accent);lg.addColorStop(1,'transparent')
+        ctx.strokeStyle=lg;ctx.lineWidth=1.5
+        ctx.beginPath();ctx.moveTo(0,H*0.50);ctx.lineTo(W,H*0.50);ctx.stroke()
+        // Logo arriba izquierda
+        const lScale=tarjLogoScale||1
+        if(logo){const lh=H*0.28*(tarjLogoScale||1)*lScale,lw=logo.width*(lh/logo.height);ctx.drawImage(logo,W*0.06,H*0.08,Math.min(lw,W*0.40*(tarjLogoScale||1)*lScale),lh)}
+        // Nombre con glow
+        ctx.shadowColor=accent;ctx.shadowBlur=12
+        ctx.font=`900 ${H*0.105}px Arial`;ctx.fillStyle=accent;ctx.textAlign='left'
+        ctx.fillText(neg||'Tu Negocio',W*0.06,H*0.44)
+        ctx.shadowBlur=0
+        // Separador
+        ctx.fillStyle=accent;ctx.fillRect(W*0.06,H*0.48,W*0.20,1.5)
+        // Mensaje
+        tarjWrapText(ctx,msg||'\u00a1Gracias por tu compra!',W*0.06,H*0.62,W*0.88,H*0.065,'#b0e8e0',`${H*0.060}px Arial`)
+        ctx.font=`${H*0.050}px Arial`;ctx.fillStyle='rgba(0,245,196,0.55)'
+        ctx.fillText(con||'',W*0.06,H*0.90)
+        // Triángulo decorativo esquina
+        ctx.fillStyle='rgba(0,245,196,0.08)';ctx.beginPath()
+        ctx.moveTo(W,H);ctx.lineTo(W,H*0.45);ctx.lineTo(W*0.55,H);ctx.closePath();ctx.fill()
+      }}
+      ,{nombre:'Retro vintage',render(ctx,W,H,logo,neg,msg,con,ac,c2,c3,c4){
+        // Fondo papel envejecido
+        const bg=ctx.createLinearGradient(0,0,W,H)
+        bg.addColorStop(0,'#f5e6c8');bg.addColorStop(1,'#ead5a0')
+        ctx.fillStyle=bg;ctx.fillRect(0,0,W,H)
+        // Textura de ruido (puntos)
+        for(let i=0;i<800;i++){const px=Math.random()*W,py=Math.random()*H;ctx.fillStyle=`rgba(100,70,20,${Math.random()*0.04})`;ctx.fillRect(px,py,1.5,1.5)}
+        // Marco doble
+        ctx.strokeStyle='#8B5E3C';ctx.lineWidth=4;ctx.strokeRect(10,10,W-20,H-20)
+        ctx.strokeStyle='#C4924A';ctx.lineWidth=1.5;ctx.strokeRect(18,18,W-36,H-36)
+        // Banda central decorativa
+        ctx.fillStyle='#8B5E3C';ctx.fillRect(0,H*0.40,W,H*0.02)
+        ctx.fillStyle='#C4924A';ctx.fillRect(0,H*0.43,W,H*0.01)
+        // Logo arriba centrado
+        const lScale=tarjLogoScale||1
+        if(logo){const lh=H*0.22*(tarjLogoScale||1)*lScale,lw=logo.width*(lh/logo.height);ctx.drawImage(logo,(W-Math.min(lw,W*0.42*(tarjLogoScale||1)*lScale))/2,H*0.07,Math.min(lw,W*0.42*(tarjLogoScale||1)*lScale),lh)}
+        // Nombre estilo letras de sello
+        ctx.font=`bold ${H*0.095}px Georgia,serif`;ctx.fillStyle='#4a2c0a';ctx.textAlign='center'
+        ctx.fillText(neg||'Tu Negocio',W/2,H*0.35)
+        // Estrellitas decorativas
+        ctx.font=`${H*0.055}px Arial`;ctx.fillStyle='#8B5E3C'
+        ctx.fillText('\u2605 \u2605 \u2605',W/2,H*0.50)
+        // Mensaje
+        tarjWrapText(ctx,msg||'\u00a1Gracias por su preferencia!',W/2,H*0.64,W*0.75,H*0.068,'#5a3510',`italic ${H*0.065}px Georgia,serif`,'center')
+        ctx.font=`${H*0.050}px Arial`;ctx.fillStyle='#8B5E3C'
+        ctx.fillText(con||'',W/2,H*0.86);ctx.textAlign='left'
+      }}
+      ,{nombre:'Ondas dinamicas',render(ctx,W,H,logo,neg,msg,con,ac,c2,c3,c4){
+        const accent=ac||'#6c63ff'
+        const col2u=c2||'#1a1a3e'
+        // Fondo claro
+        ctx.fillStyle=c3||'#f8f8ff';ctx.fillRect(0,0,W,H)
+        // Onda superior
+        ctx.fillStyle=col2u
+        ctx.beginPath();ctx.moveTo(0,0);ctx.lineTo(W,0);ctx.lineTo(W,H*0.38)
+        ctx.bezierCurveTo(W*0.75,H*0.52,W*0.25,H*0.28,0,H*0.42)
+        ctx.closePath();ctx.fill()
+        // Onda acento
+        ctx.fillStyle=accent
+        ctx.beginPath();ctx.moveTo(0,H*0.36)
+        ctx.bezierCurveTo(W*0.25,H*0.22,W*0.75,H*0.48,W,H*0.34)
+        ctx.lineTo(W,H*0.40);ctx.bezierCurveTo(W*0.75,H*0.54,W*0.25,H*0.30,0,H*0.44)
+        ctx.closePath();ctx.fill()
+        // Logo arriba centrado en zona oscura
+        const lScale=tarjLogoScale||1
+        if(logo){const lh=H*0.24*(tarjLogoScale||1)*lScale,lw=logo.width*(lh/logo.height);ctx.drawImage(logo,(W-Math.min(lw,W*0.45*(tarjLogoScale||1)*lScale))/2,H*0.04,Math.min(lw,W*0.45*(tarjLogoScale||1)*lScale),lh)}
+        // Nombre en zona oscura
+        ctx.font=`bold ${H*0.085}px Arial`;ctx.fillStyle='#ffffff';ctx.textAlign='center'
+        ctx.fillText(neg||'Tu Negocio',W/2,H*0.31)
+        // Zona clara — mensaje
+        ctx.font=`bold ${H*0.082}px Georgia,serif`;ctx.fillStyle=accent
+        ctx.fillText('\u00a1Gracias!',W/2,H*0.58)
+        ctx.fillStyle=tarjColorAlpha(accent,0.4);ctx.fillRect(W*0.35,H*0.63,W*0.30,2)
+        tarjWrapText(ctx,msg||'Tu compra nos hace felices.',W/2,H*0.74,W*0.78,H*0.062,'#333',`${H*0.058}px Arial`,'center')
+        ctx.font=`${H*0.048}px Arial`;ctx.fillStyle='#888'
+        ctx.fillText(con||'',W/2,H*0.90);ctx.textAlign='left'
+        // Círculos decorativos esquina inferior izquierda
+        ;[[W*0.06,H*0.88,H*0.10],[W*0.02,H*0.92,H*0.06]].forEach(([cx,cy,cr])=>{
+          ctx.beginPath();ctx.arc(cx,cy,cr,0,Math.PI*2)
+          ctx.fillStyle=tarjColorAlpha(accent,0.12);ctx.fill()
+        })
+      }}
     ]
+    // Orden de diseños — admin puede reordenar, se guarda en Supabase
+    let tarjDisenosOrden = TARJ_DISENOS.map(d => d.nombre)
+
+    async function tarjCargarOrden() {
+      try {
+        const res = await supabase.from('media').select('nombre').eq('tipo','tarj-disenos-order').maybeSingle()
+        if (res.data && res.data.nombre) {
+          const order = JSON.parse(res.data.nombre)
+          const ordered = []
+          order.forEach(n => { const d = TARJ_DISENOS.find(x => x.nombre === n); if (d) ordered.push(d) })
+          TARJ_DISENOS.forEach(d => { if (!order.includes(d.nombre)) ordered.push(d) })
+          tarjDisenosOrden = ordered.map(d => d.nombre)
+          // Reordenar el array en lugar
+          ordered.forEach((d, i) => { TARJ_DISENOS[i] = d })
+        }
+      } catch(e) {}
+    }
+
+    async function tarjGuardarOrden() {
+      try {
+        await supabase.from('media').delete().eq('tipo','tarj-disenos-order')
+        await supabase.from('media').insert([{tipo:'tarj-disenos-order',url:'',nombre:JSON.stringify(TARJ_DISENOS.map(d=>d.nombre))}])
+      } catch(e) {}
+    }
+
+    // Panel admin para reordenar diseños
+    window.abrirOrdenTarjetas = function() {
+      const modal = document.getElementById('modalOrdenTarjetas')
+      if (!modal) return
+      renderOrdenTarjetas()
+      modal.style.display = 'flex'
+      document.body.style.overflow = 'hidden'
+    }
+    window.cerrarOrdenTarjetas = function() {
+      const modal = document.getElementById('modalOrdenTarjetas')
+      if (modal) modal.style.display = 'none'
+      document.body.style.overflow = ''
+    }
+
+    function renderOrdenTarjetas() {
+      // Renderizar en ambos posibles contenedores
+      ;['tarjOrdenList','tarjOrdenListGestion'].forEach(containerId => {
+        const list = document.getElementById(containerId)
+        if (!list) return
+        // Liberar canvases mini antes de limpiar
+        list.querySelectorAll('canvas').forEach(c=>{c.width=0;c.height=0})
+        list.innerHTML = ''
+        let dragSrc = null
+        TARJ_DISENOS.forEach((d, i) => {
+          const item = document.createElement('div')
+          item.setAttribute('draggable','true')
+          item.setAttribute('data-nombre', d.nombre)
+          item.style.cssText = 'display:flex;align-items:center;gap:.75rem;padding:.4rem .6rem;background:var(--bg3);border:1px solid var(--border);border-radius:8px;cursor:grab;user-select:none'
+
+          // Mini preview de la tarjeta
+          const miniCanvas = document.createElement('canvas')
+          miniCanvas.width = TARJ_W; miniCanvas.height = TARJ_H
+          try {
+            d.render(miniCanvas.getContext('2d'), TARJ_W, TARJ_H, null, 'Mi Negocio', 'Gracias!', '', tarjColores[0], tarjColores[1], tarjColores[2], tarjColores[3])
+          } catch(e) {}
+          const thumb = document.createElement('canvas')
+          thumb.width = 72; thumb.height = 44
+          thumb.style.cssText = 'border-radius:4px;flex-shrink:0;border:1px solid var(--border-sub)'
+          thumb.getContext('2d').drawImage(miniCanvas, 0, 0, 72, 44)
+
+          item.innerHTML = `<span style="font-family:var(--font-head);font-size:.6rem;color:var(--cyan);width:16px;flex-shrink:0">${i+1}</span>`
+          item.appendChild(thumb)
+          const nameSpan = document.createElement('span')
+          nameSpan.style.cssText = 'font-size:.75rem;color:var(--text);flex:1'
+          nameSpan.textContent = d.nombre
+          item.appendChild(nameSpan)
+          const grip = document.createElement('span')
+          grip.style.cssText = 'color:var(--muted);font-size:.8rem'
+          grip.textContent = '⠿'
+          item.appendChild(grip)
+
+          item.addEventListener('dragstart', e => { dragSrc = item; setTimeout(()=>item.style.opacity='.4',0) })
+          item.addEventListener('dragend', () => {
+            item.style.opacity='1'
+            // Sincronizar orden y re-numerar
+            const newOrder = []
+            list.querySelectorAll('[data-nombre]').forEach(el => {
+              const d2 = TARJ_DISENOS.find(x => x.nombre === el.getAttribute('data-nombre'))
+              if (d2) newOrder.push(d2)
+            })
+            newOrder.forEach((d2,i2) => TARJ_DISENOS[i2] = d2)
+            renderOrdenTarjetas()  // re-render para actualizar números
+          })
+          item.addEventListener('dragover', e => {
+            e.preventDefault()
+            if (dragSrc && dragSrc !== item) {
+              const rect = item.getBoundingClientRect()
+              if (e.clientY < rect.top + rect.height/2) list.insertBefore(dragSrc, item)
+              else list.insertBefore(dragSrc, item.nextSibling)
+            }
+          })
+          list.appendChild(item)
+        })
+      })
+    }
+
+    document.getElementById('btnGuardarOrdenTarjetas')?.addEventListener('click', async () => {
+      // Leer orden del DOM y reordenar TARJ_DISENOS
+      const items = document.getElementById('tarjOrdenList').querySelectorAll('[data-nombre]')
+      const newOrder = []
+      items.forEach(el => {
+        const d = TARJ_DISENOS.find(x => x.nombre === el.getAttribute('data-nombre'))
+        if (d) newOrder.push(d)
+      })
+      newOrder.forEach((d,i) => TARJ_DISENOS[i] = d)
+      await tarjGuardarOrden()
+      cerrarOrdenTarjetas()
+      if (document.getElementById('tarjResultados').style.display !== 'none') tarjGenerarTodas()
+    })
+
+    setTimeout(tarjCargarOrden, 800)
+
     function tarjGenerarTodas(){
       const neg=document.getElementById('tarjNegocio').value.trim(),msg=document.getElementById('tarjMensaje').value.trim(),con=document.getElementById('tarjContacto').value.trim()
-      const grid=document.getElementById('tarjGrid');grid.innerHTML=''
+      // Liberar canvases anteriores antes de crear nuevos
+      const grid=document.getElementById('tarjGrid')
+      grid.querySelectorAll('canvas').forEach(c=>{c.width=0;c.height=0})
+      grid.innerHTML=''
+      let logoParaRender = tarjLogoImg
+      if (tarjLogoImg && tarjBgRemoval > 0) {
+        // Cap: reducir resolución para chroma-key (no necesita full res)
+        const _maxSide = 400
+        const _ratio = Math.min(1, _maxSide / Math.max(tarjLogoImg.width, tarjLogoImg.height))
+        const oc = document.createElement('canvas')
+        oc.width = Math.round(tarjLogoImg.width * _ratio)
+        oc.height = Math.round(tarjLogoImg.height * _ratio)
+        const ox = oc.getContext('2d')
+        ox.drawImage(tarjLogoImg, 0, 0)
+        // Detectar color de fondo desde las 4 esquinas
+        const id = ox.getImageData(0, 0, oc.width, oc.height)
+        const d = id.data
+        const W2 = oc.width, H2 = oc.height
+        // Promediar color de las 4 esquinas como color de fondo
+        const corners = [[0,0],[W2-1,0],[0,H2-1],[W2-1,H2-1]]
+        let bgR=0,bgG=0,bgB=0
+        corners.forEach(([cx,cy])=>{ const i=(cy*W2+cx)*4; bgR+=d[i]; bgG+=d[i+1]; bgB+=d[i+2] })
+        bgR=Math.round(bgR/4); bgG=Math.round(bgG/4); bgB=Math.round(bgB/4)
+        // Tolerancia según el slider (0 = 0px, 1 = 120px de distancia en RGB)
+        const tol = tarjBgRemoval * 120
+        for (let i = 0; i < d.length; i += 4) {
+          const dr=Math.abs(d[i]-bgR), dg=Math.abs(d[i+1]-bgG), db=Math.abs(d[i+2]-bgB)
+          const dist = dr + dg + db
+          if (dist < tol) {
+            // Fade suave en el borde (últimos 30% de tolerancia)
+            const fade = Math.min(1, (tol - dist) / (tol * 0.3))
+            d[i+3] = Math.round(d[i+3] * (1 - fade))
+          }
+        }
+        ox.putImageData(id, 0, 0)
+        const oImg = new Image()
+        oImg.src = oc.toDataURL()
+        logoParaRender = oImg
+      }
       TARJ_DISENOS.forEach((d,idx)=>{
         const canvas=document.createElement('canvas');canvas.width=TARJ_W;canvas.height=TARJ_H
-        d.render(canvas.getContext('2d'),TARJ_W,TARJ_H,tarjLogoImg,neg,msg,con,tarjLogoColor)
+        // Pasar los 4 colores al diseño
+        d.render(canvas.getContext('2d'),TARJ_W,TARJ_H,logoParaRender,neg,msg,con,tarjColores[0],tarjColores[1],tarjColores[2],tarjColores[3])
         const wrap=document.createElement('div');wrap.className='tarj-card-wrap'
         const label=document.createElement('p');label.className='tarj-card-label';label.textContent=`${idx+1}. ${d.nombre}`
         const prev=document.createElement('canvas');prev.width=TARJ_W/2;prev.height=TARJ_H/2;prev.style.cssText='width:100%;border-radius:8px;border:1px solid var(--border-sub);display:block'
         prev.getContext('2d').drawImage(canvas,0,0,TARJ_W/2,TARJ_H/2)
         const btn=document.createElement('button');btn.className='btn btn--sm tarj-dl-btn';btn.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> Descargar PNG'
         btn.addEventListener('click',()=>{if(!usuarioActual){window.requireLogin(()=>{});return};canvas.toBlob(blob=>{const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=`tarjeta-${idx+1}.png`;a.click();URL.revokeObjectURL(url)},'image/png')})
-        wrap.appendChild(label);wrap.appendChild(prev);wrap.appendChild(btn);grid.appendChild(wrap)
+        const btnEdit=document.createElement('button');btnEdit.className='btn btn--sm';btnEdit.style.cssText='display:flex;align-items:center;gap:.3rem;margin-top:.3rem;width:100%;justify-content:center;border-color:var(--cyan);color:var(--cyan)'
+        btnEdit.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg> Editar posición'
+        btnEdit.addEventListener('click',()=>window.tarjEditorAbrir(d,idx))
+        wrap.appendChild(label);wrap.appendChild(prev);wrap.appendChild(btn);wrap.appendChild(btnEdit);grid.appendChild(wrap)
       })
       document.getElementById('tarjResultados').style.display='block'
       document.getElementById('tarjResultados').scrollIntoView({behavior:'smooth',block:'nearest'})
+    }
+    // Throttle: evita generaciones masivas al mover sliders rápido
+    let _tarjGenTimer = null
+    const tarjGenerarTodas_throttled = () => {
+      clearTimeout(_tarjGenTimer)
+      _tarjGenTimer = setTimeout(tarjGenerarTodas, 120)
     }
     document.getElementById('btnGenerarTarjetas').addEventListener('click',tarjGenerarTodas)
 
@@ -8118,7 +8954,7 @@
             '</div>',
             '<div style="flex:1">',
               '<p style="margin:0;font-weight:600;color:var(--cyan)">' + tool.label + '</p>',
-              '<p style="margin:0;font-size:0.75rem;color:var(--muted)">Clic en imagen para cambiar portada</p>',
+              '<p style="margin:0;font-size:0.75rem;color:var(--muted)">Clic para cambiar URL de portada</p>',
             '</div>',
             '<span style="color:var(--muted);font-size:0.8rem">#' + (idx+1) + '</span>'
           ].join('')
@@ -8184,6 +9020,20 @@
         var ids = currentOrder.map(function(t){ return t.id })
         applyOrder(currentOrder)
         syncEmprOrderFromDOM()
+        // También guardar orden de tarjetas si cambió
+        const tarjList = document.getElementById('tarjOrdenListGestion')
+        if (tarjList && typeof tarjGuardarOrden === 'function') {
+          const items = tarjList.querySelectorAll('[data-nombre]')
+          if (items.length) {
+            const newOrder = []
+            items.forEach(el => {
+              const d = TARJ_DISENOS.find(x => x.nombre === el.getAttribute('data-nombre'))
+              if (d) newOrder.push(d)
+            })
+            newOrder.forEach((d,i) => TARJ_DISENOS[i] = d)
+            tarjGuardarOrden()
+          }
+        }
         await Promise.all([saveOrder(ids), saveEmprOrder(emprCurrentOrder.map(function(t){return t.id}))])
         cerrarGestionHerramientas()
         var bar = document.getElementById('adminBar')
@@ -8292,7 +9142,7 @@
             '</div>',
             '<div style="flex:1">',
               '<p style="margin:0;font-weight:600;color:var(--cyan)">' + tool.label + '</p>',
-              '<p style="margin:0;font-size:0.72rem;color:var(--muted)">Clic en imagen para cambiar portada</p>',
+              '<p style="margin:0;font-size:0.72rem;color:var(--muted)">Clic para cambiar URL de portada</p>',
             '</div>',
             '<span style="color:var(--muted);font-size:0.8rem">#' + (idx+1) + '</span>'
           ].join('')
@@ -8362,47 +9212,62 @@
           if (res.error || !res.data) return
           res.data.forEach(function(row) {
             var toolId = row.tipo.replace('empr-img-','')
-            if (row.url) setEmprCardImg(toolId, row.url)
+            if (row.url && !row.url.includes('supabase.co/storage')) {
+              window._portadasMap = window._portadasMap || {}
+              window._portadasMap[toolId] = row.url
+              setEmprCardImg(toolId, row.url)
+            }
           })
         } catch(e) { console.warn('cargarEmprImgs:', e) }
       }
       setTimeout(cargarEmprImgs, 600)
 
-      var emprImgTarget = null
       window.gestionEmprEditarImg = function(toolId) {
-        emprImgTarget = toolId
-        var oldInput = document.getElementById('empr-img-file-input')
-        if (oldInput) oldInput.remove()
-        var inp = document.createElement('input')
-        inp.type = 'file'; inp.accept = 'image/*'
-        inp.id = 'empr-img-file-input'; inp.style.display = 'none'
-        document.body.appendChild(inp)
-        inp.addEventListener('change', async function(e) {
-          var file = e.target.files[0]
-          if (!file || !emprImgTarget) return
-          var target = emprImgTarget
-          try {
-            // Subir a Supabase Storage
-            var ext  = file.name.split('.').pop()
-            var path = 'emprendedores/empr-' + target + '.' + ext
-            var upRes = await supabase.storage.from('media').upload(path, file, { upsert: true })
-            if (upRes.error) throw upRes.error
-            var urlRes = supabase.storage.from('media').getPublicUrl(path)
-            var cleanUrl = urlRes.data.publicUrl
-            // Guardar referencia en tabla media
-            var tipo = 'empr-img-' + target
-            await supabase.from('media').delete().eq('tipo', tipo)
-            await supabase.from('media').insert([{ tipo: tipo, url: cleanUrl, nombre: path }])
-            setEmprCardImg(target, cleanUrl + '?t=' + Date.now())
-            renderEmprLista()
-            emprImgTarget = null
-          } catch(err) {
-            console.error('Error subiendo portada empr:', err)
-            alert('Error al subir la imagen: ' + (err.message || err))
-            emprImgTarget = null
-          }
+        // Obtener URL actual
+        var card = document.querySelector('[data-empr-id="' + toolId + '"]')
+        var iconDiv = card && card.querySelector('.empr-card__icon')
+        var bgImg = iconDiv && iconDiv.style.backgroundImage
+        var currentUrl = bgImg ? bgImg.replace(/^url\(["']?/, '').replace(/["']?\)$/, '') : ''
+
+        // Modal de URL
+        var overlay = document.createElement('div')
+        overlay.style.cssText = 'position:fixed;inset:0;z-index:99999;background:rgba(0,8,15,.92);display:flex;align-items:center;justify-content:center'
+        overlay.innerHTML = `
+          <div style="background:var(--bg-card,#0a2535);border:1px solid var(--border);border-radius:12px;padding:1.5rem;width:min(480px,95vw);display:flex;flex-direction:column;gap:.75rem">
+            <h3 style="font-family:var(--font-head);font-size:.75rem;font-weight:700;letter-spacing:.1em;color:var(--cyan);margin:0;text-transform:uppercase">Portada de herramienta</h3>
+            <div>
+              <label style="font-size:.7rem;color:var(--muted)">URL de imagen (GitHub)</label>
+              <input type="text" id="_emprImgUrl" value="${currentUrl}"
+                placeholder="https://raw.githubusercontent.com/rabbit-3d/rabbit-3d.github.io/main/portadas/calculadora-costos.png"
+                style="width:100%;margin-top:.25rem;background:var(--bg3);color:var(--text);border:1px solid var(--border);border-radius:6px;padding:.45rem .5rem;font-size:.72rem;box-sizing:border-box"/>
+              <div id="_emprImgPreview" style="margin-top:.5rem;height:80px;border-radius:6px;background-size:cover;background-position:center;background-color:rgba(255,255,255,.04);${currentUrl ? 'background-image:url(' + currentUrl + ')' : ''}"></div>
+            </div>
+            <div style="display:flex;gap:.5rem;justify-content:flex-end">
+              <button id="_emprImgCancel" style="background:none;border:1px solid var(--border);color:var(--muted);border-radius:6px;padding:.38rem .85rem;cursor:pointer;font-size:.77rem">Cancelar</button>
+              <button id="_emprImgGuardar" style="background:var(--cyan);border:none;color:#fff;border-radius:6px;padding:.38rem .85rem;cursor:pointer;font-size:.77rem;font-weight:600">Guardar</button>
+            </div>
+          </div>`
+        document.body.appendChild(overlay)
+
+        var input = document.getElementById('_emprImgUrl')
+        var preview = document.getElementById('_emprImgPreview')
+        input.addEventListener('input', function() {
+          preview.style.backgroundImage = this.value ? 'url(' + this.value + ')' : ''
         })
-        inp.click()
+        input.focus(); input.select()
+
+        document.getElementById('_emprImgCancel').onclick = function() { overlay.remove() }
+        document.getElementById('_emprImgGuardar').onclick = async function() {
+          var cleanUrl = input.value.trim()
+          var tipo = 'empr-img-' + toolId
+          overlay.remove()
+          setEmprCardImg(toolId, cleanUrl)
+          await supabase.from('media').delete().eq('tipo', tipo)
+          if (cleanUrl) {
+            await supabase.from('media').insert([{ tipo: tipo, url: cleanUrl, nombre: cleanUrl }])
+          }
+          renderEmprLista()
+        }
       }
 
       // Also listen on dragover
@@ -8611,6 +9476,8 @@
       window.abrirGestionHerramientas = async function() {
         await _origAbrirGestion()
         cargarFondosAdmin()
+        if (typeof renderOrdenTarjetas === 'function') renderOrdenTarjetas()
+        if (typeof carruselAdminRender === 'function') carruselAdminRender()
       }
 
     })()
@@ -9013,10 +9880,460 @@
       })
     }
 
+
+    // ── Lazy-play de videos: pausar los que salen del viewport ─────────
+    if ('IntersectionObserver' in window) {
+      const _vidObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          const v = entry.target
+          if (!entry.isIntersecting) {
+            v.pause()
+            v.currentTime = 0
+          }
+        })
+      }, { threshold: 0.1 })
+      // Observar todos los videos del catálogo (también los nuevos)
+      const _observeVideos = () => {
+        document.querySelectorAll('.lazy-video').forEach(v => {
+          if (!v.dataset.observed) { _vidObserver.observe(v); v.dataset.observed = '1' }
+        })
+      }
+      // Ejecutar después de cada render de catálogo
+      const _origRenderCards = window.renderCards
+      if (typeof _origRenderCards === 'function') {
+        window.renderCards = function(...args) { _origRenderCards(...args); setTimeout(_observeVideos, 200) }
+      }
+      setTimeout(_observeVideos, 2000)
+    }
+
+
+    // ── Lazy-play de videos: pausar los que salen del viewport ─────────
+    if ('IntersectionObserver' in window) {
+      const _vidObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          const v = entry.target
+          if (!entry.isIntersecting) {
+            v.pause()
+            v.currentTime = 0
+          }
+        })
+      }, { threshold: 0.1 })
+      // Observar todos los videos del catálogo (también los nuevos)
+      const _observeVideos = () => {
+        document.querySelectorAll('.lazy-video').forEach(v => {
+          if (!v.dataset.observed) { _vidObserver.observe(v); v.dataset.observed = '1' }
+        })
+      }
+      // Ejecutar después de cada render de catálogo
+      const _origRenderCards = window.renderCards
+      if (typeof _origRenderCards === 'function') {
+        window.renderCards = function(...args) { _origRenderCards(...args); setTimeout(_observeVideos, 200) }
+      }
+      setTimeout(_observeVideos, 2000)
+    }
+
+
+    // ── ADMIN: Gestión del carrusel de novedades ───────────────────────
+    function carruselAdminRender() {
+      const lista = document.getElementById('carruselAdminLista')
+      if (!lista) return
+      lista.innerHTML = ''
+      carruselItems.forEach((item, i) => {
+        const h = CARRUSEL_HERRAMIENTAS[item.herramienta_id] || {}
+        const rawUrl = item.imagen_url || ''
+        const isSupabase = rawUrl.includes('supabase.co/storage')
+        const imgUrl = (!rawUrl || isSupabase)
+          ? (window._portadasMap?.[item.herramienta_id] || '')
+          : rawUrl
+        const row = document.createElement('div')
+        row.style.cssText = 'display:flex;align-items:center;gap:.6rem;background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:.5rem .75rem'
+        row.innerHTML = `
+          <div style="width:56px;height:36px;border-radius:5px;flex-shrink:0;overflow:hidden;background:#061520;${imgUrl?'background-image:url('+imgUrl+');background-size:cover;background-position:center':'display:flex;align-items:center;justify-content:center'}">
+            ${imgUrl?'':'<span style="font-size:1.1rem">'+( h.icono||'✨')+'</span>'}
+          </div>
+          <div style="flex:1;min-width:0">
+            <div style="font-size:.75rem;font-weight:600;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${item.titulo_custom||h.titulo||'?'}</div>
+            <div style="font-size:.62rem;color:var(--muted)">${imgUrl ? '✅ Con portada' : '⚠️ Sin portada — usa la de la herramienta'}</div>
+          </div>
+          <button onclick="carruselAdminEditar(${i})" style="background:none;border:1px solid var(--border);color:var(--muted);border-radius:5px;padding:.2rem .5rem;cursor:pointer;font-size:.7rem">✏️</button>
+          <button onclick="carruselAdminEliminar(${i})" style="background:none;border:1px solid rgba(255,60,60,.3);color:#f66;border-radius:5px;padding:.2rem .5rem;cursor:pointer;font-size:.7rem">🗑</button>`
+        lista.appendChild(row)
+      })
+      if (carruselItems.length === 0) {
+        lista.innerHTML = '<p style="font-size:.72rem;color:var(--muted)">No hay slides configurados. Hacé clic en "Agregar slide".</p>'
+      }
+    }
+
+    window.carruselAdminEditar = function carruselAdminEditar(idx) {
+      const item = idx >= 0 ? carruselItems[idx] : null
+
+      // Construir opciones del select — al elegir herramienta, auto-carga su portada
+      const h_opts = Object.entries(CARRUSEL_HERRAMIENTAS).map(([id,h]) =>
+        `<option value="${id}" ${item?.herramienta_id===id?'selected':''}>${h.icono} ${h.titulo}</option>`
+      ).join('')
+
+      const modal = document.createElement('div')
+      modal.style.cssText = 'position:fixed;inset:0;z-index:99999;background:rgba(0,8,15,.92);display:flex;align-items:center;justify-content:center'
+      modal.innerHTML = `
+        <div style="background:var(--bg-card,#0a2535);border:1px solid var(--border);border-radius:14px;padding:1.5rem;width:min(500px,95vw);display:flex;flex-direction:column;gap:.75rem">
+          <h3 style="font-family:var(--font-head);font-size:.8rem;font-weight:700;letter-spacing:.1em;color:var(--cyan);margin:0;text-transform:uppercase">${item?'Editar slide':'Nuevo slide'}</h3>
+          <div>
+            <label style="font-size:.7rem;color:var(--muted)">Herramienta</label>
+            <select id="_cSlideHerr" style="width:100%;margin-top:.25rem;background:var(--bg3);color:var(--text);border:1px solid var(--border);border-radius:6px;padding:.4rem .5rem;font-size:.78rem">${h_opts}</select>
+          </div>
+          <div>
+            <label style="font-size:.7rem;color:var(--muted)">Título personalizado <span style="opacity:.6">(opcional)</span></label>
+            <input type="text" id="_cSlideTit" value="${item?.titulo_custom||''}" placeholder="Si vacío usa el nombre de la herramienta" style="width:100%;margin-top:.25rem;background:var(--bg3);color:var(--text);border:1px solid var(--border);border-radius:6px;padding:.4rem .5rem;font-size:.78rem;box-sizing:border-box"/>
+          </div>
+          <div>
+            <label style="font-size:.7rem;color:var(--muted)">Subtítulo / descripción breve</label>
+            <input type="text" id="_cSlideSub" value="${item?.subtitulo||''}" placeholder="Ej: Generá STLs personalizados en segundos" style="width:100%;margin-top:.25rem;background:var(--bg3);color:var(--text);border:1px solid var(--border);border-radius:6px;padding:.4rem .5rem;font-size:.78rem;box-sizing:border-box"/>
+          </div>
+          <div>
+            <label style="font-size:.7rem;color:var(--muted)">Badge <span style="opacity:.6">(opcional — ej: Nuevo, Beta, IA)</span></label>
+            <input type="text" id="_cSlideBadge" value="${item?.badge||''}" placeholder="Nuevo" style="width:100%;margin-top:.25rem;background:var(--bg3);color:var(--text);border:1px solid var(--border);border-radius:6px;padding:.4rem .5rem;font-size:.78rem;box-sizing:border-box"/>
+          </div>
+          <div>
+            <label style="font-size:.7rem;color:var(--muted)">
+              URL de imagen de fondo
+              <span style="opacity:.6;font-size:.65rem"> — si vacío usa la portada de la herramienta</span>
+            </label>
+            <input type="text" id="_cSlideImg" value="${item?.imagen_url||''}"
+              placeholder="https://raw.githubusercontent.com/rabbit-3d/rabbit-3d.github.io/main/portadas/llaveros.png"
+              style="width:100%;margin-top:.25rem;background:var(--bg3);color:var(--text);border:1px solid var(--border);border-radius:6px;padding:.4rem .5rem;font-size:.72rem;box-sizing:border-box"/>
+            <div id="_cSlideImgPreview" style="margin-top:.4rem;height:70px;border-radius:6px;background-size:cover;background-position:center;background-color:rgba(255,255,255,.04);transition:background .3s;${(item?.imagen_url || (window._portadasMap&&window._portadasMap[item?.herramienta_id])) ? `background-image:url('${item?.imagen_url || window._portadasMap[item?.herramienta_id]}')` : ''}"></div>
+            ${!item?.imagen_url && window._portadasMap?.[item?.herramienta_id] ? `<p style="font-size:.62rem;color:var(--cyan);margin:.3rem 0 0">✅ Usando portada de la herramienta: ${window._portadasMap[item.herramienta_id].split('/').pop()}</p>` : ''}
+          </div>
+          <div style="display:flex;gap:.5rem;justify-content:flex-end;margin-top:.25rem">
+            <button id="_cSlideCancel" style="background:none;border:1px solid var(--border);color:var(--muted);border-radius:6px;padding:.4rem .9rem;cursor:pointer;font-size:.78rem">Cancelar</button>
+            <button id="_cSlideGuardar" style="background:var(--cyan);border:none;color:#fff;border-radius:6px;padding:.4rem .9rem;cursor:pointer;font-size:.78rem;font-weight:600">Guardar</button>
+          </div>
+        </div>`
+      document.body.appendChild(modal)
+
+      // Preview en tiempo real al escribir la URL
+      const imgInput = document.getElementById('_cSlideImg')
+      const preview = document.getElementById('_cSlideImgPreview')
+      imgInput.addEventListener('input', () => {
+        const url = imgInput.value.trim()
+        preview.style.backgroundImage = url ? `url('${url}')` : ''
+      })
+
+      document.getElementById('_cSlideCancel').onclick = () => modal.remove()
+      document.getElementById('_cSlideGuardar').onclick = async () => {
+        const herramienta_id = document.getElementById('_cSlideHerr').value
+        const titulo_custom = document.getElementById('_cSlideTit').value.trim()
+        const subtitulo = document.getElementById('_cSlideSub').value.trim()
+        const badge = document.getElementById('_cSlideBadge').value.trim()
+        const imagen_url = document.getElementById('_cSlideImg').value.trim()
+        const orden = item ? item.orden : carruselItems.length
+        const payload = JSON.stringify({herramienta_id,titulo_custom,subtitulo,badge,imagen_url,orden})
+        if (item && item.id) {
+          await supabase.from('media').update({nombre:payload}).eq('id', item.id)
+          carruselItems[idx] = {...carruselItems[idx], herramienta_id, titulo_custom, subtitulo, badge, imagen_url, orden}
+        } else {
+          const {data} = await supabase.from('media').insert([{tipo:'carrusel_item',url:'',nombre:payload}]).select('id').single()
+          if (data) carruselItems.push({id:data.id, herramienta_id, titulo_custom, subtitulo, badge, imagen_url, orden})
+        }
+        modal.remove()
+        carruselAdminRender()
+        renderCarrusel()
+      }
+    }
+    // Alias para los onclick en el HTML generado
+    window.carruselAdminEliminar = carruselAdminEliminar
+
+    async function carruselAdminEliminar(idx) {
+      const item = carruselItems[idx]
+      if (!item || !confirm('¿Eliminar este slide del carrusel?')) return
+      await supabase.from('media').delete().eq('id', item.id)
+      carruselItems.splice(idx, 1)
+      carruselAdminRender()
+      renderCarrusel()
+    }
+
+    // Botón agregar slide
+    document.addEventListener('click', e => {
+      if (e.target.id === 'btnAgregarSlide') carruselAdminEditar(-1)
+    })
+
+    // Renderizar lista cuando se abre el panel admin
+    const _origAbrirGestion = window.abrirGestionHerramientas
+    window.abrirGestionHerramientas = function() {
+      if (_origAbrirGestion) _origAbrirGestion()
+      carruselAdminRender()
+    }
+
+    // ── Limpiar URLs viejas de Supabase Storage ─────────────────────────
+    window.limpiarPortadasSupabase = async function() {
+      if (!confirm('¿Eliminar todas las URLs viejas de Supabase Storage en portadas?\n\nEsto limpia los registros hcard-* y empr-img-* que apunten a supabase.co/storage.\nLas URLs de GitHub no se tocan.')) return
+
+      const tipos = [
+        'hcard-stl','hcard-llavero','hcard-caja','hcard-maceta','hcard-marco','hcard-cortante',
+        'empr-img-tarjetas','empr-img-costos','empr-img-mejora','empr-img-presupuesto','empr-img-fotoproducto'
+      ]
+
+      // Traer todos los registros de esos tipos
+      const { data, error } = await supabase.from('media').select('id, tipo, url').in('tipo', tipos)
+      if (error) { alert('Error: ' + error.message); return }
+      if (!data || data.length === 0) { alert('No hay registros de portadas en la base de datos.'); return }
+
+      const viejas = data.filter(r => r.url && r.url.includes('supabase.co/storage'))
+      const github = data.filter(r => r.url && !r.url.includes('supabase.co/storage'))
+
+      if (viejas.length === 0) {
+        alert(`✅ Todo limpio. ${github.length} portadas con URL de GitHub encontradas.`)
+        return
+      }
+
+      // Mostrar resumen antes de borrar
+      const lista = viejas.map(r => `• ${r.tipo}: ${r.url.split('/').pop()}`).join('\n')
+      if (!confirm(`Se van a eliminar ${viejas.length} URLs viejas de Supabase:\n\n${lista}\n\n¿Confirmar?`)) return
+
+      // Eliminar solo los viejos
+      const ids = viejas.map(r => r.id)
+      const { error: delErr } = await supabase.from('media').delete().in('id', ids)
+      if (delErr) { alert('Error al eliminar: ' + delErr.message); return }
+
+      // También limpiar imagen_url de los slides del carrusel
+      const { data: slides } = await supabase.from('media').select('id, nombre').eq('tipo', 'carrusel_item')
+      if (slides) {
+        for (const slide of slides) {
+          try {
+            const parsed = JSON.parse(slide.nombre)
+            if (parsed.imagen_url && parsed.imagen_url.includes('supabase.co/storage')) {
+              parsed.imagen_url = ''
+              await supabase.from('media').update({ nombre: JSON.stringify(parsed) }).eq('id', slide.id)
+            }
+          } catch(e) {}
+        }
+      }
+
+      alert(`✅ Listo. Se eliminaron ${viejas.length} URLs viejas.\n${github.length} URLs de GitHub se mantuvieron.\n\nRecargá la página para ver los cambios.`)
+    }
+
     window.cerrarReportesAdmin = function() {
       const m = document.getElementById('modalReportesAdmin')
       if (m) m.style.display = 'none'
     }
+
+    // ══════════════════════════════════════════════════
+    //  EDITOR DE POSICIÓN DE TARJETA
+    //  Solo mueve logo y textos — no edita contenido
+    // ══════════════════════════════════════════════════
+    let _ted = {
+      diseno:null, idx:0, dragging:null, timer:null, canvas:null,
+      logo:{ox:0, oy:0},
+      // Efectos del logo
+      fx:{ blur:0, offX:4, offY:4, shadowColor:'#000000',
+           brightness:100, contrast:100, saturation:100,
+           veloOpac:0, veloColor:'#000000', veloBlend:'source-over' }
+    }
+
+    // Valores actuales del formulario de tarjetas
+    function _tedTexts(){
+      return {
+        neg: document.getElementById('tarjNegocio').value.trim(),
+        msg: document.getElementById('tarjMensaje').value.trim(),
+        con: document.getElementById('tarjContacto').value.trim()
+      }
+    }
+
+    window.tarjEditorAbrir = function(diseno, idx) {
+      _ted.diseno = diseno; _ted.idx = idx
+      _ted.logo = {ox:0,oy:0}; _ted.neg = {ox:0,oy:0}
+      _ted.msg = {ox:0,oy:0}; _ted.con = {ox:0,oy:0}
+      const ov = document.getElementById('tarjEditorOverlay')
+      if(!ov) return
+      ov.style.display = 'flex'
+      document.body.style.overflow = 'hidden'
+      document.getElementById('tarjEditorNombre').textContent = '✏️ ' + diseno.nombre
+      _tedFxSyncUI()
+      _tedFxBindSliders()
+      setTimeout(_tedDraw, 60)
+    }
+    let _tedSlidersBound = false
+    function _tedFxBindSliders(){
+      if(_tedSlidersBound) return
+      _tedSlidersBound = true
+      const rd=()=>{clearTimeout(_ted.timer);_ted.timer=setTimeout(_tedDraw,40)}
+      const bind=(id,key,sfx)=>{const el=document.getElementById(id);if(!el)return;el.addEventListener('input',function(){_ted.fx[key]=parseFloat(this.value);const lb=document.getElementById(id+'Val');if(lb)lb.textContent=this.value+sfx;rd()})}
+      bind('tedBlur','blur','px');bind('tedOffX','offX','px');bind('tedOffY','offY','px')
+      const sc=document.getElementById('tedShadowColor');if(sc)sc.addEventListener('input',function(){_ted.fx.shadowColor=this.value;rd()})
+      bind('tedBrillo','brightness','%');bind('tedContraste','contrast','%');bind('tedSat','saturation','%')
+      bind('tedVelo','veloOpac','%')
+      const vc=document.getElementById('tedVeloColor');if(vc)vc.addEventListener('input',function(){_ted.fx.veloColor=this.value;rd()})
+      const vb=document.getElementById('tedVeloBlend');if(vb)vb.addEventListener('change',function(){_ted.fx.veloBlend=this.value;rd()})
+    }
+
+    window.tarjEditorCerrar = function() {
+      document.getElementById('tarjEditorOverlay').style.display = 'none'
+      document.body.style.overflow = ''
+      if(_ted.canvas){ _ted.canvas.width=0; _ted.canvas.height=0; _ted.canvas=null }
+      // Liberar canvas de pantalla también
+      const _dc=document.getElementById('tarjEditorCanvas');if(_dc){_dc.width=1;_dc.height=1}
+      clearTimeout(_ted.timer)
+    }
+
+    window.tarjEditorReset = function() {
+      _ted.logo={ox:0,oy:0}
+      _ted.fx={blur:0,offX:4,offY:4,shadowColor:'#000000',brightness:100,contrast:100,saturation:100,veloOpac:0,veloColor:'#000000',veloBlend:'source-over'}
+      _tedFxSyncUI()
+      _tedDraw()
+    }
+    function _tedFxSyncUI(){
+      const f=_ted.fx
+      const sv=(id,v,sfx='')=>{const e=document.getElementById(id);if(e)e.value=v;const l=document.getElementById(id+'Val');if(l)l.textContent=v+sfx}
+      sv('tedBlur',f.blur,'px');sv('tedOffX',f.offX,'px');sv('tedOffY',f.offY,'px')
+      const sc=document.getElementById('tedShadowColor');if(sc)sc.value=f.shadowColor
+      sv('tedBrillo',f.brightness,'%');sv('tedContraste',f.contrast,'%');sv('tedSat',f.saturation,'%')
+      sv('tedVelo',f.veloOpac,'%')
+      const vc=document.getElementById('tedVeloColor');if(vc)vc.value=f.veloColor
+      const vb=document.getElementById('tedVeloBlend');if(vb)vb.value=f.veloBlend
+    }
+
+    function _tedDraw() {
+      if(!_ted.diseno) return
+      const W=TARJ_W, H=TARJ_H, t=_tedTexts()
+      const neg=t.neg||'Tu Negocio', msg=t.msg||'¡Gracias por tu compra!', con=t.con
+
+      // ── Render base: diseño completo con textos originales ──────────
+      // Pasamos logo=null para que el diseño NO dibuje el logo
+      // Los textos los dibuja el diseño en su posición original
+      const base = document.createElement('canvas'); base.width=W; base.height=H
+      const bctx = base.getContext('2d')
+      _ted.diseno.render(bctx, W, H, null, neg, msg, con,
+        tarjColores[0], tarjColores[1], tarjColores[2], tarjColores[3])
+
+      // ── Canvas final ────────────────────────────────────────────────
+      const c = document.createElement('canvas'); c.width=W; c.height=H
+      const ctx = c.getContext('2d')
+
+      // 1) Dibujar fondo+textos del diseño
+      ctx.drawImage(base, 0, 0)
+      base.width=0; base.height=0
+
+      // 2) Logo con offset — usa posición cacheada al abrir
+      if(tarjLogoImg && _ted.lw0>0) {
+        const lh=_ted.lh0, lw=_ted.lw0
+        const lx=_ted.lx0 + _ted.logo.ox
+        const ly=_ted.ly0 + _ted.logo.oy
+        // Aplicar efectos
+        ctx.save()
+        const fx=_ted.fx
+        if(fx&&fx.blur>0){ctx.shadowColor=fx.shadowColor;ctx.shadowBlur=fx.blur;ctx.shadowOffsetX=fx.offX;ctx.shadowOffsetY=fx.offY}
+        if(fx)ctx.filter=`brightness(${fx.brightness}%) contrast(${fx.contrast}%) saturate(${fx.saturation}%)`
+        ctx.drawImage(tarjLogoImg, lx, ly, lw, lh)
+        ctx.restore()
+        if(fx&&fx.veloOpac>0){ctx.save();ctx.globalAlpha=fx.veloOpac/100;ctx.globalCompositeOperation=fx.veloBlend;ctx.fillStyle=fx.veloColor;ctx.fillRect(0,0,W,H);ctx.restore()}
+        // Borde punteado arrastrable
+        ctx.save();ctx.strokeStyle='#159A9C';ctx.lineWidth=2;ctx.setLineDash([6,4])
+        ctx.strokeRect(lx,ly,lw,lh);ctx.setLineDash([]);ctx.restore()
+      }
+
+      // (texto handles eliminados — solo logo es movible)
+
+      // 4) Mostrar en pantalla
+      const dc=document.getElementById('tarjEditorCanvas')
+      const wr=document.getElementById('tarjEditorCanvasWrap')
+      if(!dc||!wr) return
+      const sc=Math.min((wr.clientWidth-40)/W, (wr.clientHeight-40)/H, 1)
+      dc.width=W; dc.height=H
+      dc.style.width=Math.round(W*sc)+'px'; dc.style.height=Math.round(H*sc)+'px'
+      dc.dataset.sc=sc
+      dc.getContext('2d').drawImage(c,0,0)
+      if(_ted.canvas){_ted.canvas.width=0;_ted.canvas.height=0}
+      _ted.canvas=c
+    }
+
+    // TARJ_ED_POS eliminado — textos no son movibles
+
+    window.tarjEditorDescargar = function() {
+      if(!_ted.diseno||!usuarioActual){if(!usuarioActual)window.requireLogin(()=>{});return}
+      const W=TARJ_W, H=TARJ_H, t=_tedTexts()
+      const neg=t.neg||'Tu Negocio', msg=t.msg||'¡Gracias por tu compra!', con=t.con
+      const c=document.createElement('canvas'); c.width=W; c.height=H
+      const ctx=c.getContext('2d')
+      _ted.diseno.render(ctx,W,H,null,neg,msg,con,tarjColores[0],tarjColores[1],tarjColores[2],tarjColores[3])
+      if(tarjLogoImg && _ted.lw0>0){
+        const lh=_ted.lh0, lw=_ted.lw0
+        const lx=_ted.lx0+_ted.logo.ox, ly=_ted.ly0+_ted.logo.oy
+        const fx=_ted.fx
+        ctx.save()
+        if(fx&&fx.blur>0){ctx.shadowColor=fx.shadowColor;ctx.shadowBlur=fx.blur;ctx.shadowOffsetX=fx.offX;ctx.shadowOffsetY=fx.offY}
+        if(fx)ctx.filter=`brightness(${fx.brightness}%) contrast(${fx.contrast}%) saturate(${fx.saturation}%)`
+        ctx.drawImage(tarjLogoImg, lx, ly, lw, lh)
+        ctx.restore()
+        if(fx&&fx.veloOpac>0){ctx.save();ctx.globalAlpha=fx.veloOpac/100;ctx.globalCompositeOperation=fx.veloBlend;ctx.fillStyle=fx.veloColor;ctx.fillRect(0,0,W,H);ctx.restore()}
+      }
+      c.toBlob(blob=>{
+        const url=URL.createObjectURL(blob),a=document.createElement('a')
+        a.href=url;a.download=`tarjeta-editada-${_ted.idx+1}.png`;a.click();URL.revokeObjectURL(url)
+        c.width=0;c.height=0
+      },'image/png')
+    }
+
+    // ── Drag ──────────────────────────────────────────────────────
+    ;(function(){
+      const isOpen=()=>document.getElementById('tarjEditorOverlay')?.style.display!=='none'
+      const HIT=24
+
+      function getCanvasPos(clientX,clientY){
+        const dc=document.getElementById('tarjEditorCanvas');if(!dc)return null
+        const r=dc.getBoundingClientRect(),sc=parseFloat(dc.dataset.sc||1)
+        return{x:(clientX-r.left)/sc, y:(clientY-r.top)/sc}
+      }
+
+      function whichEl(x,y){
+        if(!_ted.diseno)return null
+        const W=TARJ_W,H=TARJ_H
+        // Logo: detectar hitbox dinámicamente
+        if(tarjLogoImg){
+          const lh=H*0.28*(tarjLogoScale||1),lw=tarjLogoImg.width*(lh/tarjLogoImg.height)
+          const lx=W*0.07+W*(_ted.logo.ox/100),ly=H*0.10+H*(_ted.logo.oy/100)
+          if(x>=lx-HIT&&x<=lx+lw+HIT&&y>=ly-HIT&&y<=ly+lh+HIT)return'logo'
+        }
+        // Solo el logo es arrastrable
+        return null
+      }
+
+      let lastPos=null
+      function onStart(clientX,clientY){
+        if(!isOpen())return false
+        const pos=getCanvasPos(clientX,clientY);if(!pos)return false
+        const el=whichEl(pos.x,pos.y)
+        if(!el)return false
+        _ted.dragging=el;lastPos=pos
+        return true
+      }
+      function onMove(clientX,clientY){
+        if(!_ted.dragging||!isOpen())return
+        const pos=getCanvasPos(clientX,clientY);if(!pos)return
+        const W=TARJ_W,H=TARJ_H
+        const dox=((pos.x-lastPos.x)/W)*100
+        const doy=((pos.y-lastPos.y)/H)*100
+        lastPos=pos
+        _ted[_ted.dragging].ox=Math.round((_ted[_ted.dragging].ox+dox)*10)/10
+        _ted[_ted.dragging].oy=Math.round((_ted[_ted.dragging].oy+doy)*10)/10
+        clearTimeout(_ted.timer);_ted.timer=setTimeout(_tedDraw,20)
+      }
+      function onEnd(){_ted.dragging=null}
+
+      document.addEventListener('mousedown',e=>{
+        const dc=document.getElementById('tarjEditorCanvas')
+        if(e.target===dc&&onStart(e.clientX,e.clientY))e.preventDefault()
+      })
+      document.addEventListener('mousemove',e=>{if(isOpen())onMove(e.clientX,e.clientY)})
+      document.addEventListener('mouseup',onEnd)
+      document.addEventListener('touchstart',e=>{
+        const dc=document.getElementById('tarjEditorCanvas')
+        if(e.target===dc&&onStart(e.touches[0].clientX,e.touches[0].clientY))e.preventDefault()
+      },{passive:false})
+      document.addEventListener('touchmove',e=>{
+        if(_ted.dragging&&isOpen()){onMove(e.touches[0].clientX,e.touches[0].clientY);e.preventDefault()}
+      },{passive:false})
+      document.addEventListener('touchend',onEnd)
+    })()
 
   </script>
 
@@ -9025,7 +10342,7 @@
   <!-- MODAL GESTIÓN HERRAMIENTAS -->
   <div class="modal-overlay" id="modal-gestion-herramientas" style="display:none;z-index:9999">
     <div class="modal" style="max-width:720px;width:95%;max-height:90vh;overflow-y:auto">
-      <div class="modal__header">
+      <div class="modal__header" style="position:sticky;top:0;z-index:10;background:var(--bg-card,#0a2535)">
         <h2 class="modal__title">🔧 Gestionar herramientas</h2>
         <button class="modal__close" onclick="cerrarGestionHerramientas()">✕</button>
       </div>
@@ -9064,7 +10381,24 @@
           <input type="file" id="fondoFolderInput" accept="image/*" multiple webkitdirectory style="display:none"/>
         </div>
 
-        <div style="display:flex;justify-content:flex-end;gap:0.75rem;margin-top:.5rem">
+        <!-- Carrusel de novedades -->
+        <div>
+          <p style="font-family:var(--font-head);font-size:.62rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--cyan);margin:0 0 .5rem">🎠 Carrusel de novedades</p>
+          <p style="font-size:.72rem;color:var(--muted);margin:0 0 .75rem">Elegí qué herramientas mostrar en el carrusel principal. Se muestran en el orden indicado.</p>
+          <div id="carruselAdminLista" style="display:flex;flex-direction:column;gap:.5rem;margin-bottom:.75rem"></div>
+          <button class="btn btn--sm" id="btnAgregarSlide" style="display:flex;align-items:center;gap:.4rem">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Agregar slide
+          </button>
+        </div>
+
+        <!-- Orden de tarjetas de agradecimiento -->
+        <div>
+          <p style="font-family:var(--font-head);font-size:.62rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--cyan);margin:0 0 .5rem">🃏 Orden — Tarjetas de agradecimiento</p>
+          <p style="font-size:.72rem;color:var(--muted);margin:0 0 .75rem">Arrastrá para reordenar. Los usuarios verán los diseños en este orden.</p>
+          <div id="tarjOrdenListGestion" style="display:flex;flex-direction:column;gap:.4rem"></div>
+        </div>
+        <div style="display:flex;gap:.5rem;justify-content:flex-end">
           <button class="btn" onclick="cerrarGestionHerramientas()">Cancelar</button>
           <button class="btn btn--primary" onclick="guardarOrdenHerramientas()">Guardar orden</button>
         </div>
@@ -9137,6 +10471,7 @@
       <button class="btn btn--sm" id="btnActualizarMW" onclick="actualizarMakerworld()">🔄 Tendencias</button>
       <button class="btn btn--sm" id="btnVerReportes" onclick="abrirReportesAdmin()">🐛 Reportes</button>
       <button class="btn btn--sm" id="btnEstadisticas" onclick="abrirEstadisticas()">📊 Estadísticas</button>
+      <button class="btn btn--sm" id="btnLimpiarPortadas" onclick="limpiarPortadasSupabase()" title="Elimina URLs viejas de Supabase Storage de las portadas">🧹 Limpiar portadas</button>
       <button class="btn btn--sm btn--danger" id="btnLogout">🚪 Cerrar sesión</button>
     </div>
   </div>
@@ -9194,6 +10529,20 @@
     </div>
   </div>
 
+  <!-- MODAL ORDEN TARJETAS (admin) -->
+  <div class="modal-overlay" id="modalOrdenTarjetas" style="display:none;z-index:9999">
+    <div class="modal" style="max-width:420px;width:95%;gap:.75rem">
+      <button class="modal__close" onclick="cerrarOrdenTarjetas()">✕</button>
+      <h2 class="modal__title">🃏 Orden de tarjetas</h2>
+      <p style="font-size:.75rem;color:var(--muted);margin:0">Arrastrá para reordenar. Los usuarios verán los diseños en este orden.</p>
+      <div id="tarjOrdenList" style="display:flex;flex-direction:column;gap:.4rem;max-height:60vh;overflow-y:auto"></div>
+      <div style="display:flex;gap:.5rem;justify-content:flex-end;margin-top:.25rem">
+        <button class="btn" onclick="cerrarOrdenTarjetas()">Cancelar</button>
+        <button class="btn btn--primary" id="btnGuardarOrdenTarjetas">Guardar orden</button>
+      </div>
+    </div>
+  </div>
+
   <!-- BOTÓN FLOTANTE REPORTAR PROBLEMA -->
   <button class="bug-float-btn" id="bugFloatBtn" title="Reportar un problema">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
@@ -9238,6 +10587,75 @@
       <div class="modal__body" style="padding:1.5rem">
         <div id="reportesAdminContainer">
           <p style="color:var(--muted);font-size:0.85rem">Cargando...</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ EDITOR DE POSICIÓN ══ -->
+  <div id="tarjEditorOverlay" style="display:none;position:fixed;inset:0;z-index:99998;background:rgba(0,8,15,0.97);flex-direction:column;font-family:sans-serif">
+    <!-- Header -->
+    <div style="display:flex;align-items:center;gap:.6rem;padding:.55rem 1rem;background:#061520;border-bottom:1px solid rgba(255,255,255,.08);flex-shrink:0">
+      <button onclick="tarjEditorCerrar()" style="background:none;border:1px solid rgba(255,255,255,.15);color:#8aa;border-radius:6px;padding:.28rem .65rem;cursor:pointer;font-size:.77rem;display:flex;align-items:center;gap:.3rem">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="13" height="13"><polyline points="15 18 9 12 15 6"/></svg>Volver
+      </button>
+      <span id="tarjEditorNombre" style="font-size:.68rem;font-weight:700;letter-spacing:.1em;color:#159A9C;flex:1;text-transform:uppercase"></span>
+      <!-- Leyenda -->
+      <div style="font-size:.62rem;color:#8aa;margin-right:.75rem">
+        <span style="color:#159A9C">▪</span> Arrastrá el logo para moverlo
+      </div>
+      <button onclick="tarjEditorReset()" style="background:none;border:1px solid rgba(255,255,255,.12);color:#8aa;border-radius:6px;padding:.28rem .65rem;cursor:pointer;font-size:.72rem;margin-right:.4rem">↺ Restaurar</button>
+      <button onclick="tarjEditorDescargar()" style="background:#159A9C;border:none;color:#fff;border-radius:6px;padding:.35rem .9rem;cursor:pointer;font-size:.77rem;font-weight:600;display:flex;align-items:center;gap:.3rem">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>Descargar PNG
+      </button>
+    </div>
+    <!-- Instrucción -->
+    <div style="text-align:center;padding:.4rem;font-size:.7rem;color:#607080;background:#040e18;border-bottom:1px solid rgba(255,255,255,.05);flex-shrink:0">
+      Arrastrá el logo para moverlo. Usá el panel para ajustar sombra, brillo y color.
+    </div>
+    <!-- Body: canvas + panel -->
+    <div style="display:flex;flex:1;overflow:hidden;min-height:0">
+      <!-- Canvas -->
+      <div id="tarjEditorCanvasWrap" style="flex:1;display:flex;align-items:center;justify-content:center;padding:1.25rem;overflow:hidden;background:repeating-conic-gradient(rgba(255,255,255,.03) 0% 25%,transparent 0% 50%) 0 0/20px 20px">
+        <canvas id="tarjEditorCanvas" style="max-width:100%;max-height:100%;border-radius:10px;box-shadow:0 0 40px rgba(0,0,0,.7);cursor:crosshair;touch-action:none;display:block"></canvas>
+      </div>
+      <!-- Panel de efectos -->
+      <div style="width:240px;flex-shrink:0;background:#061520;border-left:1px solid rgba(255,255,255,.08);overflow-y:auto;font-size:.72rem;color:#ccd">
+        <style>
+          .tep-sec{padding:.45rem 1rem .2rem;font-size:.54rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#159A9C;border-top:1px solid rgba(255,255,255,.06);margin-top:.25rem}
+          .tep-row{padding:.1rem 1rem}
+          .tep-lbl{color:#8aa;font-size:.67rem;margin-bottom:.1rem}
+          .tep-sl{display:flex;gap:.3rem;align-items:center}
+          .tep-sl input[type=range]{flex:1;accent-color:#159A9C;cursor:pointer}
+          .tep-val{color:#159A9C;font-family:monospace;font-size:.64rem;min-width:34px;text-align:right;flex-shrink:0}
+        </style>
+
+        <div class="tep-sec" style="border-top:none;margin-top:0">🌑 Sombra del logo</div>
+        <div class="tep-row"><div class="tep-lbl">Intensidad</div><div class="tep-sl"><input type="range" id="tedBlur" min="0" max="60" value="0"/><span class="tep-val" id="tedBlurVal">0px</span></div></div>
+        <div class="tep-row"><div class="tep-lbl">Offset X</div><div class="tep-sl"><input type="range" id="tedOffX" min="-30" max="30" value="4"/><span class="tep-val" id="tedOffXVal">4px</span></div></div>
+        <div class="tep-row"><div class="tep-lbl">Offset Y</div><div class="tep-sl"><input type="range" id="tedOffY" min="-30" max="30" value="4"/><span class="tep-val" id="tedOffYVal">4px</span></div></div>
+        <div class="tep-row" style="display:flex;align-items:center;gap:.5rem;padding:.15rem 1rem"><span class="tep-lbl" style="margin:0">Color</span><input type="color" id="tedShadowColor" value="#000000" style="width:30px;height:22px;border:1px solid rgba(255,255,255,.12);border-radius:4px;cursor:pointer;padding:1px;background:none"/></div>
+
+        <div class="tep-sec">✨ Brillo y contraste</div>
+        <div class="tep-row"><div class="tep-lbl">Brillo</div><div class="tep-sl"><input type="range" id="tedBrillo" min="0" max="300" value="100"/><span class="tep-val" id="tedBrilloVal">100%</span></div></div>
+        <div class="tep-row"><div class="tep-lbl">Contraste</div><div class="tep-sl"><input type="range" id="tedContraste" min="0" max="300" value="100"/><span class="tep-val" id="tedContrasteVal">100%</span></div></div>
+        <div class="tep-row"><div class="tep-lbl">Saturación</div><div class="tep-sl"><input type="range" id="tedSat" min="0" max="300" value="100"/><span class="tep-val" id="tedSatVal">100%</span></div></div>
+
+        <div class="tep-sec">🎨 Velo de color</div>
+        <div class="tep-row"><div class="tep-lbl">Intensidad</div><div class="tep-sl"><input type="range" id="tedVelo" min="0" max="70" value="0"/><span class="tep-val" id="tedVeloVal">0%</span></div></div>
+        <div class="tep-row" style="display:flex;align-items:center;gap:.5rem;padding:.15rem 1rem"><span class="tep-lbl" style="margin:0">Color</span><input type="color" id="tedVeloColor" value="#000000" style="width:30px;height:22px;border:1px solid rgba(255,255,255,.12);border-radius:4px;cursor:pointer;padding:1px;background:none"/></div>
+        <div class="tep-row"><div class="tep-lbl">Modo mezcla</div>
+          <select id="tedVeloBlend" style="background:#0a1e2d;color:#ccd;border:1px solid rgba(255,255,255,.1);border-radius:4px;padding:.2rem .3rem;font-size:.7rem;width:100%;cursor:pointer">
+            <option value="source-over">Normal</option>
+            <option value="multiply">Multiplicar</option>
+            <option value="screen">Pantalla</option>
+            <option value="overlay">Overlay</option>
+            <option value="soft-light">Luz suave</option>
+          </select>
+        </div>
+
+        <div style="padding:.75rem 1rem;margin-top:.25rem">
+          <p style="font-size:.6rem;color:#607080;margin:0 0 .4rem">Arrastrá el logo directamente en el canvas para moverlo.</p>
         </div>
       </div>
     </div>
