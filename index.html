@@ -653,7 +653,7 @@
   <section class="catalogo" id="catalogo">
     <div class="section__header">
       <h2 class="section__title">Catálogo Rabbit3D</h2>
-      <p class="section__sub">Todos los diseños incluyen archivo STL listo para imprimir · incluye Top Diseños</p>
+      <p class="section__sub">Todos los diseños incluyen archivo STL listo para imprimir</p>
     </div>
 
 
@@ -745,22 +745,6 @@
       <p class="cargando">Cargando diseños...</p>
     </div>
 
-    <!-- TOP DISEÑOS dentro del catálogo -->
-    <div class="top-designs-inner" id="top-designs">
-      <div class="top-designs-inner__header">
-        <h3 class="top-designs-inner__title">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
-          Top Diseños Rabbit3D
-        </h3>
-        <p class="top-designs-inner__sub">Los más descargados por la comunidad</p>
-      </div>
-      <div class="top-grid" id="topGrid">
-        <p class="cargando" style="padding:2rem;grid-column:1/-1">Cargando...</p>
-      </div>
-      <div style="text-align:center;margin-top:1.5rem">
-        <button class="btn btn--outline" id="topVerMas" style="display:none" onclick="topVerMasClick()">Ver más</button>
-      </div>
-    </div>
   </section>
 
 
@@ -2480,6 +2464,37 @@
     // ══════════════════════════════════════════
     //  PERFIL
     // ══════════════════════════════════════════
+    // ── Compresión de imágenes antes de subir a Storage ─────────────────
+    // Reduce el peso de las fotos para minimizar el egress de Supabase
+    async function comprimirImagen(file, maxW=800, maxH=800, quality=0.78) {
+      return new Promise(resolve => {
+        // Videos y SVG no se comprimen
+        if (!file.type.startsWith('image/') || file.type === 'image/svg+xml') {
+          resolve(file); return
+        }
+        const img = new Image()
+        const url = URL.createObjectURL(file)
+        img.onload = () => {
+          URL.revokeObjectURL(url)
+          // Calcular nuevas dimensiones manteniendo proporción
+          let w = img.width, h = img.height
+          if (w > maxW || h > maxH) {
+            const ratio = Math.min(maxW/w, maxH/h)
+            w = Math.round(w * ratio); h = Math.round(h * ratio)
+          }
+          const canvas = document.createElement('canvas')
+          canvas.width = w; canvas.height = h
+          canvas.getContext('2d').drawImage(img, 0, 0, w, h)
+          canvas.toBlob(blob => {
+            if (!blob || blob.size >= file.size) { resolve(file); return }
+            resolve(new File([blob], file.name.replace(/\.[^.]+$/, '.jpg'), { type: 'image/jpeg' }))
+          }, 'image/jpeg', quality)
+        }
+        img.onerror = () => { URL.revokeObjectURL(url); resolve(file) }
+        img.src = url
+      })
+    }
+
     async function cargarPerfil() {
       const { data, error } = await supabase.from('perfil').select('*').limit(1)
       if (error || !data || data.length === 0) return
@@ -2588,8 +2603,9 @@
       const preview = document.getElementById('uploadDisenadorPreview')
       preview.innerHTML = '<span class="upload-texto">Subiendo foto...</span>'
       const ext = file.name.split('.').pop()
-      const fileName = `disenador_${Date.now()}.${ext}`
-      const { error: upErr } = await supabase.storage.from('media').upload(fileName, file, { upsert: true })
+      const fileName = `disenador_${Date.now()}.jpg`
+      const fileToUpload = await comprimirImagen(file, 600, 600, 0.80)
+      const { error: upErr } = await supabase.storage.from('media').upload(fileName, fileToUpload, { upsert: true })
       if (upErr) {
         preview.innerHTML = `<span class="upload-icon">↑</span><span class="upload-texto" style="color:#d94060">Error al subir.</span>`
         return
@@ -2721,7 +2737,6 @@
       })
       statTotal.textContent = productos.length
       renderProductos()
-      renderTopDesigns()
     }
 
     function renderProductos(reset = true) {
@@ -3063,16 +3078,6 @@
       cargarSugerencias()
     }
 
-    // Logout desde la admin bar
-    document.getElementById('btnLogout').addEventListener('click', async () => {
-      if (!confirm('¿Cerrar sesión?')) return
-      await supabase.auth.signOut()
-      usuarioActual = null
-      perfilUsuario = null
-      desactivarAdmin()
-      actualizarNavUsuario()
-    })
-
     // ══════════════════════════════════════════
     //  USUARIO (login / registro / perfil)
     // ══════════════════════════════════════════
@@ -3262,8 +3267,9 @@
       const overlay = document.getElementById('userPerfilAvatarOverlay')
       overlay.innerHTML = '<span style="font-size:0.65rem;color:var(--text)">Subiendo...</span>'
       const ext = file.name.split('.').pop()
-      const fileName = `user_${usuarioActual.id}_${Date.now()}.${ext}`
-      const { error: upErr } = await supabase.storage.from('media').upload(fileName, file, { upsert: true })
+      const fileName = `user_${usuarioActual.id}_${Date.now()}.jpg`
+      const fileToUpload = await comprimirImagen(file, 400, 400, 0.82)
+      const { error: upErr } = await supabase.storage.from('media').upload(fileName, fileToUpload, { upsert: true })
       overlay.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>'
       if (upErr) { document.getElementById('userPerfilError').textContent = 'Error al subir imagen.'; return }
       const { data: urlData } = supabase.storage.from('media').getPublicUrl(fileName)
@@ -3636,8 +3642,9 @@
       logoError.textContent = ''
 
       const ext = file.name.split('.').pop()
-      const fileName = `logo_${Date.now()}.${ext}`
-      const { error: upErr } = await supabase.storage.from('media').upload(fileName, file, { upsert: true })
+      const fileName = `logo_${Date.now()}.png`
+      const fileToUpload = await comprimirImagen(file, 400, 200, 0.90)
+      const { error: upErr } = await supabase.storage.from('media').upload(fileName, fileToUpload, { upsert: true })
       if (upErr) { logoError.textContent = 'Error al subir: ' + upErr.message; return }
 
       const { data: urlData } = supabase.storage.from('media').getPublicUrl(fileName)
@@ -3732,8 +3739,9 @@
 
       // Subir a Supabase storage
       const ext = file.name.split('.').pop()
-      const fileName = `foto_perfil_${Date.now()}.${ext}`
-      const { error: upErr } = await supabase.storage.from('media').upload(fileName, file, { upsert: true })
+      const fileName = `foto_perfil_${Date.now()}.jpg`
+      const fileToUpload = await comprimirImagen(file, 500, 500, 0.80)
+      const { error: upErr } = await supabase.storage.from('media').upload(fileName, fileToUpload, { upsert: true })
       if (upErr) { alert('Error al subir la foto: ' + upErr.message); return }
 
       const { data: urlData } = supabase.storage.from('media').getPublicUrl(fileName)
@@ -4026,77 +4034,8 @@
     // ══════════════════════════════════════════
     //  TOP DESIGNS CAROUSEL (hasta 20 diseños)
     // ══════════════════════════════════════════
-    var topAllDesigns = []
-    var topShowing = 10
 
-    function renderTopDesigns() {
-      const grid = document.getElementById('topGrid')
-      const btn  = document.getElementById('topVerMas')
-      if (!grid) return
-      topAllDesigns = [...productos]
-        .filter(p => p.descargas && Number(p.descargas) > 0)
-        .sort((a, b) => Number(b.descargas) - Number(a.descargas))
-        .slice(0, 20)
-      if (topAllDesigns.length === 0) {
-        grid.innerHTML = '<p class="cargando" style="padding:2rem;grid-column:1/-1">Aún no hay datos de descargas.</p>'
-        if (btn) btn.style.display = 'none'
-        return
-      }
-      topShowing = 10
-      renderTopGrid()
-    }
 
-    function renderTopGrid() {
-      const grid = document.getElementById('topGrid')
-      const btn  = document.getElementById('topVerMas')
-      if (!grid) return
-      const visible = topAllDesigns.slice(0, topShowing)
-      grid.innerHTML = visible.map((p, i) => {
-        const precio = Number(p.precio)
-        const precioTexto = precio === 0 ? 'Gratis' : `$${precio.toFixed(2)} USD`
-        const esGratis = precio === 0
-        return `
-        <article class="card" data-id="${p.id}" onclick="window.abrirDetalle('${p.id}')" style="cursor:pointer">
-          <div class="card__img-wrap">
-            ${p.imagen_url
-              ? `<img src="${p.imagen_url}" alt="${p.nombre}" class="card__img" loading="lazy"/>`
-              : `<div class="card__placeholder">3D</div>`}
-            <span class="card__num">${String(i+1).padStart(2,'0')}</span>
-            <span class="card__badge">${labelCategoria(p.categoria)}</span>
-            ${esGratis ? `<span class="card__badge-gratis">Gratis</span>` : ''}
-            <div class="card__overlay">
-              <p class="card__nombre-overlay">${p.nombre}</p>
-              <p class="card__precio-overlay">${precioTexto}</p>
-              ${p.descargas ? `<p class="card__descargas-overlay">↓ ${Number(p.descargas).toLocaleString()}</p>` : ''}
-            </div>
-          </div>
-          <div class="card__body">
-            <h3 class="card__nombre">${p.nombre}</h3>
-            <div class="card__footer">
-              <span class="card__precio ${esGratis ? 'card__precio--gratis' : ''}">${precioTexto}</span>
-              <div class="card__acciones" onclick="event.stopPropagation()">
-                ${p.cults_url ? `<a href="${p.cults_url}" target="_blank" class="card__accion-btn card__accion-btn--cults card__accion-btn--descarga" title="Descargar en Cults3D" onclick="event.stopPropagation()">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" width="14" height="14"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-                </a>` : ''}
-                <button class="card__accion-btn ${favoritos.includes(String(p.id)) ? 'activo' : ''}" onclick="window.toggleFavorito('${p.id}')" title="Favorito">
-                  <svg viewBox="0 0 24 24" fill="${favoritos.includes(String(p.id)) ? 'currentColor' : 'none'}" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
-                </button>
-              </div>
-            </div>
-          </div>
-        </article>`
-      }).join('')
-      if (btn) {
-        const hasMore = topAllDesigns.length > topShowing
-        btn.style.display = hasMore ? 'inline-flex' : 'none'
-        btn.textContent = 'Ver más (' + (topAllDesigns.length - topShowing) + ' restantes)'
-      }
-    }
-
-    window.topVerMasClick = function() {
-      topShowing = Math.min(topShowing + 10, topAllDesigns.length)
-      renderTopGrid()
-    }
 
     //  YOUTUBE — CARRUSEL + REORDENAR
     // ══════════════════════════════════════════
@@ -4717,8 +4656,9 @@
         const errEl = document.getElementById('makerError')
         errEl.textContent = 'Subiendo imagen...'
         const ext      = file.name.split('.').pop()
-        const fileName = `maker_${usuarioActual.id}_${Date.now()}.${ext}`
-        const { error: upErr } = await supabase.storage.from('media').upload(fileName, file, { upsert: true })
+        const fileName = `maker_${usuarioActual.id}_${Date.now()}.jpg`
+        const fileToUpload = await comprimirImagen(file, 900, 900, 0.78)
+        const { error: upErr } = await supabase.storage.from('media').upload(fileName, fileToUpload, { upsert: true })
         if (upErr) { errEl.textContent = 'Error al subir: ' + upErr.message; return }
         const { data: urlData } = supabase.storage.from('media').getPublicUrl(fileName)
         makerProyectos.push(urlData.publicUrl)
@@ -4736,8 +4676,9 @@
       const file = e.target.files[0]
       if (!file || !usuarioActual) return
       const ext      = file.name.split('.').pop()
-      const fileName = `maker_avatar_${usuarioActual.id}_${Date.now()}.${ext}`
-      const { error: upErr } = await supabase.storage.from('media').upload(fileName, file, { upsert: true })
+      const fileName = `maker_avatar_${usuarioActual.id}_${Date.now()}.jpg`
+      const fileToUpload = await comprimirImagen(file, 400, 400, 0.80)
+      const { error: upErr } = await supabase.storage.from('media').upload(fileName, fileToUpload, { upsert: true })
       if (upErr) return
       const { data: urlData } = supabase.storage.from('media').getPublicUrl(fileName)
       const url = urlData.publicUrl
@@ -6376,6 +6317,7 @@
     cargarDisenador()
     cargarSugerencias()
     cargarYoutube()
+    _tendenciasCargarEstado()
     // Cargar media y portadas en secuencia: primero portadas, luego carrusel
     ;(async () => {
       await cargarMedia()      // carga logo, carruselItems
@@ -10065,51 +10007,41 @@
     }
 
     // ── Limpiar URLs viejas de Supabase Storage ─────────────────────────
-    window.limpiarPortadasSupabase = async function() {
-      if (!confirm('¿Eliminar todas las URLs viejas de Supabase Storage en portadas?\n\nEsto limpia los registros hcard-* y empr-img-* que apunten a supabase.co/storage.\nLas URLs de GitHub no se tocan.')) return
-
-      const tipos = [
-        'hcard-stl','hcard-llavero','hcard-caja','hcard-maceta','hcard-marco','hcard-cortante',
-        'empr-img-tarjetas','empr-img-costos','empr-img-mejora','empr-img-presupuesto','empr-img-fotoproducto'
-      ]
-
-      // Traer todos los registros de esos tipos
-      const { data, error } = await supabase.from('media').select('id, tipo, url').in('tipo', tipos)
-      if (error) { alert('Error: ' + error.message); return }
-      if (!data || data.length === 0) { alert('No hay registros de portadas en la base de datos.'); return }
-
-      const viejas = data.filter(r => r.url && r.url.includes('supabase.co/storage'))
-      const github = data.filter(r => r.url && !r.url.includes('supabase.co/storage'))
-
-      if (viejas.length === 0) {
-        alert(`✅ Todo limpio. ${github.length} portadas con URL de GitHub encontradas.`)
-        return
+    // ── Toggle visibilidad sección Tendencias ────────────────────────────
+    async function _tendenciasSetVisible(visible) {
+      const section = document.getElementById('makerworld')
+      const btn = document.getElementById('btnToggleTendencias')
+      const label = document.getElementById('tendVisLabel')
+      if (section) section.style.display = visible ? '' : 'none'
+      if (btn) {
+        btn.textContent = visible ? '👁 Visible' : '🙈 Oculta'
+        btn.style.background = visible ? 'var(--cyan)' : '#8B0000'
       }
+      if (label) label.textContent = visible ? 'Visible para usuarios' : 'Oculta para usuarios'
+    }
 
-      // Mostrar resumen antes de borrar
-      const lista = viejas.map(r => `• ${r.tipo}: ${r.url.split('/').pop()}`).join('\n')
-      if (!confirm(`Se van a eliminar ${viejas.length} URLs viejas de Supabase:\n\n${lista}\n\n¿Confirmar?`)) return
+    async function _tendenciasCargarEstado() {
+      try {
+        const { data } = await supabase.from('media').select('nombre').eq('tipo','config-tendencias-visible').maybeSingle()
+        const visible = !data || data.nombre !== 'false'
+        await _tendenciasSetVisible(visible)
+      } catch(e) {}
+    }
 
-      // Eliminar solo los viejos
-      const ids = viejas.map(r => r.id)
-      const { error: delErr } = await supabase.from('media').delete().in('id', ids)
-      if (delErr) { alert('Error al eliminar: ' + delErr.message); return }
+    window.abrirGestorTendencias = function() {
+      const modal = document.getElementById('modalGestorTendencias')
+      if (modal) modal.style.display = 'flex'
+    }
 
-      // También limpiar imagen_url de los slides del carrusel
-      const { data: slides } = await supabase.from('media').select('id, nombre').eq('tipo', 'carrusel_item')
-      if (slides) {
-        for (const slide of slides) {
-          try {
-            const parsed = JSON.parse(slide.nombre)
-            if (parsed.imagen_url && parsed.imagen_url.includes('supabase.co/storage')) {
-              parsed.imagen_url = ''
-              await supabase.from('media').update({ nombre: JSON.stringify(parsed) }).eq('id', slide.id)
-            }
-          } catch(e) {}
-        }
-      }
-
-      alert(`✅ Listo. Se eliminaron ${viejas.length} URLs viejas.\n${github.length} URLs de GitHub se mantuvieron.\n\nRecargá la página para ver los cambios.`)
+    window.toggleTendencias = async function() {
+      const section = document.getElementById('makerworld')
+      const esVisible = section && section.style.display !== 'none'
+      const nuevaVisibilidad = !esVisible
+      await _tendenciasSetVisible(nuevaVisibilidad)
+      try {
+        await supabase.from('media').delete().eq('tipo','config-tendencias-visible')
+        await supabase.from('media').insert([{tipo:'config-tendencias-visible', url:'', nombre: String(nuevaVisibilidad)}])
+      } catch(e) { console.warn('Error guardando estado tendencias:', e) }
     }
 
     window.cerrarReportesAdmin = function() {
@@ -10460,19 +10392,52 @@
       </button>
     </div>
     <div class="admin-float__body" id="adminFloatBody">
-      <button class="btn btn--sm" id="btnEditarPerfil">✏️ Editar perfil</button>
+
+      <!-- Contenido -->
+      <div style="font-size:.52rem;font-weight:700;letter-spacing:.12em;color:var(--cyan);text-transform:uppercase;padding:.1rem .2rem .3rem;opacity:.7">Contenido</div>
+      <button class="btn btn--sm" id="btnEditarPerfil">✏️ Perfil</button>
       <button class="btn btn--sm" id="btnEditarDisenador">🎨 Diseñador</button>
       <button class="btn btn--sm" id="btnGestionarMedia">📁 Media</button>
       <button class="btn btn--sm btn--cults" id="btnSincronizarCults">⟳ Cults3D</button>
-      <button class="btn btn--sm btn--eliminar-masivo" id="btnEliminarMasivo">🗑 Eliminar</button>
       <button class="btn btn--sm" id="btnAdminYt">▶ Videos YT</button>
-      <button class="btn btn--sm" id="btnVerUsuarios">👥 Usuarios</button>
+
+      <!-- Gestión -->
+      <div style="font-size:.52rem;font-weight:700;letter-spacing:.12em;color:var(--cyan);text-transform:uppercase;padding:.4rem .2rem .3rem;opacity:.7;border-top:1px solid rgba(255,255,255,.06);margin-top:.2rem">Gestión</div>
       <button class="btn btn--sm" id="btnGestionarHerramientas" onclick="abrirGestionHerramientas()">🔧 Herramientas</button>
-      <button class="btn btn--sm" id="btnActualizarMW" onclick="actualizarMakerworld()">🔄 Tendencias</button>
+      <button class="btn btn--sm" id="btnVerUsuarios">👥 Usuarios</button>
       <button class="btn btn--sm" id="btnVerReportes" onclick="abrirReportesAdmin()">🐛 Reportes</button>
       <button class="btn btn--sm" id="btnEstadisticas" onclick="abrirEstadisticas()">📊 Estadísticas</button>
-      <button class="btn btn--sm" id="btnLimpiarPortadas" onclick="limpiarPortadasSupabase()" title="Elimina URLs viejas de Supabase Storage de las portadas">🧹 Limpiar portadas</button>
-      <button class="btn btn--sm btn--danger" id="btnLogout">🚪 Cerrar sesión</button>
+      <button class="btn btn--sm btn--eliminar-masivo" id="btnEliminarMasivo">🗑 Eliminar</button>
+
+      <!-- Secciones -->
+      <div style="font-size:.52rem;font-weight:700;letter-spacing:.12em;color:var(--cyan);text-transform:uppercase;padding:.4rem .2rem .3rem;opacity:.7;border-top:1px solid rgba(255,255,255,.06);margin-top:.2rem">Secciones</div>
+      <button class="btn btn--sm" id="btnGestorTendencias" onclick="abrirGestorTendencias()">🔥 Tendencias</button>
+
+    </div>
+  </div>
+
+  <!-- MODAL GESTOR TENDENCIAS -->
+  <div id="modalGestorTendencias" style="display:none;position:fixed;inset:0;z-index:9999;background:rgba(0,8,15,.85);display:none;align-items:center;justify-content:center">
+    <div style="background:var(--bg-card,#0a2535);border:1px solid var(--border);border-radius:14px;padding:1.75rem;width:min(420px,95vw);display:flex;flex-direction:column;gap:1rem">
+      <div style="display:flex;align-items:center;justify-content:space-between">
+        <h3 style="font-family:var(--font-head);font-size:.8rem;font-weight:700;letter-spacing:.1em;color:var(--cyan);margin:0;text-transform:uppercase">🔥 Tendencias en Impresión 3D</h3>
+        <button onclick="document.getElementById('modalGestorTendencias').style.display='none'" style="background:none;border:none;color:var(--muted);cursor:pointer;font-size:1.1rem;line-height:1">✕</button>
+      </div>
+
+      <!-- Visibilidad -->
+      <div style="background:var(--bg3);border:1px solid var(--border);border-radius:10px;padding:1rem">
+        <p style="font-size:.72rem;color:var(--muted);margin:0 0 .75rem">Controla si la sección aparece en la página para todos los usuarios.</p>
+        <div style="display:flex;align-items:center;justify-content:space-between">
+          <span style="font-size:.8rem;font-weight:600;color:var(--text)" id="tendVisLabel">Visible para usuarios</span>
+          <button id="btnToggleTendencias" onclick="toggleTendencias()" style="background:var(--cyan);border:none;color:#fff;border-radius:6px;padding:.4rem 1rem;cursor:pointer;font-size:.78rem;font-weight:600;min-width:90px" title="Mostrar u ocultar la sección">👁 Visible</button>
+        </div>
+      </div>
+
+      <!-- Actualizar datos -->
+      <div style="background:var(--bg3);border:1px solid var(--border);border-radius:10px;padding:1rem">
+        <p style="font-size:.72rem;color:var(--muted);margin:0 0 .75rem">Actualiza los diseños más populares de Printables, Cults3D y Thingiverse.</p>
+        <button class="btn btn--sm" id="btnActualizarMW" onclick="actualizarMakerworld()" style="width:100%;justify-content:center">🔄 Actualizar datos ahora</button>
+      </div>
     </div>
   </div>
 
