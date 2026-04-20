@@ -8021,88 +8021,62 @@
         return new Promise(res => tc.toBlob(res, 'image/png'))
       }
 
-      // Post-procesa el ImageData: eliminación agresiva de fondo residual + bordes suaves
+      // Post-procesa el ImageData: confía en la máscara del modelo + refinamiento suave
       function fotoPostprocess(imageData, origImg) {
         const data = imageData.data
         const w = imageData.width
         const h = imageData.height
 
-        // Obtener color promedio del borde de la imagen original (= color del fondo)
-        // Usamos la imagen original para detectar qué color es "fondo"
-        let bgR = 128, bgG = 128, bgB = 128
-        if (origImg) {
-          const sc = document.createElement('canvas')
-          sc.width = w; sc.height = h
-          const sx = sc.getContext('2d', { willReadFrequently: true })
-          sx.drawImage(origImg, 0, 0, w, h)
-          const edge = sx.getImageData(0, 0, w, h).data
-          const bw = Math.max(3, Math.round(Math.min(w,h) * 0.03))
-          let sr=0, sg=0, sb=0, sn=0
-          for (let y=0; y<h; y++) for (let x=0; x<w; x++) {
-            if (x<bw||x>=w-bw||y<bw||y>=h-bw) {
-              const i=(y*w+x)*4
-              sr+=edge[i]; sg+=edge[i+1]; sb+=edge[i+2]; sn++
-            }
-          }
-          if (sn>0) { bgR=sr/sn; bgG=sg/sn; bgB=sb/sn }
-        }
-
-        // Paso 1: Binarización agresiva de la máscara
-        // Píxeles con alpha < 40 → totalmente transparentes
-        // Píxeles con alpha > 200 → totalmente opacos
-        // La zona gris (40-200) → decidir por color vs fondo
+        // Copiar alpha original del modelo — no la modificamos por color
         const alpha = new Uint8Array(w * h)
+        for (let i = 0; i < w * h; i++) alpha[i] = data[i*4+3]
+
+        // Paso 1: Limpiar extremos — alpha < 15 → 0, alpha > 240 → 255
+        // Elimina ruido de borde muy leve sin afectar zonas semitransparentes legítimas
         for (let i = 0; i < w * h; i++) {
-          const a = data[i*4+3]
-          if (a < 40)       alpha[i] = 0
-          else if (a > 200) alpha[i] = 255
-          else {
-            // Zona ambigua: comparar color del píxel vs color del fondo
-            const r=data[i*4], g=data[i*4+1], b=data[i*4+2]
-            const distBg = Math.sqrt((r-bgR)**2+(g-bgG)**2+(b-bgB)**2)
-            // Si el color es muy parecido al fondo → transparente
-            alpha[i] = distBg < 40 ? 0 : (distBg > 80 ? 255 : Math.round((distBg-40)/40*255))
-          }
+          if (alpha[i] < 15)       alpha[i] = 0
+          else if (alpha[i] > 240) alpha[i] = 255
         }
 
-        // Paso 2: Eliminación de islas pequeñas (ruido de fondo dentro del sujeto)
-        // BFS flood-fill desde los bordes para identificar fondo conectado
+        // Paso 2: Flood-fill SOLO desde el borde exterior para limpiar fondo conectado
+        // Solo marca píxeles con alpha < 80 (claramente fondo según el modelo)
+        // No toca zonas que el modelo marcó como inciertas (80-200)
         const visited = new Uint8Array(w * h)
         const queue = []
-        for (let x=0; x<w; x++) { if(alpha[x]===0){visited[x]=1;queue.push(x)} if(alpha[(h-1)*w+x]===0){visited[(h-1)*w+x]=1;queue.push((h-1)*w+x)} }
-        for (let y=0; y<h; y++) { if(alpha[y*w]===0){visited[y*w]=1;queue.push(y*w)} if(alpha[y*w+w-1]===0){visited[y*w+w-1]=1;queue.push(y*w+w-1)} }
-        let qi=0
-        while(qi<queue.length) {
-          const px=queue[qi++]; const x=px%w, y=Math.floor(px/w)
-          for(const nb of[px-1,px+1,px-w,px+w]) {
-            if(nb>=0&&nb<w*h&&!visited[nb]&&alpha[nb]<128) { visited[nb]=1; queue.push(nb) }
+        const pushIfBg = (idx) => { if (!visited[idx] && alpha[idx] < 80) { visited[idx]=1; queue.push(idx) } }
+        for (let x=0; x<w; x++) { pushIfBg(x); pushIfBg((h-1)*w+x) }
+        for (let y=1; y<h-1; y++) { pushIfBg(y*w); pushIfBg(y*w+w-1) }
+        let qi = 0
+        while (qi < queue.length) {
+          const px = queue[qi++]; const x = px%w, y = Math.floor(px/w)
+          for (const nb of [px-1,px+1,px-w,px+w]) {
+            if (nb>=0 && nb<w*h && !visited[nb] && alpha[nb]<80) { visited[nb]=1; queue.push(nb) }
           }
         }
-        // Píxeles de fondo no conectados al borde → posiblemente son parte del sujeto, dejar pasar
-        // Píxeles que el modelo marcó como fondo Y están conectados al borde exterior → eliminar
-        for(let i=0; i<w*h; i++) { if(visited[i]) alpha[i]=0 }
+        for (let i=0; i<w*h; i++) if (visited[i]) alpha[i] = 0
 
-        // Paso 3: Erosión de 1px en bordes semitransparentes para eliminar halo
+        // Paso 3: Erosión suave en el borde (1px) para eliminar halo de borde
         const alpha2 = new Uint8Array(alpha)
-        for(let y=1; y<h-1; y++) for(let x=1; x<w-1; x++) {
-          const i=y*w+x
-          if(alpha[i]>0&&alpha[i]<255) {
-            const mn=Math.min(alpha[i-1],alpha[i+1],alpha[i-w],alpha[i+w])
-            if(mn===0) alpha2[i]=Math.round(alpha[i]*0.5)  // erosión agresiva en borde con transparente
+        for (let y=1; y<h-1; y++) for (let x=1; x<w-1; x++) {
+          const i = y*w+x
+          if (alpha[i] > 0 && alpha[i] < 255) {
+            const mn = Math.min(alpha[i-1], alpha[i+1], alpha[i-w], alpha[i+w])
+            // Solo erosionar si hay un vecino completamente transparente (borde real)
+            if (mn === 0) alpha2[i] = Math.round(alpha[i] * 0.6)
           }
         }
 
-        // Paso 4: Feathering suave de 1px (transición natural en el borde)
-        for(let y=1; y<h-1; y++) for(let x=1; x<w-1; x++) {
-          const i=y*w+x
-          if(alpha2[i]>0&&alpha2[i]<255) {
-            const sum=alpha2[i]+alpha2[(y-1)*w+x]+alpha2[(y+1)*w+x]+alpha2[y*w+x-1]+alpha2[y*w+x+1]
-            alpha2[i]=Math.round(sum/5)
+        // Paso 4: Feathering de 1px — transición suave en bordes
+        for (let y=1; y<h-1; y++) for (let x=1; x<w-1; x++) {
+          const i = y*w+x
+          if (alpha2[i] > 0 && alpha2[i] < 255) {
+            const sum = alpha2[i] + alpha2[(y-1)*w+x] + alpha2[(y+1)*w+x] + alpha2[y*w+x-1] + alpha2[y*w+x+1]
+            alpha2[i] = Math.round(sum / 5)
           }
         }
 
         // Aplicar alpha final
-        for(let i=0; i<w*h; i++) data[i*4+3]=alpha2[i]
+        for (let i=0; i<w*h; i++) data[i*4+3] = alpha2[i]
 
         return imageData
       }
@@ -8139,8 +8113,26 @@
             </div>`
         }
         document.getElementById('fotoCompositor').style.display = 'block'
+        // Mantener 1080x1080 si no hay fondo cargado — NO adoptar tamaño de la foto
         if (OUT_W === 0 || OUT_H === 0) { OUT_W = 1080; OUT_H = 1080 }
+        // Si no hay fondo imagen seleccionado, resetear a 1080x1080 cuadrado
+        if (!fotoBgImg) { OUT_W = 1080; OUT_H = 1080 }
         canvas.width = OUT_W; canvas.height = OUT_H
+        // Escalar el producto para que entre bien en el canvas al cargar (~80%)
+        const imgRatio = fotoRecortada.width / fotoRecortada.height
+        const canvRatio = OUT_W / OUT_H
+        if (imgRatio > canvRatio) {
+          fotoEscala = (OUT_W * 0.8) / fotoRecortada.width
+        } else {
+          fotoEscala = (OUT_H * 0.8) / fotoRecortada.height
+        }
+        // Sincronizar el slider de escala
+        const sliderEscala = document.getElementById('fotoEscala')
+        if (sliderEscala) {
+          sliderEscala.value = Math.round(fotoEscala * 100)
+          const valEl = document.getElementById('fotoEscalaVal')
+          if (valEl) valEl.textContent = Math.round(fotoEscala * 100) + '%'
+        }
         fotoPosX = 0; fotoPosY = 0
         setTimeout(() => { fotoRender() }, 50)
         const btnRec = document.getElementById('fotoBtnRecortar')
