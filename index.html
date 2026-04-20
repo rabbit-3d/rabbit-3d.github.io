@@ -7718,7 +7718,7 @@
       let fotoDragging = false, fotoDragStartX = 0, fotoDragStartY = 0
 
       const canvas  = document.getElementById('fotoCanvas')
-      const ctx     = canvas.getContext('2d')
+      const ctx     = canvas.getContext('2d', { willReadFrequently: true })
 
       // ── Cargar fondos desde Supabase ─────────────────────────────
       // Convierte URLs de fondos de GitHub Pages a raw.githubusercontent.com para evitar CORS
@@ -8014,70 +8014,139 @@
         const h = Math.round(img.height * ratio)
         const tc = document.createElement('canvas')
         tc.width = w; tc.height = h
-        const ctx = tc.getContext('2d')
+        const ctx = tc.getContext('2d', { willReadFrequently: true })
         ctx.imageSmoothingEnabled = true
         ctx.imageSmoothingQuality = 'high'
         ctx.drawImage(img, 0, 0, w, h)
         return new Promise(res => tc.toBlob(res, 'image/png'))
       }
 
-      // Post-procesa el ImageData: confía en la máscara del modelo + refinamiento suave
+      // Post-procesa el ImageData: pipeline avanzado 6 pasos
       function fotoPostprocess(imageData, origImg) {
         const data = imageData.data
         const w = imageData.width
         const h = imageData.height
 
-        // Copiar alpha original del modelo — no la modificamos por color
+        // ── Detectar color del fondo real (sampleo de bordes de la imagen original) ──
+        let bgR=200, bgG=200, bgB=200, bgUniform=false
+        if (origImg) {
+          const sc = document.createElement('canvas')
+          sc.width = w; sc.height = h
+          const sx = sc.getContext('2d', { willReadFrequently: true })
+          sx.drawImage(origImg, 0, 0, w, h)
+          const ed = sx.getImageData(0, 0, w, h).data
+          const bw = Math.max(4, Math.round(Math.min(w,h)*0.04))
+          let sr=0,sg=0,sb=0,sn=0, sr2=0,sg2=0,sb2=0
+          for (let y=0;y<h;y++) for (let x=0;x<w;x++) {
+            if (x<bw||x>=w-bw||y<bw||y>=h-bw) {
+              const i=(y*w+x)*4; sr+=ed[i]; sg+=ed[i+1]; sb+=ed[i+2]; sn++
+              sr2+=ed[i]*ed[i]; sg2+=ed[i+1]*ed[i+1]; sb2+=ed[i+2]*ed[i+2]
+            }
+          }
+          if (sn>0) {
+            bgR=sr/sn; bgG=sg/sn; bgB=sb/sn
+            // Calcular varianza — si es baja, el fondo es uniforme
+            const varR=sr2/sn-bgR*bgR, varG=sg2/sn-bgG*bgG, varB=sb2/sn-bgB*bgB
+            bgUniform = (varR+varG+varB)/3 < 400  // varianza baja = fondo sólido
+          }
+        }
+
+        // ── Copiar alpha del modelo como base ──────────────────────────────────
         const alpha = new Uint8Array(w * h)
-        for (let i = 0; i < w * h; i++) alpha[i] = data[i*4+3]
+        for (let i=0;i<w*h;i++) alpha[i]=data[i*4+3]
 
-        // Paso 1: Limpiar extremos — alpha < 15 → 0, alpha > 240 → 255
-        // Elimina ruido de borde muy leve sin afectar zonas semitransparentes legítimas
-        for (let i = 0; i < w * h; i++) {
-          if (alpha[i] < 15)       alpha[i] = 0
-          else if (alpha[i] > 240) alpha[i] = 255
+        // ── Paso 1: Refinar zonas ambiguas usando color del fondo ──────────────
+        // Solo si el fondo es uniforme (evita falsos positivos con fondos complejos)
+        if (bgUniform && origImg) {
+          const sc2 = document.createElement('canvas')
+          sc2.width=w; sc2.height=h
+          const sx2 = sc2.getContext('2d', { willReadFrequently: true })
+          sx2.drawImage(origImg, 0, 0, w, h)
+          const orig = sx2.getImageData(0,0,w,h).data
+          // Umbral de similitud al fondo: ajusta según uniformidad
+          const thr = bgUniform ? 55 : 35
+          for (let i=0;i<w*h;i++) {
+            const a=alpha[i]
+            if (a > 20 && a < 220) {  // zona ambigua
+              const r=orig[i*4],g=orig[i*4+1],b=orig[i*4+2]
+              const dist=Math.sqrt((r-bgR)**2+(g-bgG)**2+(b-bgB)**2)
+              if (dist < thr) {
+                // Muy parecido al fondo → transparente, ponderado por similitud y alpha del modelo
+                alpha[i] = Math.round(a * Math.max(0, (dist-10)/(thr-10)))
+              }
+            }
+          }
         }
 
-        // Paso 2: Flood-fill SOLO desde el borde exterior para limpiar fondo conectado
-        // Solo marca píxeles con alpha < 80 (claramente fondo según el modelo)
-        // No toca zonas que el modelo marcó como inciertas (80-200)
-        const visited = new Uint8Array(w * h)
-        const queue = []
-        const pushIfBg = (idx) => { if (!visited[idx] && alpha[idx] < 80) { visited[idx]=1; queue.push(idx) } }
-        for (let x=0; x<w; x++) { pushIfBg(x); pushIfBg((h-1)*w+x) }
-        for (let y=1; y<h-1; y++) { pushIfBg(y*w); pushIfBg(y*w+w-1) }
-        let qi = 0
-        while (qi < queue.length) {
-          const px = queue[qi++]; const x = px%w, y = Math.floor(px/w)
+        // ── Paso 2: Binarización suave de extremos ─────────────────────────────
+        for (let i=0;i<w*h;i++) {
+          if (alpha[i]<20)       alpha[i]=0
+          else if (alpha[i]>235) alpha[i]=255
+        }
+
+        // ── Paso 3: Flood-fill exterior — elimina fondo conectado al borde ─────
+        // Umbral adaptativo: más agresivo si fondo uniforme
+        const ffThr = bgUniform ? 100 : 60
+        const visited = new Uint8Array(w*h)
+        const q = []
+        const push = (idx) => { if(!visited[idx] && alpha[idx]<ffThr){visited[idx]=1;q.push(idx)} }
+        for (let x=0;x<w;x++) { push(x); push((h-1)*w+x) }
+        for (let y=1;y<h-1;y++) { push(y*w); push(y*w+w-1) }
+        let qi=0
+        while (qi<q.length) {
+          const px=q[qi++]; const x=px%w, y=Math.floor(px/w)
           for (const nb of [px-1,px+1,px-w,px+w]) {
-            if (nb>=0 && nb<w*h && !visited[nb] && alpha[nb]<80) { visited[nb]=1; queue.push(nb) }
+            if (nb>=0&&nb<w*h&&!visited[nb]&&alpha[nb]<ffThr){visited[nb]=1;q.push(nb)}
           }
         }
-        for (let i=0; i<w*h; i++) if (visited[i]) alpha[i] = 0
+        for (let i=0;i<w*h;i++) if(visited[i]) alpha[i]=0
 
-        // Paso 3: Erosión suave en el borde (1px) para eliminar halo de borde
+        // ── Paso 4: Morphological closing — cierra huecos internos pequeños ────
+        // Dilación seguida de erosión para rellenar huecos de fondo dentro del sujeto
+        const CLOSE_R = 2
+        const dilated = new Uint8Array(alpha)
+        for (let y=CLOSE_R;y<h-CLOSE_R;y++) for (let x=CLOSE_R;x<w-CLOSE_R;x++) {
+          if (alpha[y*w+x]===0) {
+            let hasOpaque=false
+            outer: for (let dy=-CLOSE_R;dy<=CLOSE_R;dy++) for (let dx=-CLOSE_R;dx<=CLOSE_R;dx++) {
+              if (alpha[(y+dy)*w+(x+dx)]>180){hasOpaque=true;break outer}
+            }
+            if (hasOpaque) dilated[y*w+x]=180  // dilatar
+          }
+        }
+        // Erosión — volver atrás solo los que tienen vecinos opacos reales
+        for (let y=CLOSE_R;y<h-CLOSE_R;y++) for (let x=CLOSE_R;x<w-CLOSE_R;x++) {
+          if (dilated[y*w+x]===180) {
+            let allOpaque=true
+            outer2: for (let dy=-CLOSE_R;dy<=CLOSE_R;dy++) for (let dx=-CLOSE_R;dx<=CLOSE_R;dx++) {
+              if (dilated[(y+dy)*w+(x+dx)]<100){allOpaque=false;break outer2}
+            }
+            // Si está rodeado de opacos → rellenar el hueco
+            if (allOpaque) alpha[y*w+x]=220
+          }
+        }
+
+        // ── Paso 5: Erosión de borde (eliminar halo) ──────────────────────────
         const alpha2 = new Uint8Array(alpha)
-        for (let y=1; y<h-1; y++) for (let x=1; x<w-1; x++) {
-          const i = y*w+x
-          if (alpha[i] > 0 && alpha[i] < 255) {
-            const mn = Math.min(alpha[i-1], alpha[i+1], alpha[i-w], alpha[i+w])
-            // Solo erosionar si hay un vecino completamente transparente (borde real)
-            if (mn === 0) alpha2[i] = Math.round(alpha[i] * 0.6)
+        for (let y=1;y<h-1;y++) for (let x=1;x<w-1;x++) {
+          const i=y*w+x
+          if (alpha[i]>0&&alpha[i]<255) {
+            const mn=Math.min(alpha[i-1],alpha[i+1],alpha[i-w],alpha[i+w])
+            if (mn===0) alpha2[i]=Math.round(alpha[i]*0.55)
           }
         }
 
-        // Paso 4: Feathering de 1px — transición suave en bordes
-        for (let y=1; y<h-1; y++) for (let x=1; x<w-1; x++) {
-          const i = y*w+x
-          if (alpha2[i] > 0 && alpha2[i] < 255) {
-            const sum = alpha2[i] + alpha2[(y-1)*w+x] + alpha2[(y+1)*w+x] + alpha2[y*w+x-1] + alpha2[y*w+x+1]
-            alpha2[i] = Math.round(sum / 5)
+        // ── Paso 6: Feathering suave de 1px ───────────────────────────────────
+        for (let y=1;y<h-1;y++) for (let x=1;x<w-1;x++) {
+          const i=y*w+x
+          if (alpha2[i]>0&&alpha2[i]<255) {
+            const sum=alpha2[i]+alpha2[(y-1)*w+x]+alpha2[(y+1)*w+x]+alpha2[y*w+x-1]+alpha2[y*w+x+1]
+            alpha2[i]=Math.round(sum/5)
           }
         }
 
         // Aplicar alpha final
-        for (let i=0; i<w*h; i++) data[i*4+3] = alpha2[i]
-
+        for (let i=0;i<w*h;i++) data[i*4+3]=alpha2[i]
         return imageData
       }
 
@@ -8158,7 +8227,7 @@
           // Convertir fotoOrigImg a RawImage para RMBG-1.4
           const tc = document.createElement('canvas')
           tc.width = fotoOrigImg.width; tc.height = fotoOrigImg.height
-          tc.getContext('2d').drawImage(fotoOrigImg, 0, 0)
+          tc.getContext('2d', { willReadFrequently: true }).drawImage(fotoOrigImg, 0, 0)
           const dataUrl = tc.toDataURL('image/png')
 
           const RawImage = window._tf?.RawImage
@@ -8218,7 +8287,7 @@
         const w = Math.round(fotoOrigImg.width * ratio)
         const h = Math.round(fotoOrigImg.height * ratio)
         const tc = document.createElement('canvas'); tc.width = w; tc.height = h
-        const tx = tc.getContext('2d')
+        const tx = tc.getContext('2d', { willReadFrequently: true })
         tx.drawImage(fotoOrigImg, 0, 0, w, h)
         const imgData = tx.getImageData(0, 0, w, h)
         const data = imgData.data, orig = new Uint8ClampedArray(data)
@@ -8410,7 +8479,7 @@
         // ── Preparar producto con ajustes de imagen ───────────────────
         const tmp = document.createElement('canvas')
         tmp.width = fotoRecortada.width; tmp.height = fotoRecortada.height
-        const tmpCtx = tmp.getContext('2d')
+        const tmpCtx = tmp.getContext('2d', { willReadFrequently: true })
         tmpCtx.putImageData(fotoRecortada, 0, 0)
 
         // Aplicar brillo/contraste/saturación/tinte via pixel manipulation
@@ -8465,7 +8534,7 @@
           // Crear silhoueta negra del producto
           const shadowC = document.createElement('canvas')
           shadowC.width = fotoRecortada.width; shadowC.height = fotoRecortada.height
-          const sCtx = shadowC.getContext('2d')
+          const sCtx = shadowC.getContext('2d', { willReadFrequently: true })
           sCtx.putImageData(fotoRecortada, 0, 0)
           // Colorear todo negro manteniendo alpha
           sCtx.globalCompositeOperation = 'source-in'
@@ -8493,12 +8562,12 @@
           // Suavizar bordes con gradiente en máscara
           const offC = document.createElement('canvas')
           offC.width = prodW + bordes*2; offC.height = prodH + bordes*2
-          const offCtx = offC.getContext('2d')
+          const offCtx = offC.getContext('2d', { willReadFrequently: true })
           offCtx.drawImage(tmp, bordes, bordes, prodW, prodH)
           // Aplicar blur para suavizar contorno
           const blurC = document.createElement('canvas')
           blurC.width = prodW; blurC.height = prodH
-          const blurCtx = blurC.getContext('2d')
+          const blurCtx = blurC.getContext('2d', { willReadFrequently: true })
           blurCtx.filter = `blur(${bordes}px)`
           blurCtx.drawImage(offC, -bordes, -bordes)
           blurCtx.filter = 'none'
