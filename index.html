@@ -5511,7 +5511,7 @@
             var url=URL.createObjectURL(blob)
             var a=document.createElement('a')
             if (!usuarioActual) { window.requireLogin(function(){}); URL.revokeObjectURL(url); return }
-            a.href=url; a.download='llavero_'+p.nombre.replace(/\s/g,'_')+'.stl'; a.click()
+            a.href=url; a.download='llavero_'+p.nombre.replace(/\s/g,'_')+'.stl'; a.click(); if(window.trackDescarga) trackDescarga('llavero')
             setTimeout(function(){URL.revokeObjectURL(url)},1000)
             var kb=(buf.byteLength/1024).toFixed(1)
             document.getElementById('llInfoTris').textContent=tris.length.toLocaleString()
@@ -7316,7 +7316,7 @@
         const prev=document.createElement('canvas');prev.width=TARJ_W/2;prev.height=TARJ_H/2;prev.style.cssText='width:100%;border-radius:8px;border:1px solid var(--border-sub);display:block'
         prev.getContext('2d').drawImage(canvas,0,0,TARJ_W/2,TARJ_H/2)
         const btn=document.createElement('button');btn.className='btn btn--sm tarj-dl-btn';btn.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> Descargar PNG'
-        btn.addEventListener('click',()=>{if(!usuarioActual){window.requireLogin(()=>{});return};canvas.toBlob(blob=>{const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=`tarjeta-${idx+1}.png`;a.click();URL.revokeObjectURL(url)},'image/png')})
+        btn.addEventListener('click',()=>{if(!usuarioActual){window.requireLogin(()=>{});return};canvas.toBlob(blob=>{const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=`tarjeta-${idx+1}.png`;a.click();URL.revokeObjectURL(url);if(window.trackDescarga)trackDescarga('tarjetas')},'image/png')})
         const btnEdit=document.createElement('button');btnEdit.className='btn btn--sm';btnEdit.style.cssText='display:flex;align-items:center;gap:.3rem;margin-top:.3rem;width:100%;justify-content:center;border-color:var(--cyan);color:var(--cyan)'
         btnEdit.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg> Editar posición'
         btnEdit.addEventListener('click',()=>window.tarjEditorAbrir(d,idx))
@@ -7345,7 +7345,7 @@
     document.getElementById('btnPotenciar').addEventListener('click',async()=>{const err=document.getElementById('potencError'),load=document.getElementById('potencLoading'),res=document.getElementById('potencResultados'),btn=document.getElementById('btnPotenciar');err.textContent='';if(!potencImgBase64){err.textContent='Primero subi una foto.';return}const desc=document.getElementById('potencDesc').value.trim();btn.disabled=true;load.style.display='flex';res.style.display='none';const msgs=['Analizando imagen...','Generando propuestas...','Creando descripcion...','Casi listo...'];let mi=0;const mel=document.getElementById('potencLoadingMsg');const intv=setInterval(()=>{mi=(mi+1)%msgs.length;mel.textContent=msgs[mi]},2200);try{const resp=await fetch(EDGE_FN_URL,{method:'POST',headers:{'Content-Type':'application/json','apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY},body:JSON.stringify({imageBase64:potencImgBase64,imageType:potencImgType,descripcion:desc||null})});const data=await resp.json();if(!resp.ok||!data.ok)throw new Error(data?.error||data?.detail||`Error ${resp.status}`);const p=data.data;document.getElementById('potencPromptImg').textContent=p.prompt_imagen||'';document.getElementById('potencTitulos').innerHTML=(p.titulos||[]).map((t,i)=>`<div class="potenc-titulo-item"><span class="potenc-titulo-num">${i+1}</span><span class="potenc-titulo-text">${t}</span><button class="potenc-copy-mini" onclick="potencCopiarTitulo(this,${JSON.stringify(t)})">copiar</button></div>`).join('');document.getElementById('potencDescResult').textContent=p.descripcion||'';res.style.display='block';res.scrollIntoView({behavior:'smooth',block:'nearest'})}catch(e){let msg=e.message||'Intenta de nuevo.';if(msg.includes('ANTHROPIC_API_KEY'))msg='Falta la API key en Supabase Edge Functions Secrets.';else if(msg.includes('Failed to fetch'))msg='No se pudo conectar con la Edge Function.';err.textContent=msg}finally{clearInterval(intv);load.style.display='none';btn.disabled=false}})
 
     // ── CALCULADORA ───────────────────────────────────────────────────
-    document.getElementById('btnCalcularCosto').addEventListener('click',()=>{const g=id=>parseFloat(document.getElementById(id).value)||0;const mat=(g('costoGramos')/1000)*g('costoPorKg'),el=g('costoHoras')*g('costoElect'),trab=(g('costoTrabajo')/60)*g('costoHoraTrabajo'),fij=g('costoFijos');const sub=mat+el+trab+fij,gan=sub*(g('costoMargen')/100),tot=sub+gan;const fmt=n=>'$'+Math.round(n).toLocaleString('es-AR');[['resMateria',mat],['resElect',el],['resTrabajo',trab],['resFijos',fij],['resSubtotal',sub],['resGanancia',gan],['resTotal',tot]].forEach(([id,v])=>document.getElementById(id).textContent=fmt(v));document.getElementById('costosResultado').style.display='block'})
+    document.getElementById('btnCalcularCosto').addEventListener('click',()=>{const g=id=>parseFloat(document.getElementById(id).value)||0;const mat=(g('costoGramos')/1000)*g('costoPorKg'),el=g('costoHoras')*g('costoElect'),trab=(g('costoTrabajo')/60)*g('costoHoraTrabajo'),fij=g('costoFijos');const sub=mat+el+trab+fij,gan=sub*(g('costoMargen')/100),tot=sub+gan;const fmt=n=>'$'+Math.round(n).toLocaleString('es-AR');[['resMateria',mat],['resElect',el],['resTrabajo',trab],['resFijos',fij],['resSubtotal',sub],['resGanancia',gan],['resTotal',tot]].forEach(([id,v])=>document.getElementById(id).textContent=fmt(v));document.getElementById('costosResultado').style.display='block'; if(window.trackDescarga) trackDescarga('costos')})
     document.getElementById('btnCopiarCosto').addEventListener('click',()=>{const g=id=>document.getElementById(id).textContent;const txt=['Calculadora Rabbit3D','Material: '+g('resMateria'),'Electricidad: '+g('resElect'),'Mano de obra: '+g('resTrabajo'),'Gastos fijos: '+g('resFijos'),'Subtotal: '+g('resSubtotal'),'Ganancia: '+g('resGanancia'),'PRECIO VENTA: '+g('resTotal')].join('\n');navigator.clipboard.writeText(txt).then(()=>{const b=document.getElementById('btnCopiarCosto');b.textContent='Copiado!';setTimeout(()=>{b.textContent='Copiar resumen'},2000)})})
 
     // ══════════════════════════════════════════
@@ -7606,7 +7606,7 @@
         const url = URL.createObjectURL(blob)
         const a = document.createElement('a')
         if (!usuarioActual) { window.requireLogin(()=>{}); return }
-        a.href = url; a.download = 'imagen-mejorada.png'; a.click()
+        a.href = url; a.download = 'imagen-mejorada.png'; a.click(); if(window.trackDescarga) trackDescarga('mejora')
         URL.revokeObjectURL(url)
       }, 'image/png')
     })
@@ -8768,7 +8768,7 @@
           const url = URL.createObjectURL(blob)
           const a = document.createElement('a')
           a.href = url
-          a.download = `presupuesto-${g('presNumero')||'001'}.png`
+          a.download = `presupuesto-${g('presNumero')||'001'}.png`; if(window.trackDescarga) trackDescarga('presupuesto')
           if (!usuarioActual) { window.requireLogin(function(){}); URL.revokeObjectURL(url); return }
           a.click()
           URL.revokeObjectURL(url)
@@ -9362,7 +9362,7 @@
           var file = files[i]
           var idx  = Date.now() + i
           var tipo = 'foto-fondo-' + idx
-          var url  = 'https://rabbit-3d.github.io/fondos/' + encodeURIComponent(file.name)
+          var url  = 'https://lamadriguera.site/fondos/' + encodeURIComponent(file.name)
           try {
             await supabase.from('media').upsert([{ tipo: tipo, url: url, nombre: file.name }], { onConflict: 'nombre' })
             fondosAdmin.push({ tipo: tipo, url: url, nombre: file.name })
@@ -9400,7 +9400,7 @@
           var idx  = Date.now() + i
           var nombre = file.name
           var tipo = 'foto-fondo-' + idx
-          var url  = 'https://rabbit-3d.github.io/fondos/' + encodeURIComponent(nombre)
+          var url  = 'https://lamadriguera.site/fondos/' + encodeURIComponent(nombre)
           try {
             await supabase.from('media').upsert([{ tipo: tipo, url: url, nombre: nombre }], { onConflict: 'nombre' })
             fondosAdmin.push({ tipo: tipo, url: url, nombre: nombre })
@@ -10200,7 +10200,7 @@
       }
       c.toBlob(blob=>{
         const url=URL.createObjectURL(blob),a=document.createElement('a')
-        a.href=url;a.download=`tarjeta-editada-${_ted.idx+1}.png`;a.click();URL.revokeObjectURL(url)
+        a.href=url;a.download=`tarjeta-editada-${_ted.idx+1}.png`;a.click();URL.revokeObjectURL(url);if(window.trackDescarga)trackDescarga('tarjetas')
         c.width=0;c.height=0
       },'image/png')
     }
