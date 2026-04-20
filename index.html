@@ -103,7 +103,7 @@
   <header class="header">
     <div class="header__inner">
       <a href="#" class="logo">
-        <img id="headerLogo" src="imagenes/logo.png" alt="Rabbit3D" class="logo__img"/>
+        <img id="headerLogo" src="" alt="La Madriguera" class="logo__img" style="display:none" onload="this.style.display=''" />
       </a>
 
       <nav class="nav">
@@ -1606,6 +1606,9 @@
               </div><!-- end foto-controles -->
 
               <div class="foto-actions" style="margin-top:.75rem;flex-wrap:wrap">
+                <p style="font-size:.65rem;color:var(--muted);margin:0 0 .4rem">
+                  🤖 Motor: <strong style="color:var(--cyan)">RMBG-1.4</strong> — IA de alta calidad, 100% local
+                </p>
                 <button class="btn" id="fotoBtnRecortar">✂️ Re-recortar</button>
                 <button class="btn" id="fotoBtnCentrar">⊙ Centrar</button>
                 <button class="btn btn--primary" id="fotoBtnDescargar">
@@ -3478,9 +3481,7 @@
           const tool = m.tipo.replace('empr-img-', '')
           if (m.url && _isGHUrl(m.url)) window._portadasMap[tool] = m.url
         }
-      })
-      console.log('[Portadas]', window._portadasMap)
-      // Cargar slides de novedades configurados por admin
+      })      // Cargar slides de novedades configurados por admin
       const rawItems = data.filter(m => m.tipo === 'carrusel_item')
       // nombre contiene JSON con herramienta_id, titulo_custom, subtitulo, badge, imagen_url, orden
       carruselItems = rawItems
@@ -3526,13 +3527,10 @@
         return
       }
 
-      if (usarNovedades) {
-        console.log('[Carrusel] _portadasMap:', JSON.stringify(window._portadasMap))
-        track.innerHTML = slides.map((item, i) => {
+      if (usarNovedades) {        track.innerHTML = slides.map((item, i) => {
           const h = CARRUSEL_HERRAMIENTAS[item.herramienta_id] || {}
           // URL: siempre del mapa de portadas (fuente única de verdad)
           const imgUrl = (window._portadasMap && window._portadasMap[item.herramienta_id]) || ''
-          console.log(`[Slide ${i}] herramienta=${item.herramienta_id} imgUrl=${imgUrl}`)
           const titulo = item.titulo_custom || h.titulo || 'Novedad'
           const subtitulo = item.subtitulo || ''
           const badge = item.badge || h.badge || ''
@@ -5667,9 +5665,7 @@
               const tool = row.tipo.replace('empr-img-', '')
               window._portadasMap[tool] = row.url
             }
-          })
-          console.log('[Portadas mapa]', window._portadasMap)
-        }
+          })        }
       } catch(e) { console.warn('cargarHcardImgs:', e) }
     }
 
@@ -6318,6 +6314,8 @@
     cargarSugerencias()
     cargarYoutube()
     _tendenciasCargarEstado()
+    // Migrar URLs viejas de fondos si es admin
+    if (typeof migrarUrlsFondos === 'function') setTimeout(migrarUrlsFondos, 3000)
     // Cargar media y portadas en secuencia: primero portadas, luego carrusel
     ;(async () => {
       await cargarMedia()      // carga logo, carruselItems
@@ -6634,6 +6632,92 @@
       const el=document.getElementById(id)
       if(el) el.addEventListener('click',e=>{ if(e.target===el) cerrarEmprendedor(id) })
     })
+
+    // ── Sistema de Mantenimiento de herramientas ──────────────────────────────
+    // Las herramientas en mantenimiento se guardan en Supabase tabla media
+    // tipo = 'config-maint-<toolId>', nombre = '1' (en mant) o '0' (activa)
+    let _maintTools = {}       // { toolId: true/false }
+    let _maintLoaded = false
+
+    async function cargarMantenimiento() {
+      if (_maintLoaded) return
+      try {
+        const { data } = await supabase.from('media')
+          .select('tipo,nombre').like('tipo','config-maint-%')
+        if (data) data.forEach(r => {
+          const id = r.tipo.replace('config-maint-','')
+          _maintTools[id] = r.nombre === '1'
+        })
+        _maintLoaded = true
+        _aplicarOverlaysMant()
+      } catch(e) {}
+    }
+
+    function _estaEnMant(toolId) { return !!_maintTools[toolId] }
+
+    // Muestra overlay visual en la card si está en mantenimiento
+    function _aplicarOverlaysMant() {
+      Object.entries(_maintTools).forEach(([id, enMant]) => {
+        // Cards de laboratorio
+        const labCard = document.querySelector('.herramienta-card[onclick*="modal-' + id + '"]')
+        if (labCard) _toggleMantOverlay(labCard, id, enMant, 'lab')
+        // Cards de emprendedores
+        const emprCard = document.querySelector('[data-empr-id="' + id + '"]')
+        if (emprCard) _toggleMantOverlay(emprCard, id, enMant, 'empr')
+      })
+    }
+
+    function _toggleMantOverlay(card, id, enMant, tipo) {
+      const overlayId = 'mant-overlay-' + id
+      let overlay = document.getElementById(overlayId)
+      if (enMant && !esAdmin) {
+        if (!overlay) {
+          overlay = document.createElement('div')
+          overlay.id = overlayId
+          overlay.style.cssText = 'position:absolute;inset:0;z-index:10;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.4rem;background:rgba(0,0,0,.72);border-radius:inherit;backdrop-filter:blur(3px);pointer-events:all'
+          overlay.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="1.5" width="28" height="28"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg><span style="font-size:.72rem;font-weight:700;color:#f59e0b;text-align:center;padding:0 .5rem">En mantenimiento</span><span style="font-size:.65rem;color:rgba(255,255,255,.6);text-align:center;padding:0 .5rem">Volvé pronto</span>'
+          if (getComputedStyle(card).position === 'static') card.style.position = 'relative'
+          card.appendChild(overlay)
+        }
+      } else if (overlay) {
+        overlay.remove()
+      }
+    }
+
+    // Interceptar abrirHerramienta y abrirEmprendedor para bloquear si está en mant
+    const _origAbrirH_mant = window.abrirHerramienta
+    window.abrirHerramienta = function(id) {
+      const toolId = id.replace('modal-','')
+      if (_estaEnMant(toolId) && !esAdmin) {
+        // Mostrar toast de mantenimiento
+        _mostrarToastMant()
+        return
+      }
+      _origAbrirH_mant(id)
+    }
+
+    const _origAbrirE_mant = window.abrirEmprendedor
+    window.abrirEmprendedor = function(id) {
+      const toolId = id.replace('modal-','')
+      if (_estaEnMant(toolId) && !esAdmin) {
+        _mostrarToastMant()
+        return
+      }
+      _origAbrirE_mant(id)
+    }
+
+    function _mostrarToastMant() {
+      const t = document.createElement('div')
+      t.style.cssText = 'position:fixed;bottom:1.5rem;left:50%;transform:translateX(-50%);background:#1a1a2e;border:1px solid #f59e0b;color:#f59e0b;padding:.6rem 1.2rem;border-radius:8px;font-size:.8rem;font-weight:600;z-index:99999;display:flex;align-items:center;gap:.5rem;box-shadow:0 4px 20px rgba(0,0,0,.5)'
+      t.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg> Esta herramienta está en mantenimiento'
+      document.body.appendChild(t)
+      setTimeout(() => t.remove(), 3000)
+    }
+
+    // Cargar estado de mantenimiento al iniciar
+    cargarMantenimiento()
+    // ── Fin sistema de mantenimiento ──────────────────────────────────────────
+
     window.requireLogin = function(callback) {
       if (usuarioActual) { callback(); return }
       // Mostrar modal de login inmediatamente (z-index: 99999 lo pone sobre cualquier herramienta)
@@ -7637,22 +7721,38 @@
       const ctx     = canvas.getContext('2d')
 
       // ── Cargar fondos desde Supabase ─────────────────────────────
+      // Convierte URLs de fondos de GitHub Pages a raw.githubusercontent.com para evitar CORS
+      function normalizarUrlFondo(url) {
+        if (!url) return url
+        // lamadriguera.site/fondos/X → raw.githubusercontent.com/.../fondos/X
+        if (url.includes('lamadriguera.site/fondos/')) {
+          const archivo = url.split('/fondos/').pop()
+          return 'https://raw.githubusercontent.com/rabbit-3d/rabbit-3d.github.io/main/fondos/' + archivo
+        }
+        // rabbit-3d.github.io/fondos/X → raw.githubusercontent.com/.../fondos/X
+        if (url.includes('rabbit-3d.github.io/fondos/')) {
+          const archivo = url.split('/fondos/').pop()
+          return 'https://raw.githubusercontent.com/rabbit-3d/rabbit-3d.github.io/main/fondos/' + archivo
+        }
+        return url
+      }
+
       async function cargarFotoFondos() {
         try {
           const { data, error } = await supabase.from('media')
             .select('tipo,url').like('tipo','foto-fondo-%')
           if (error || !data) return
-          let fondos = data.map(r => r.url).filter(Boolean)
+          let fondos = data.map(r => normalizarUrlFondo(r.url)).filter(Boolean)
           // Aplicar orden guardado
           const orderRes = await supabase.from('media').select('nombre').eq('tipo','foto-fondos-order').maybeSingle()
           if (orderRes.data && orderRes.data.nombre) {
             try {
               const order = JSON.parse(orderRes.data.nombre)
               const map = {}
-              data.forEach(r => { map[r.tipo] = r.url })
+              data.forEach(r => { map[r.tipo] = normalizarUrlFondo(r.url) })
               const ordered = order.map(t => map[t]).filter(Boolean)
               // Agregar fondos sin orden al final
-              data.forEach(r => { if (!order.includes(r.tipo) && r.url) ordered.push(r.url) })
+              data.forEach(r => { if (!order.includes(r.tipo) && r.url) ordered.push(normalizarUrlFondo(r.url)) })
               fondos = ordered
             } catch(e) {}
           }
@@ -7755,7 +7855,7 @@
             <svg viewBox="0 0 24 24" fill="none" stroke="#159A9C" stroke-width="2" width="44" height="44" style="animation:potencSpin .8s linear infinite"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>
             <div style="text-align:center">
               <p style="margin:0;font-size:1rem;font-weight:700;color:var(--cyan);font-family:var(--font-head);letter-spacing:.05em">PROCESANDO IMAGEN</p>
-              <p style="margin:.3rem 0 0;font-size:.78rem;color:var(--text)">Removiendo el fondo con IA...</p>
+              <p style="margin:.3rem 0 0;font-size:.78rem;color:var(--text)">Cargando modelo RMBG-1.4...</p>
               <p style="margin:.2rem 0 0;font-size:.7rem;color:var(--muted)">${file.name}</p>
             </div>
           </div>`
@@ -7771,8 +7871,8 @@
                 <svg viewBox="0 0 24 24" fill="none" stroke="#159A9C" stroke-width="2" width="44" height="44" style="animation:potencSpin .8s linear infinite"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>
                 <div style="text-align:center">
                   <p style="margin:0;font-size:1rem;font-weight:700;color:var(--cyan);font-family:var(--font-head);letter-spacing:.05em">REMOVIENDO FONDO</p>
-                  <p style="margin:.3rem 0 0;font-size:.78rem;color:var(--text)">remove.bg está procesando tu foto...</p>
-                  <p style="margin:.2rem 0 0;font-size:.7rem;color:var(--muted)">Esto puede tardar unos segundos</p>
+                  <p style="margin:.3rem 0 0;font-size:.78rem;color:var(--text)">RMBG-1.4 procesando tu foto...</p>
+                  <p style="margin:.2rem 0 0;font-size:.7rem;color:var(--muted)">Alta calidad · 100% local · Sin límites</p>
                 </div>
               </div>`
             document.getElementById('fotoPaso2').style.display = 'block'
@@ -7793,87 +7893,270 @@
         reader.readAsDataURL(file)
       }
 
-      // ── Remove.bg API + fallback Canvas ──────────────────────────
-      const REMOVEBG_KEY = 'VVDeJyHrk8mTDUFQwRgcBPTc'
+      // ── Remoción de fondo: Transformers.js + RMBG-1.4 (100% local, ~45MB modelo) ──
+      // Modelo: briaai/RMBG-1.4 — calidad similar a remove.bg, sin API key, sin servidor
+
+      let _rmbgModel     = null   // modelo cargado
+      let _rmbgProcessor = null   // procesador cargado
+      let _rmbgLoading   = false
+      let _rmbgLoaded    = false
+
+      const _TRANSFORMERS_CDNS = [
+        'https://cdn.jsdelivr.net/npm/@huggingface/transformers@3.4.0/dist/transformers.min.js',
+        'https://unpkg.com/@huggingface/transformers@3.4.0/dist/transformers.min.js'
+      ]
+
+      function _cargarScript(url, timeout = 30000) {
+        return new Promise((resolve, reject) => {
+          const s = document.createElement('script')
+          s.src = url
+          const t = setTimeout(() => { s.remove(); reject(new Error('timeout')) }, timeout)
+          s.onload  = () => { clearTimeout(t); resolve() }
+          s.onerror = () => { clearTimeout(t); s.remove(); reject(new Error('error CDN')) }
+          document.head.appendChild(s)
+        })
+      }
+
+      // Transformers.js se carga como módulo ESM inyectando un <script type="module">
+      // que expone AutoModel/AutoProcessor/RawImage en window._tf
+      function _inyectarModuloTransformers(onProgress) {
+        return new Promise((resolve) => {
+          if (window._tf) { resolve(true); return }
+          if (onProgress) onProgress('Descargando modelo IA (~45MB, solo la primera vez)...')
+          const s = document.createElement('script')
+          s.type = 'module'
+          // IIFE async — necesario porque await y return desnudos no son válidos en top-level de módulo inyectado
+          s.textContent = `(async () => {
+            const CDNS = [
+              'https://cdn.jsdelivr.net/npm/@huggingface/transformers@3.4.0/dist/transformers.min.js',
+              'https://unpkg.com/@huggingface/transformers@3.4.0/dist/transformers.min.js'
+            ]
+            let mod = null
+            for (const cdn of CDNS) {
+              try { mod = await import(cdn); break } catch(e) { /* probar siguiente */ }
+            }
+            if (!mod) { window._tfError = true; return }
+            const { AutoModel, AutoProcessor, RawImage, env } = mod
+            env.allowLocalModels = false
+            if (env.backends && env.backends.onnx && env.backends.onnx.wasm) {
+              env.backends.onnx.wasm.proxy = true
+            }
+            window._tf = { AutoModel, AutoProcessor, RawImage, env }
+          })()`
+          // El módulo no dispara onload — usamos poll para detectar window._tf
+          document.head.appendChild(s)
+          const t = Date.now()
+          const poll = setInterval(() => {
+            if (window._tf)          { clearInterval(poll); resolve(true)  }
+            if (window._tfError)     { clearInterval(poll); resolve(false) }
+            if (Date.now()-t > 30000){ clearInterval(poll); resolve(false) }
+          }, 200)
+        })
+      }
+
+      async function cargarBgRemoval(onProgress) {
+        if (_rmbgLoaded) return true
+        if (_rmbgLoading) {
+          return new Promise(res => {
+            const check = setInterval(() => {
+              if (!_rmbgLoading) { clearInterval(check); res(_rmbgLoaded) }
+            }, 300)
+          })
+        }
+        _rmbgLoading = true
+        try {
+          const ok = await _inyectarModuloTransformers(onProgress)
+          if (!ok || !window._tf) throw new Error('No se pudo cargar Transformers.js')
+
+          const { AutoModel, AutoProcessor, env } = window._tf
+          if (onProgress) onProgress('Cargando modelo RMBG-1.4...')
+
+          _rmbgModel = await AutoModel.from_pretrained('briaai/RMBG-1.4', {
+            config: { model_type: 'custom' }
+          })
+          _rmbgProcessor = await AutoProcessor.from_pretrained('briaai/RMBG-1.4', {
+            config: {
+              do_normalize: true, do_pad: false, do_rescale: true, do_resize: true,
+              image_mean: [0.5, 0.5, 0.5], image_std: [1, 1, 1],
+              feature_extractor_type: 'ImageFeatureExtractor',
+              resample: 2, rescale_factor: 0.00392156862745098,
+              size: { width: 1024, height: 1024 }
+            }
+          })
+          _rmbgLoaded = true
+          _rmbgLoading = false
+          return true
+        } catch(e) {
+          console.warn('RMBG-1.4 no se pudo cargar:', e)
+          _rmbgLoading = false
+          return false
+        }
+      }
+
+      // Pre-procesa la imagen al tamaño óptimo para el modelo (max 1024px)
+      function fotoPreprocessBlob(img) {
+        const MAX = 1024
+        const ratio = Math.min(1, MAX / Math.max(img.width, img.height))
+        const w = Math.round(img.width * ratio)
+        const h = Math.round(img.height * ratio)
+        const tc = document.createElement('canvas')
+        tc.width = w; tc.height = h
+        const ctx = tc.getContext('2d')
+        ctx.imageSmoothingEnabled = true
+        ctx.imageSmoothingQuality = 'high'
+        ctx.drawImage(img, 0, 0, w, h)
+        return new Promise(res => tc.toBlob(res, 'image/png'))
+      }
+
+      // Post-procesa el ImageData: suaviza bordes y elimina halos
+      function fotoPostprocess(imageData) {
+        const data = imageData.data
+        const w = imageData.width
+        const h = imageData.height
+
+        // 1. Erosión leve: elimina píxeles semitransparentes aislados en los bordes
+        const alpha = new Uint8Array(w * h)
+        for (let i = 0; i < w * h; i++) alpha[i] = data[i * 4 + 3]
+
+        for (let y = 1; y < h - 1; y++) {
+          for (let x = 1; x < w - 1; x++) {
+            const i = y * w + x
+            if (alpha[i] > 10 && alpha[i] < 245) {
+              // Píxel semitransparente: suavizar con vecinos
+              const neighbors = [
+                alpha[(y-1)*w+x], alpha[(y+1)*w+x],
+                alpha[y*w+(x-1)], alpha[y*w+(x+1)]
+              ]
+              const avg = neighbors.reduce((s,v) => s+v, 0) / 4
+              // Si los vecinos son mayormente transparentes, hacer más transparente
+              if (avg < 60) data[i * 4 + 3] = Math.round(alpha[i] * 0.3)
+              // Si los vecinos son mayormente opacos, hacer más opaco
+              else if (avg > 190) data[i * 4 + 3] = Math.min(255, Math.round(alpha[i] * 1.3))
+            }
+          }
+        }
+
+        // 2. Suavizado de alpha en el borde (feathering de 1px)
+        for (let y = 1; y < h - 1; y++) {
+          for (let x = 1; x < w - 1; x++) {
+            const i = (y * w + x) * 4
+            const a = data[i + 3]
+            if (a > 0 && a < 255) {
+              const neighbors = [
+                data[((y-1)*w+x)*4+3], data[((y+1)*w+x)*4+3],
+                data[(y*w+(x-1))*4+3], data[(y*w+(x+1))*4+3]
+              ]
+              data[i+3] = Math.round((a + neighbors.reduce((s,v)=>s+v,0)) / 5)
+            }
+          }
+        }
+
+        return imageData
+      }
+
+      // Escala el ImageData recortado de vuelta al tamaño original
+      function fotoEscalarResultado(imgData, targetW, targetH) {
+        if (imgData.width === targetW && imgData.height === targetH) return imgData
+        const src = document.createElement('canvas')
+        src.width = imgData.width; src.height = imgData.height
+        src.getContext('2d').putImageData(imgData, 0, 0)
+        const dst = document.createElement('canvas')
+        dst.width = targetW; dst.height = targetH
+        const ctx = dst.getContext('2d')
+        ctx.imageSmoothingEnabled = true
+        ctx.imageSmoothingQuality = 'high'
+        ctx.drawImage(src, 0, 0, targetW, targetH)
+        return ctx.getImageData(0, 0, targetW, targetH)
+      }
+
+      // Aplica el ImageData final al compositor
+      function fotoAplicarResultado(imgData) {
+        fotoRecortada = imgData
+        const inner = document.getElementById('fotoUploadInner')
+        const zone  = document.getElementById('fotoUploadZone')
+        if (inner) {
+          zone.style.minHeight = ''
+          zone.style.borderColor = 'rgba(21,154,156,.5)'
+          zone.style.background = 'rgba(21,154,156,.04)'
+          inner.innerHTML = `
+            <div style="display:flex;flex-direction:column;align-items:center;gap:.5rem;padding:1rem;pointer-events:none">
+              <svg viewBox="0 0 24 24" fill="none" stroke="#4ecca3" stroke-width="2" width="36" height="36"><polyline points="20 6 9 17 4 12"/></svg>
+              <p style="margin:0;font-size:.9rem;font-weight:700;color:#4ecca3;font-family:var(--font-head)">¡FONDO REMOVIDO!</p>
+              <p style="margin:0;font-size:.72rem;color:var(--muted)">Elegí un fondo y acomodá tu producto</p>
+            </div>`
+        }
+        document.getElementById('fotoCompositor').style.display = 'block'
+        if (OUT_W === 0 || OUT_H === 0) { OUT_W = 1080; OUT_H = 1080 }
+        canvas.width = OUT_W; canvas.height = OUT_H
+        fotoPosX = 0; fotoPosY = 0
+        setTimeout(() => { fotoRender() }, 50)
+        const btnRec = document.getElementById('fotoBtnRecortar')
+        btnRec.textContent = '✂️ Re-recortar'
+        btnRec.disabled = false
+      }
 
       async function fotoRecortarConAPI() {
         if (!fotoOrigImg) return
-        const errEl = document.getElementById('fotoError')
+        const errEl  = document.getElementById('fotoError')
         const btnRec = document.getElementById('fotoBtnRecortar')
         errEl.textContent = ''
-        btnRec.textContent = '⏳ Recortando...'
+        btnRec.textContent = '⏳ Iniciando IA...'
         btnRec.disabled = true
 
         try {
-          // Convertir imagen a blob
+          // Cargar modelo (se descarga ~45MB la primera vez, luego queda en caché del browser)
+          const loaded = await cargarBgRemoval((msg) => { btnRec.textContent = '⏳ ' + msg })
+          if (!loaded) throw new Error('No se pudo cargar el modelo')
+
+          btnRec.textContent = '⏳ Procesando imagen...'
+
+          // Convertir fotoOrigImg a RawImage para RMBG-1.4
           const tc = document.createElement('canvas')
           tc.width = fotoOrigImg.width; tc.height = fotoOrigImg.height
           tc.getContext('2d').drawImage(fotoOrigImg, 0, 0)
-          const blob = await new Promise(res => tc.toBlob(res, 'image/png'))
+          const dataUrl = tc.toDataURL('image/png')
 
-          const formData = new FormData()
-          formData.append('image_file', blob, 'producto.png')
-          formData.append('size', 'preview')
+          const RawImage = window._tf?.RawImage
+          const rawImg = await RawImage.fromURL(dataUrl)
 
-          const resp = await fetch('https://api.remove.bg/v1.0/removebg', {
-            method: 'POST',
-            headers: { 'X-Api-Key': REMOVEBG_KEY },
-            body: formData
-          })
+          // Procesar con el modelo
+          const { pixel_values } = await _rmbgProcessor(rawImg)
+          const { output } = await _rmbgModel({ input: pixel_values })
 
-          if (!resp.ok) {
-            const txt = await resp.text()
-            throw new Error(`remove.bg error ${resp.status}: ${txt}`)
-          }
+          btnRec.textContent = '⏳ Refinando bordes...'
 
-          const resultBlob = await resp.blob()
-          console.log('remove.bg response:', resp.status, resultBlob.type, resultBlob.size)
+          // Convertir máscara a ImageData con alpha
+          const maskData = output[0].squeeze().tolist()  // valores 0-1
+          const maskH    = maskData.length
+          const maskW    = maskData[0].length
 
-          // Convertir blob a base64 para evitar problemas de CORS con createObjectURL
-          const base64 = await new Promise((resolve, reject) => {
-            const reader = new FileReader()
-            reader.onload  = e => resolve(e.target.result)
-            reader.onerror = reject
-            reader.readAsDataURL(resultBlob)
-          })
+          // Escalar la imagen original al tamaño de la máscara
+          const srcC = document.createElement('canvas')
+          srcC.width = maskW; srcC.height = maskH
+          const srcCtx = srcC.getContext('2d')
+          srcCtx.drawImage(fotoOrigImg, 0, 0, maskW, maskH)
+          let imgData = srcCtx.getImageData(0, 0, maskW, maskH)
+          const pixels = imgData.data
 
-          const img = new Image()
-          img.onload = () => {
-            const rc = document.createElement('canvas')
-            rc.width = img.width; rc.height = img.height
-            rc.getContext('2d').drawImage(img, 0, 0)
-            fotoRecortada = rc.getContext('2d').getImageData(0, 0, rc.width, rc.height)
-            const inner = document.getElementById('fotoUploadInner')
-            const zone  = document.getElementById('fotoUploadZone')
-            if (inner) {
-              zone.style.minHeight = ''
-              zone.style.borderColor = 'rgba(21,154,156,.5)'
-              zone.style.background = 'rgba(21,154,156,.04)'
-              inner.innerHTML = `
-                <div style="display:flex;flex-direction:column;align-items:center;gap:.5rem;padding:1rem;pointer-events:none">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="#4ecca3" stroke-width="2" width="36" height="36"><polyline points="20 6 9 17 4 12"/></svg>
-                  <p style="margin:0;font-size:.9rem;font-weight:700;color:#4ecca3;font-family:var(--font-head)">¡FONDO REMOVIDO!</p>
-                  <p style="margin:0;font-size:.72rem;color:var(--muted)">Elegí un fondo y acomodá tu producto</p>
-                </div>`
+          // Aplicar máscara como canal alpha
+          for (let y = 0; y < maskH; y++) {
+            for (let x = 0; x < maskW; x++) {
+              const i = (y * maskW + x) * 4
+              pixels[i + 3] = Math.round(maskData[y][x] * 255)
             }
-            document.getElementById('fotoCompositor').style.display = 'block'
-            // Asegurar que el canvas tenga dimensiones
-            if (OUT_W === 0 || OUT_H === 0) { OUT_W = 1080; OUT_H = 1080 }
-            canvas.width = OUT_W; canvas.height = OUT_H
-            fotoPosX = 0; fotoPosY = 0
-            // Pequeño delay para que el DOM actualice antes de renderizar
-            setTimeout(() => { fotoRender() }, 50)
-            btnRec.textContent = '✂️ Re-recortar'
-            btnRec.disabled = false
           }
-          img.onerror = () => {
-            throw new Error('No se pudo cargar la imagen devuelta por remove.bg')
-          }
-          img.src = base64
+
+          // Post-procesar: suavizar bordes
+          imgData = fotoPostprocess(imgData)
+
+          // Escalar de vuelta al tamaño original
+          const finalData = fotoEscalarResultado(imgData, fotoOrigImg.width, fotoOrigImg.height)
+
+          fotoAplicarResultado(finalData)
 
         } catch(err) {
-          console.warn('remove.bg falló, usando fallback Canvas:', err)
-          errEl.textContent = '⚠ API no disponible, usando recorte local.'
+          console.warn('RMBG-1.4 falló, usando fallback Canvas:', err)
+          errEl.textContent = '⚠ IA no disponible. Usá el recorte manual con la barra de tolerancia.'
           document.getElementById('fotoTolRow').style.display = 'flex'
           fotoRecortarFallback()
           btnRec.textContent = '✂️ Re-recortar'
@@ -8781,11 +9064,8 @@
 
     // Productos primero, después sesión y makers — orden importa para el CTA
     ;(async () => {
-      console.info('[Rabbit3D] Cargando productos...')
       await Promise.all([cargarProductos(), cargarTematicas()])
-      console.info('[Rabbit3D] Productos cargados:', productos.length)
       await verificarSesionUsuario()
-      console.info('[Rabbit3D] Sesión verificada, esAdmin:', esAdmin)
       // Cargar en paralelo todo lo que puede ir junto
       await Promise.all([
         cargarTendOcultas(),
@@ -9424,6 +9704,86 @@
 
     })()
 
+
+      // ── Gestor de Mantenimiento (admin) ──────────────────────────────────
+      const MANT_TOOLS = [
+        // Laboratorio 3D
+        { id: 'llavero',      label: '🔑 Llaveros con nombre',        tipo: 'lab'  },
+        { id: 'caja',         label: '📦 Cajas personalizadas',        tipo: 'lab'  },
+        { id: 'maceta',       label: '🌱 Macetas personalizadas',      tipo: 'lab'  },
+        { id: 'marco',        label: '🖼 Marcos personalizados',       tipo: 'lab'  },
+        { id: 'cortante',     label: '✂️ Cortantes personalizados',    tipo: 'lab'  },
+        // Emprendedores
+        { id: 'tarjetas',     label: '💌 Tarjetas de agradecimiento',  tipo: 'empr' },
+        { id: 'costos',       label: '🧮 Calculadora de costos',       tipo: 'empr' },
+        { id: 'mejora',       label: '✨ Mejorador de imágenes',       tipo: 'empr' },
+        { id: 'presupuesto',  label: '📄 Generador de presupuestos',   tipo: 'empr' },
+        { id: 'fotoproducto', label: '🖼 Cambiar fondo de producto',   tipo: 'empr' },
+      ]
+
+      window.abrirGestorMantenimiento = async function() {
+        const modal = document.getElementById('modalGestorMant')
+        modal.style.display = 'flex'
+        // Recargar estado fresco desde Supabase
+        try {
+          const { data } = await supabase.from('media')
+            .select('tipo,nombre').like('tipo','config-maint-%')
+          _maintTools = {}
+          if (data) data.forEach(r => {
+            _maintTools[r.tipo.replace('config-maint-','')] = r.nombre === '1'
+          })
+        } catch(e) {}
+        _renderMantListas()
+      }
+
+      function _renderMantListas() {
+        ;['lab','empr'].forEach(tipo => {
+          const lista = document.getElementById('mantLista' + (tipo==='lab'?'Lab':'Empr'))
+          if (!lista) return
+          lista.innerHTML = ''
+          MANT_TOOLS.filter(t => t.tipo === tipo).forEach(tool => {
+            const enMant = !!_maintTools[tool.id]
+            const row = document.createElement('div')
+            row.style.cssText = 'display:flex;align-items:center;justify-content:space-between;padding:.5rem .7rem;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);border-radius:8px'
+            row.innerHTML = `
+              <span style="font-size:.78rem;color:var(--text)">${tool.label}</span>
+              <button data-tool-id="${tool.id}" data-en-mant="${enMant}"
+                style="padding:.3rem .8rem;border-radius:6px;border:none;cursor:pointer;font-size:.72rem;font-weight:700;
+                  background:${enMant ? 'rgba(245,158,11,.15)' : 'rgba(21,154,156,.15)'};
+                  color:${enMant ? '#f59e0b' : '#4ecca3'}"
+                onclick="toggleMantTool(this)">
+                ${enMant ? '🔧 En mantenimiento' : '✅ Activa'}
+              </button>`
+            lista.appendChild(row)
+          })
+        })
+      }
+
+      window.toggleMantTool = async function(btn) {
+        const id = btn.dataset.toolId
+        const enMant = btn.dataset.enMant === 'true'
+        const nuevoEstado = !enMant
+        btn.disabled = true
+        btn.textContent = '...'
+        try {
+          await supabase.from('media').delete().eq('tipo','config-maint-'+id)
+          if (nuevoEstado) {
+            await supabase.from('media').insert([{tipo:'config-maint-'+id, url:'', nombre:'1'}])
+          }
+          _maintTools[id] = nuevoEstado
+          // Actualizar overlay en la card
+          const labCard = document.querySelector('.herramienta-card[onclick*="modal-'+id+'"]')
+          if (labCard) _toggleMantOverlay(labCard, id, nuevoEstado, 'lab')
+          const emprCard = document.querySelector('[data-empr-id="'+id+'"]')
+          if (emprCard) _toggleMantOverlay(emprCard, id, nuevoEstado, 'empr')
+          _renderMantListas()
+        } catch(e) {
+          btn.disabled = false
+          alert('Error al guardar: ' + (e.message || e))
+        }
+      }
+      // ── Fin gestor de mantenimiento ──────────────────────────────────────
+
     // ══════════════════════════════════════════
     //  TRACKING DE EVENTOS
     // ══════════════════════════════════════════
@@ -10044,6 +10404,20 @@
       } catch(e) { console.warn('Error guardando estado tendencias:', e) }
     }
 
+    // ── Migrar URLs de fondos de rabbit-3d.github.io → lamadriguera.site ─
+    async function migrarUrlsFondos() {
+      try {
+        const { data } = await supabase.from('media').select('id, url').like('tipo', 'foto-fondo-%')
+        if (!data || !data.length) return
+        const viejas = data.filter(r => r.url && r.url.includes('rabbit-3d.github.io/fondos/'))
+        if (!viejas.length) { return }
+        for (const r of viejas) {
+          const newUrl = r.url.replace('https://rabbit-3d.github.io/fondos/', 'https://lamadriguera.site/fondos/')
+          await supabase.from('media').update({ url: newUrl }).eq('id', r.id)
+        }
+      } catch(e) { console.warn('[Fondos] Error migrando URLs:', e) }
+    }
+
     window.cerrarReportesAdmin = function() {
       const m = document.getElementById('modalReportesAdmin')
       if (m) m.style.display = 'none'
@@ -10311,6 +10685,8 @@
           </button>
           <input type="file" id="fondoFileInput" accept="image/*" multiple style="display:none"/>
           <input type="file" id="fondoFolderInput" accept="image/*" multiple webkitdirectory style="display:none"/>
+
+
         </div>
 
         <!-- Carrusel de novedades -->
@@ -10412,10 +10788,33 @@
       <!-- Secciones -->
       <div style="font-size:.52rem;font-weight:700;letter-spacing:.12em;color:var(--cyan);text-transform:uppercase;padding:.4rem .2rem .3rem;opacity:.7;border-top:1px solid rgba(255,255,255,.06);margin-top:.2rem">Secciones</div>
       <button class="btn btn--sm" id="btnGestorTendencias" onclick="abrirGestorTendencias()">🔥 Tendencias</button>
+      <button class="btn btn--sm" onclick="abrirGestorMantenimiento()">🔧 Mantenimiento</button>
 
     </div>
   </div>
 
+
+  <!-- MODAL GESTOR MANTENIMIENTO -->
+  <div id="modalGestorMant" style="display:none;position:fixed;inset:0;z-index:9999;background:rgba(0,8,15,.85);align-items:center;justify-content:center">
+    <div style="background:var(--bg-card,#0a2535);border:1px solid var(--border);border-radius:14px;padding:1.75rem;width:min(440px,95vw);max-height:90vh;overflow-y:auto;display:flex;flex-direction:column;gap:1rem">
+      <div style="display:flex;align-items:center;justify-content:space-between">
+        <h3 style="font-family:var(--font-head);font-size:.8rem;font-weight:700;letter-spacing:.1em;color:var(--cyan);margin:0;text-transform:uppercase">🔧 Mantenimiento de herramientas</h3>
+        <button onclick="document.getElementById('modalGestorMant').style.display='none'" style="background:none;border:none;color:var(--muted);cursor:pointer;font-size:1.1rem;line-height:1">✕</button>
+      </div>
+      <p style="font-size:.72rem;color:var(--muted);margin:0">Las herramientas en mantenimiento muestran un aviso al usuario y no se pueden abrir. Vos como admin las podés seguir usando normalmente.</p>
+
+      <!-- Laboratorio 3D -->
+      <div>
+        <p style="font-size:.6rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--cyan);margin:0 0 .5rem;opacity:.8">🔬 Laboratorio 3D</p>
+        <div id="mantListaLab" style="display:flex;flex-direction:column;gap:.4rem"></div>
+      </div>
+      <!-- Emprendedores -->
+      <div>
+        <p style="font-size:.6rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--cyan);margin:.5rem 0 .5rem;opacity:.8">💼 Área de emprendedores</p>
+        <div id="mantListaEmpr" style="display:flex;flex-direction:column;gap:.4rem"></div>
+      </div>
+    </div>
+  </div>
   <!-- MODAL GESTOR TENDENCIAS -->
   <div id="modalGestorTendencias" style="display:none;position:fixed;inset:0;z-index:9999;background:rgba(0,8,15,.85);display:none;align-items:center;justify-content:center">
     <div style="background:var(--bg-card,#0a2535);border:1px solid var(--border);border-radius:14px;padding:1.75rem;width:min(420px,95vw);display:flex;flex-direction:column;gap:1rem">
