@@ -4,6 +4,29 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>La Madriguera – Diseños para Impresión 3D</title>
+
+  <!-- ── SEO & Open Graph (preview al compartir el link) ── -->
+  <meta name="description" content="La Madriguera: catálogo de diseños para impresión 3D, generadores de piezas personalizadas y herramientas para emprendedores makers."/>
+  <meta name="author" content="La Madriguera"/>
+  <meta name="theme-color" content="#001520"/>
+
+  <!-- Open Graph — WhatsApp, Facebook, Discord, Telegram -->
+  <meta property="og:type"        content="website"/>
+  <meta property="og:url"         content="https://lamadriguera.site/"/>
+  <meta property="og:title"       content="La Madriguera – Diseños para Impresión 3D"/>
+  <meta property="og:description" content="Catálogo de diseños para impresión 3D, generadores de piezas personalizadas y herramientas para emprendedores makers."/>
+  <meta property="og:image"       content="https://lamadriguera.site/og-image.png"/>
+  <meta property="og:image:width"  content="1200"/>
+  <meta property="og:image:height" content="630"/>
+  <meta property="og:locale"      content="es_AR"/>
+  <meta property="og:site_name"   content="La Madriguera"/>
+
+  <!-- Twitter / X Card -->
+  <meta name="twitter:card"        content="summary_large_image"/>
+  <meta name="twitter:title"       content="La Madriguera – Diseños para Impresión 3D"/>
+  <meta name="twitter:description" content="Catálogo de diseños para impresión 3D, generadores de piezas personalizadas y herramientas para emprendedores makers."/>
+  <meta name="twitter:image"       content="https://lamadriguera.site/og-image.png"/>
+
   <link rel="icon" type="image/svg+xml" href="favicon.svg"/>
   <link rel="icon" type="image/png" sizes="32x32" href="favicon.svg"/>
   <link rel="apple-touch-icon" href="favicon.svg"/>
@@ -7086,127 +7109,6 @@
         // Mensaje
         tarjWrapText(ctx,msg||'\u00a1Gracias por su preferencia!',W/2,H*0.64,W*0.75,H*0.068,col2,`italic ${H*0.065}px Georgia,serif`,'center')
         ctx.font=`${H*0.050}px Arial`;ctx.fillStyle=accent
-        ctx.fillText(con||'',W/2,H*0.86);ctx.textAlign='left'
-      }}
-      ,{nombre:'Ondas dinamicas',render(ctx,W,H,logo,neg,msg,con,ac,c2,c3,c4){
-        const accent=ac||'#6c63ff'
-        const col2u=c2||'#1a1a3e'
-        // Fondo claro
-        ctx.fillStyle=c3||'#f8f8ff';ctx.fillRect(0,0,W,H)
-        // Onda superior
-        ctx.fillStyle=col2u
-        ctx.beginPath();ctx.moveTo(0,0);ctx.lineTo(W,0);ctx.lineTo(W,H*0.38)
-        ctx.bezierCurveTo(W*0.75,H*0.52,W*0.25,H*0.28,0,H*0.42)
-        ctx.closePath();ctx.fill()
-        // Onda acento
-        ctx.fillStyle=accent
-        ctx.beginPath();ctx.moveTo(0,H*0.36)
-        ctx.bezierCurveTo(W*0.25,H*0.22,W*0.75,H*0.48,W,H*0.34)
-        ctx.lineTo(W,H*0.40);ctx.bezierCurveTo(W*0.75,H*0.54,W*0.25,H*0.30,0,H*0.44)
-        ctx.closePath();ctx.fill()
-        // Logo arriba centrado en zona oscura
-        const lScale=tarjLogoScale||1
-        if(logo){const lh=H*0.24*(tarjLogoScale||1)*lScale,lw=logo.width*(lh/logo.height);ctx.drawImage(logo,(W-Math.min(lw,W*0.45*(tarjLogoScale||1)*lScale))/2,H*0.04,Math.min(lw,W*0.45*(tarjLogoScale||1)*lScale),lh)}
-        // Nombre en zona oscura
-        ctx.font=`bold ${H*0.085}px Arial`;ctx.fillStyle='#ffffff';ctx.textAlign='center'
-        ctx.fillText(neg||'Tu Negocio',W/2,H*0.31)
-        // Zona clara — mensaje
-        ctx.font=`bold ${H*0.082}px Georgia,serif`;ctx.fillStyle=accent
-        ctx.fillText('\u00a1Gracias!',W/2,H*0.58)
-        ctx.fillStyle=tarjColorAlpha(accent,0.4);ctx.fillRect(W*0.35,H*0.63,W*0.30,2)
-        tarjWrapText(ctx,msg||'Tu compra nos hace felices.',W/2,H*0.74,W*0.78,H*0.062,'#333',`${H*0.058}px Arial`,'center')
-        ctx.font=`${H*0.048}px Arial`;ctx.fillStyle='#888'
-        ctx.fillText(con||'',W/2,H*0.90);ctx.textAlign='left'
-        // Círculos decorativos esquina inferior izquierda
-        ;[[W*0.06,H*0.88,H*0.10],[W*0.02,H*0.92,H*0.06]].forEach(([cx,cy,cr])=>{
-          ctx.beginPath();ctx.arc(cx,cy,cr,0,Math.PI*2)
-          ctx.fillStyle=tarjColorAlpha(accent,0.12);ctx.fill()
-        })
-      }}
-      ,{nombre:'Acuarela pastel',render(ctx,W,H,logo,neg,msg,con,ac,c2,c3,c4){
-        // Fondo degradado suave lavanda-melocotón
-        const bg=ctx.createLinearGradient(0,0,W,H)
-        bg.addColorStop(0,'#e8e0f8');bg.addColorStop(0.5,'#fce4ec');bg.addColorStop(1,'#fff3e0')
-        ctx.fillStyle=bg;ctx.fillRect(0,0,W,H)
-        // Manchas de acuarela (círculos borrosos semitransparentes)
-        const manchas=[[W*0.1,H*0.15,H*0.55,'rgba(200,180,240,0.25)'],[W*0.85,H*0.3,H*0.45,'rgba(255,180,180,0.22)'],[W*0.5,H*0.8,H*0.5,'rgba(255,220,150,0.20)'],[W*0.7,H*0.1,H*0.3,'rgba(180,220,255,0.22)']]
-        manchas.forEach(([mx,my,mr,mc])=>{const rg=ctx.createRadialGradient(mx,my,0,mx,my,mr);rg.addColorStop(0,mc);rg.addColorStop(1,'transparent');ctx.fillStyle=rg;ctx.fillRect(0,0,W,H)})
-        // Marco fino
-        ctx.strokeStyle='rgba(180,140,200,0.4)';ctx.lineWidth=2;ctx.strokeRect(10,10,W-20,H-20)
-        // Logo centrado arriba
-        const lScale=tarjLogoScale||1
-        if(logo){const lh=H*0.28*(tarjLogoScale||1)*lScale,lw=logo.width*(lh/logo.height);ctx.drawImage(logo,(W-Math.min(lw,W*0.5*(tarjLogoScale||1)*lScale))/2,H*0.05,Math.min(lw,W*0.5*(tarjLogoScale||1)*lScale),lh)}
-        // Nombre
-        ctx.font=`bold ${H*0.10}px Georgia,serif`;ctx.fillStyle='#5a3a7e';ctx.textAlign='center'
-        ctx.fillText(neg||'Tu Negocio',W/2,H*0.47)
-        // Separador floral
-        ctx.font=`${H*0.07}px Arial`;ctx.fillStyle='rgba(180,100,180,0.7)'
-        ctx.fillText('\u273f \u2665 \u273f',W/2,H*0.57)
-        // Mensaje
-        tarjWrapText(ctx,msg||'\u00a1Gracias por tu compra!',W/2,H*0.68,W*0.78,H*0.065,'#7a4a6a',`italic ${H*0.062}px Georgia,serif`,'center')
-        ctx.font=`${H*0.048}px Arial`;ctx.fillStyle='rgba(120,80,160,0.7)'
-        ctx.fillText(con||'',W/2,H*0.88);ctx.textAlign='left'
-      }}
-      ,{nombre:'Neon oscuro',render(ctx,W,H,logo,neg,msg,con,ac,c2,c3,c4){
-        const accent=ac||'#00f5c4'
-        // Fondo muy oscuro
-        ctx.fillStyle='#050d12';ctx.fillRect(0,0,W,H)
-        // Rejilla sutil (grid lines)
-        ctx.strokeStyle='rgba(0,245,196,0.06)';ctx.lineWidth=1
-        for(let x=0;x<W;x+=W*0.08){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,H);ctx.stroke()}
-        for(let y=0;y<H;y+=H*0.12){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(W,y);ctx.stroke()}
-        // Borde neon brillante
-        ctx.shadowColor=accent;ctx.shadowBlur=18
-        ctx.strokeStyle=accent;ctx.lineWidth=2;ctx.strokeRect(8,8,W-16,H-16)
-        ctx.shadowBlur=0
-        // Línea horizontal acento
-        const lg=ctx.createLinearGradient(0,0,W,0)
-        lg.addColorStop(0,'transparent');lg.addColorStop(0.5,accent);lg.addColorStop(1,'transparent')
-        ctx.strokeStyle=lg;ctx.lineWidth=1.5
-        ctx.beginPath();ctx.moveTo(0,H*0.50);ctx.lineTo(W,H*0.50);ctx.stroke()
-        // Logo arriba izquierda
-        const lScale=tarjLogoScale||1
-        if(logo){const lh=H*0.28*(tarjLogoScale||1)*lScale,lw=logo.width*(lh/logo.height);ctx.drawImage(logo,W*0.06,H*0.08,Math.min(lw,W*0.40*(tarjLogoScale||1)*lScale),lh)}
-        // Nombre con glow
-        ctx.shadowColor=accent;ctx.shadowBlur=12
-        ctx.font=`900 ${H*0.105}px Arial`;ctx.fillStyle=accent;ctx.textAlign='left'
-        ctx.fillText(neg||'Tu Negocio',W*0.06,H*0.44)
-        ctx.shadowBlur=0
-        // Separador
-        ctx.fillStyle=accent;ctx.fillRect(W*0.06,H*0.48,W*0.20,1.5)
-        // Mensaje
-        tarjWrapText(ctx,msg||'\u00a1Gracias por tu compra!',W*0.06,H*0.62,W*0.88,H*0.065,'#b0e8e0',`${H*0.060}px Arial`)
-        ctx.font=`${H*0.050}px Arial`;ctx.fillStyle='rgba(0,245,196,0.55)'
-        ctx.fillText(con||'',W*0.06,H*0.90)
-        // Triángulo decorativo esquina
-        ctx.fillStyle='rgba(0,245,196,0.08)';ctx.beginPath()
-        ctx.moveTo(W,H);ctx.lineTo(W,H*0.45);ctx.lineTo(W*0.55,H);ctx.closePath();ctx.fill()
-      }}
-      ,{nombre:'Retro vintage',render(ctx,W,H,logo,neg,msg,con,ac,c2,c3,c4){
-        // Fondo papel envejecido
-        const bg=ctx.createLinearGradient(0,0,W,H)
-        bg.addColorStop(0,'#f5e6c8');bg.addColorStop(1,'#ead5a0')
-        ctx.fillStyle=bg;ctx.fillRect(0,0,W,H)
-        // Textura de ruido (puntos)
-        for(let i=0;i<800;i++){const px=Math.random()*W,py=Math.random()*H;ctx.fillStyle=`rgba(100,70,20,${Math.random()*0.04})`;ctx.fillRect(px,py,1.5,1.5)}
-        // Marco doble
-        ctx.strokeStyle='#8B5E3C';ctx.lineWidth=4;ctx.strokeRect(10,10,W-20,H-20)
-        ctx.strokeStyle='#C4924A';ctx.lineWidth=1.5;ctx.strokeRect(18,18,W-36,H-36)
-        // Banda central decorativa
-        ctx.fillStyle='#8B5E3C';ctx.fillRect(0,H*0.40,W,H*0.02)
-        ctx.fillStyle='#C4924A';ctx.fillRect(0,H*0.43,W,H*0.01)
-        // Logo arriba centrado
-        const lScale=tarjLogoScale||1
-        if(logo){const lh=H*0.22*(tarjLogoScale||1)*lScale,lw=logo.width*(lh/logo.height);ctx.drawImage(logo,(W-Math.min(lw,W*0.42*(tarjLogoScale||1)*lScale))/2,H*0.07,Math.min(lw,W*0.42*(tarjLogoScale||1)*lScale),lh)}
-        // Nombre estilo letras de sello
-        ctx.font=`bold ${H*0.095}px Georgia,serif`;ctx.fillStyle='#4a2c0a';ctx.textAlign='center'
-        ctx.fillText(neg||'Tu Negocio',W/2,H*0.35)
-        // Estrellitas decorativas
-        ctx.font=`${H*0.055}px Arial`;ctx.fillStyle='#8B5E3C'
-        ctx.fillText('\u2605 \u2605 \u2605',W/2,H*0.50)
-        // Mensaje
-        tarjWrapText(ctx,msg||'\u00a1Gracias por su preferencia!',W/2,H*0.64,W*0.75,H*0.068,'#5a3510',`italic ${H*0.065}px Georgia,serif`,'center')
-        ctx.font=`${H*0.050}px Arial`;ctx.fillStyle='#8B5E3C'
         ctx.fillText(con||'',W/2,H*0.86);ctx.textAlign='left'
       }}
       ,{nombre:'Ondas dinamicas',render(ctx,W,H,logo,neg,msg,con,ac,c2,c3,c4){
