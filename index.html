@@ -1962,100 +1962,131 @@
   </section>
 
   <!-- MODAL DISEÑADOR DE CAJAS -->
+  <!-- MODAL DISEÑADOR DE CAJAS — estilo Pacdora -->
   <div class="modal-overlay" id="modal-cajas-diseño" style="display:none">
-    <div class="modal" style="max-width:900px;width:95vw;max-height:92vh;overflow-y:auto;padding:1.5rem">
-      <button class="modal__close" onclick="cerrarEmprendedor('modal-cajas-diseño')">✕</button>
-      <h2 class="modal__title" style="font-family:var(--font-head);letter-spacing:.08em;font-size:1rem;margin-bottom:1rem">📦 DISEÑADOR DE CAJAS</h2>
+    <div class="modal" style="max-width:1100px;width:98vw;max-height:96vh;overflow:hidden;padding:0;display:flex;flex-direction:column">
 
-      <!-- Paso 1: Logo + configuración -->
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1.25rem">
-
-        <!-- Logo -->
-        <div>
-          <p style="font-size:.62rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--cyan);margin:0 0 .5rem">1 · Tu logo</p>
-          <div id="cajasLogoZone" onclick="document.getElementById('cajasLogoFile').click()"
-            style="border:2px dashed rgba(21,154,156,.4);border-radius:10px;padding:1.2rem;text-align:center;cursor:pointer;background:rgba(21,154,156,.04);transition:.2s;min-height:90px;display:flex;align-items:center;justify-content:center"
-            onmouseover="this.style.borderColor='var(--cyan)'" onmouseout="this.style.borderColor='rgba(21,154,156,.4)'">
-            <div id="cajasLogoPreview" style="display:none;flex-direction:column;align-items:center;gap:.4rem">
-              <img id="cajasLogoImg" style="max-height:60px;max-width:180px;object-fit:contain"/>
-              <p style="font-size:.65rem;color:var(--cyan);margin:0">Clic para cambiar</p>
-            </div>
-            <div id="cajasLogoPlaceholder">
-              <svg viewBox="0 0 24 24" fill="none" stroke="var(--cyan)" stroke-width="1.5" width="28" height="28"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="m21 15-5-5L5 21"/></svg>
-              <p style="font-size:.72rem;color:var(--muted);margin:.3rem 0 0">Subí tu logo</p>
-            </div>
-          </div>
-          <input type="file" id="cajasLogoFile" accept="image/*" style="display:none"/>
-        </div>
-
-        <!-- Configuración -->
-        <div style="display:flex;flex-direction:column;gap:.6rem">
-          <div>
-            <p style="font-size:.62rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--cyan);margin:0 0 .5rem">2 · Tamaño de caja</p>
-            <select id="cajasTamaño" style="width:100%;padding:.45rem .6rem;background:rgba(0,0,0,.3);border:1px solid rgba(255,255,255,.12);border-radius:8px;color:var(--text);font-size:.78rem">
-              <option value="s">Pequeña — 8×8×4 cm</option>
-              <option value="m" selected>Mediana — 12×12×6 cm</option>
-              <option value="l">Grande — 18×12×8 cm</option>
-              <option value="xl">Extra grande — 25×18×10 cm</option>
-              <option value="sobre">Sobre/Mailer — 20×15×3 cm</option>
-            </select>
-          </div>
-          <div>
-            <p style="font-size:.62rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--cyan);margin:0 0 .4rem">3 · Color de caja (fondo)</p>
-            <div style="display:flex;gap:.5rem;align-items:center">
-              <input type="color" id="cajasBgColor" value="#f5f0e8" style="width:38px;height:34px;border:none;border-radius:6px;cursor:pointer;background:none"/>
-              <input type="text" id="cajasBgColorHex" value="#f5f0e8" maxlength="7"
-                style="flex:1;padding:.3rem .5rem;background:rgba(0,0,0,.3);border:1px solid rgba(255,255,255,.12);border-radius:6px;color:var(--text);font-size:.75rem;font-family:monospace"/>
-            </div>
-          </div>
-          <div>
-            <p style="font-size:.62rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--cyan);margin:0 0 .4rem">4 · Color de acento</p>
-            <div style="display:flex;gap:.5rem;align-items:center">
-              <input type="color" id="cajasColor" value="#159A9C" style="width:38px;height:34px;border:none;border-radius:6px;cursor:pointer;background:none"/>
-              <input type="text" id="cajasColorHex" value="#159A9C" maxlength="7"
-                style="flex:1;padding:.3rem .5rem;background:rgba(0,0,0,.3);border:1px solid rgba(255,255,255,.12);border-radius:6px;color:var(--text);font-size:.75rem;font-family:monospace"/>
-            </div>
-            <p id="cajasColorFeedback" style="display:none;font-size:.62rem;color:var(--muted);margin:.4rem 0 0;line-height:1.6"></p>
-          </div>
-          <div>
-            <p style="font-size:.62rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--cyan);margin:0 0 .4rem">5 · Texto opcional</p>
-            <input type="text" id="cajasTexto" maxlength="40" placeholder="Ej: ¡Gracias por tu compra!"
-              style="width:100%;padding:.35rem .5rem;background:rgba(0,0,0,.3);border:1px solid rgba(255,255,255,.12);border-radius:6px;color:var(--text);font-size:.75rem;box-sizing:border-box"/>
-          </div>
-          <button onclick="cajasGenerarTodas()" class="btn" style="margin-top:auto">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><polyline points="5 3 19 3 19 9"/><polyline points="5 21 19 21"/><path d="M5 3v18"/></svg>
-            Generar plantillas
-          </button>
-        </div>
+      <!-- Header -->
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:.9rem 1.2rem;border-bottom:1px solid rgba(255,255,255,.08);flex-shrink:0">
+        <h2 style="font-family:var(--font-head);letter-spacing:.08em;font-size:.9rem;margin:0;color:var(--cyan)">📦 DISEÑADOR DE CAJAS</h2>
+        <button class="modal__close" onclick="cerrarEmprendedor('modal-cajas-diseño')" style="position:static">✕</button>
       </div>
 
-      <!-- Grid de diseños -->
-      <p style="font-size:.62rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--cyan);margin:0 0 .75rem">Plantillas imprimibles</p>
-      <div id="cajasGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:1rem"></div>
-      <p id="cajasHint" style="font-size:.7rem;color:var(--muted);text-align:center;margin-top:1rem;line-height:1.6">
-        Subí tu logo y hacé clic en <strong>Generar plantillas</strong> para ver los 8 diseños de cajas.<br>
-        Cada plantilla es una hoja desplegada lista para imprimir, recortar y doblar.
-      </p>
+      <!-- Body: sidebar izq + contenido derecha -->
+      <div style="display:flex;flex:1;overflow:hidden;min-height:0">
+
+        <!-- SIDEBAR: selector de tipos -->
+        <div style="width:180px;flex-shrink:0;border-right:1px solid rgba(255,255,255,.07);overflow-y:auto;padding:.75rem .5rem;display:flex;flex-direction:column;gap:.3rem">
+          <p style="font-size:.58rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin:0 0 .4rem .2rem">Tipo de caja</p>
+          <div id="cajasTipoList"></div>
+        </div>
+
+        <!-- PANEL DERECHO -->
+        <div style="flex:1;overflow-y:auto;padding:1rem;display:flex;flex-direction:column;gap:1rem;min-width:0">
+
+          <!-- Fila top: dimensiones + logo + colores -->
+          <div style="display:grid;grid-template-columns:auto 1fr 1fr;gap:.9rem;align-items:start">
+
+            <!-- Dimensiones libres -->
+            <div style="background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:10px;padding:.75rem;min-width:180px">
+              <p style="font-size:.6rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--cyan);margin:0 0 .6rem">Dimensiones (cm)</p>
+              <div style="display:flex;flex-direction:column;gap:.45rem">
+                <label style="display:flex;align-items:center;gap:.5rem;font-size:.72rem;color:var(--text)">
+                  <span style="width:52px;color:var(--muted)">Largo</span>
+                  <input type="number" id="cajasW" value="12" min="3" max="60" step="0.5"
+                    style="width:60px;padding:.28rem .4rem;background:rgba(0,0,0,.3);border:1px solid rgba(255,255,255,.15);border-radius:6px;color:var(--text);font-size:.78rem;text-align:center"/>
+                  <span style="font-size:.65rem;color:var(--muted)">cm</span>
+                </label>
+                <label style="display:flex;align-items:center;gap:.5rem;font-size:.72rem;color:var(--text)">
+                  <span style="width:52px;color:var(--muted)">Ancho</span>
+                  <input type="number" id="cajasH" value="12" min="3" max="60" step="0.5"
+                    style="width:60px;padding:.28rem .4rem;background:rgba(0,0,0,.3);border:1px solid rgba(255,255,255,.15);border-radius:6px;color:var(--text);font-size:.78rem;text-align:center"/>
+                  <span style="font-size:.65rem;color:var(--muted)">cm</span>
+                </label>
+                <label style="display:flex;align-items:center;gap:.5rem;font-size:.72rem;color:var(--text)">
+                  <span style="width:52px;color:var(--muted)">Alto</span>
+                  <input type="number" id="cajasD" value="6" min="1" max="40" step="0.5"
+                    style="width:60px;padding:.28rem .4rem;background:rgba(0,0,0,.3);border:1px solid rgba(255,255,255,.15);border-radius:6px;color:var(--text);font-size:.78rem;text-align:center"/>
+                  <span style="font-size:.65rem;color:var(--muted)">cm</span>
+                </label>
+              </div>
+              <p id="cajasAreaLabel" style="font-size:.6rem;color:var(--muted);margin:.6rem 0 0;line-height:1.5"></p>
+            </div>
+
+            <!-- Logo -->
+            <div style="background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:10px;padding:.75rem">
+              <p style="font-size:.6rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--cyan);margin:0 0 .5rem">Logo (opcional)</p>
+              <div id="cajasLogoZone" onclick="document.getElementById('cajasLogoFile').click()"
+                style="border:2px dashed rgba(21,154,156,.35);border-radius:8px;padding:.8rem;text-align:center;cursor:pointer;background:rgba(21,154,156,.03);transition:.2s;min-height:74px;display:flex;align-items:center;justify-content:center"
+                onmouseover="this.style.borderColor='var(--cyan)'" onmouseout="this.style.borderColor='rgba(21,154,156,.35)'">
+                <div id="cajasLogoPreview" style="display:none;flex-direction:column;align-items:center;gap:.3rem">
+                  <img id="cajasLogoImg" style="max-height:50px;max-width:140px;object-fit:contain"/>
+                  <p style="font-size:.6rem;color:var(--cyan);margin:0">Clic para cambiar</p>
+                </div>
+                <div id="cajasLogoPlaceholder" style="display:flex;flex-direction:column;align-items:center;gap:.25rem">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="var(--cyan)" stroke-width="1.5" width="22" height="22"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="m21 15-5-5L5 21"/></svg>
+                  <p style="font-size:.65rem;color:var(--muted);margin:0">Subí tu logo</p>
+                </div>
+              </div>
+              <input type="file" id="cajasLogoFile" accept="image/*" style="display:none"/>
+              <p id="cajasColorFeedback" style="display:none;font-size:.6rem;color:var(--muted);margin:.4rem 0 0;line-height:1.5"></p>
+            </div>
+
+            <!-- Colores + texto -->
+            <div style="background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:10px;padding:.75rem;display:flex;flex-direction:column;gap:.5rem">
+              <p style="font-size:.6rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--cyan);margin:0 0 .2rem">Personalización</p>
+              <label style="font-size:.68rem;color:var(--muted)">Color de caja
+                <div style="display:flex;gap:.4rem;margin-top:.2rem;align-items:center">
+                  <input type="color" id="cajasBgColor" value="#f5f0e8" style="width:32px;height:28px;border:none;border-radius:4px;cursor:pointer"/>
+                  <input type="text" id="cajasBgColorHex" value="#f5f0e8" maxlength="7" style="flex:1;padding:.25rem .4rem;background:rgba(0,0,0,.3);border:1px solid rgba(255,255,255,.12);border-radius:5px;color:var(--text);font-size:.7rem;font-family:monospace"/>
+                </div>
+              </label>
+              <label style="font-size:.68rem;color:var(--muted)">Color de acento
+                <div style="display:flex;gap:.4rem;margin-top:.2rem;align-items:center">
+                  <input type="color" id="cajasColor" value="#159A9C" style="width:32px;height:28px;border:none;border-radius:4px;cursor:pointer"/>
+                  <input type="text" id="cajasColorHex" value="#159A9C" maxlength="7" style="flex:1;padding:.25rem .4rem;background:rgba(0,0,0,.3);border:1px solid rgba(255,255,255,.12);border-radius:5px;color:var(--text);font-size:.7rem;font-family:monospace"/>
+                </div>
+              </label>
+              <label style="font-size:.68rem;color:var(--muted)">Texto en la caja
+                <input type="text" id="cajasTexto" maxlength="40" placeholder="Ej: ¡Gracias por tu compra!"
+                  style="width:100%;padding:.28rem .4rem;background:rgba(0,0,0,.3);border:1px solid rgba(255,255,255,.12);border-radius:5px;color:var(--text);font-size:.7rem;margin-top:.2rem;box-sizing:border-box"/>
+              </label>
+            </div>
+          </div>
+
+          <!-- Fila central: Preview animado + Plantilla -->
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;min-height:0">
+
+            <!-- Vista previa animada -->
+            <div style="background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:10px;padding:.75rem;display:flex;flex-direction:column;gap:.6rem">
+              <p style="font-size:.6rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--cyan);margin:0">Vista previa 3D</p>
+              <canvas id="cajasPreview3D" style="width:100%;border-radius:8px;background:#1a2a38;display:block"></canvas>
+              <!-- Slider abierto/cerrado -->
+              <div style="display:flex;align-items:center;gap:.6rem">
+                <span style="font-size:.65rem;color:var(--muted);white-space:nowrap">Abierto</span>
+                <input type="range" id="cajasSlider" min="0" max="100" value="70"
+                  style="flex:1;accent-color:var(--cyan)"/>
+                <span style="font-size:.65rem;color:var(--muted);white-space:nowrap">Cerrado</span>
+              </div>
+              <p style="font-size:.62rem;color:var(--muted);text-align:center;margin:0">Arrastrá el slider para ver el armado</p>
+            </div>
+
+            <!-- Plantilla de corte -->
+            <div style="background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:10px;padding:.75rem;display:flex;flex-direction:column;gap:.6rem">
+              <p style="font-size:.6rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--cyan);margin:0">Plantilla de corte y doblez</p>
+              <canvas id="cajasPlantilla" style="width:100%;border-radius:6px;background:#fff;display:block"></canvas>
+              <div style="display:flex;gap:.5rem">
+                <button onclick="cajasDescargarPNGActual()" class="btn btn--sm" style="flex:1;font-size:.68rem">⬇ PNG</button>
+                <button onclick="cajasDescargarPDFActual()" class="btn btn--sm" style="flex:1;font-size:.68rem">📄 PDF</button>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
     </div>
   </div>
 
-  <!-- MODAL VISTA 3D CAJAS -->
-  <div id="cajas3dOverlay" style="display:none;position:fixed;inset:0;z-index:99999;background:rgba(0,8,15,.95);align-items:center;justify-content:center;flex-direction:column">
-    <div style="display:flex;align-items:center;justify-content:space-between;width:min(700px,95vw);margin-bottom:.75rem">
-      <div>
-        <p id="cajas3dTitulo" style="margin:0;font-family:var(--font-head);font-size:.85rem;font-weight:700;color:var(--cyan);letter-spacing:.08em"></p>
-        <p style="margin:.2rem 0 0;font-size:.65rem;color:var(--muted)">Arrastrá para rotar · Scroll para zoom · Doble clic para resetear</p>
-      </div>
-      <button onclick="cajas3dCerrar()" style="background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);border-radius:8px;color:var(--text);padding:.4rem .8rem;cursor:pointer;font-size:.8rem">✕ Cerrar</button>
-    </div>
-    <canvas id="cajas3dCanvas" style="border-radius:12px;border:1px solid rgba(21,154,156,.2);touch-action:none"></canvas>
-    <div style="display:flex;gap:.75rem;margin-top:.75rem;flex-wrap:wrap;justify-content:center">
-      <button onclick="cajas3dSetView('front')" class="btn btn--sm" style="font-size:.65rem">⬛ Frente</button>
-      <button onclick="cajas3dSetView('side')"  class="btn btn--sm" style="font-size:.65rem">◧ Lateral</button>
-      <button onclick="cajas3dSetView('top')"   class="btn btn--sm" style="font-size:.65rem">⬜ Arriba</button>
-      <button onclick="cajas3dSetView('iso')"   class="btn btn--sm" style="font-size:.65rem">🔄 Isométrica</button>
-    </div>
-  </div>
 
 
   <!-- MODAL IMAGEN STL -->
@@ -9853,6 +9884,7 @@
         { id: 'mejora',       label: '✨ Mejorador de imágenes',       tipo: 'empr' },
         { id: 'presupuesto',  label: '📄 Generador de presupuestos',   tipo: 'empr' },
         { id: 'fotoproducto', label: '🖼 Cambiar fondo de producto',   tipo: 'empr' },
+        { id: 'cajas-diseño', label: '📦 Diseñador de cajas',          tipo: 'empr' },
       ]
 
       window.abrirGestorMantenimiento = async function() {
@@ -9920,256 +9952,124 @@
 
 
       // ══════════════════════════════════════════════════════════════════
-      // DISEÑADOR DE CAJAS — motor de render de plantillas desplegadas
+      // DISEÑADOR DE CAJAS — JS principal (estilo Pacdora)
       // ══════════════════════════════════════════════════════════════════
       let cajasLogoImg = null
+      let cajasSelectedIdx = 0
+      let cajasAnimId = null
+      let _cajasDebounce = null
 
-      const CAJAS_TAMAÑOS = {
-        s:    { W:80,  H:80,  D:40,  label:'8×8×4 cm'   },
-        m:    { W:120, H:120, D:60,  label:'12×12×6 cm' },
-        l:    { W:180, H:120, D:80,  label:'18×12×8 cm' },
-        xl:   { W:250, H:180, D:100, label:'25×18×10 cm'},
-        sobre:{ W:200, H:150, D:30,  label:'20×15×3 cm' },
-      }
-
-      document.getElementById('cajasLogoFile').addEventListener('change', function(e) {
-        const file = e.target.files[0]; if (!file) return
-        const reader = new FileReader()
-        reader.onload = ev => {
-          const img = new Image()
-          img.onload = () => {
-            cajasLogoImg = img
-            document.getElementById('cajasLogoImg').src = ev.target.result
-            document.getElementById('cajasLogoPreview').style.display = 'flex'
-            document.getElementById('cajasLogoPlaceholder').style.display = 'none'
-            // Extraer colores del logo automáticamente
-            cajasExtraerColores(img)
-          }
-          img.src = ev.target.result
-        }
-        reader.readAsDataURL(file)
-      })
-
-      // Extrae color de fondo (esquinas) y color acento (más pronunciado) del logo
-      function cajasExtraerColores(img) {
-        const sc = 80 / Math.max(img.width, img.height)
-        const sw = Math.round(img.width * sc), sh = Math.round(img.height * sc)
-        const tc = document.createElement('canvas'); tc.width = sw; tc.height = sh
-        const tCtx = tc.getContext('2d', { willReadFrequently: true })
-        tCtx.drawImage(img, 0, 0, sw, sh)
-        const data = tCtx.getImageData(0, 0, sw, sh).data
-
-        // Color de fondo: promedio de las 4 esquinas (zona 15% del borde)
-        const bw = Math.max(2, Math.round(Math.min(sw, sh) * 0.15))
-        let bgR=0, bgG=0, bgB=0, bgN=0
-        for (let y=0; y<sh; y++) for (let x=0; x<sw; x++) {
-          if (x<bw || x>=sw-bw || y<bw || y>=sh-bw) {
-            const i=(y*sw+x)*4; const a=data[i+3]
-            if (a > 128) { bgR+=data[i]; bgG+=data[i+1]; bgB+=data[i+2]; bgN++ }
-          }
-        }
-        if (bgN > 0) { bgR=Math.round(bgR/bgN); bgG=Math.round(bgG/bgN); bgB=Math.round(bgB/bgN) }
-        else { bgR=248; bgG=248; bgB=248 }
-
-        // Color acento: cuantización k-means simplificada (3 clusters, excluir el bg)
-        // Paso 1: samplear píxeles no-fondo del logo
-        const samples = []
-        const bgThresh = 40
-        for (let i=0; i<data.length; i+=4) {
-          const a=data[i+3]; if (a < 128) continue
-          const r=data[i], g=data[i+1], b=data[i+2]
-          const dBg = Math.sqrt((r-bgR)**2+(g-bgG)**2+(b-bgB)**2)
-          if (dBg > bgThresh) samples.push([r,g,b])
-        }
-
-        let accentR=bgR, accentG=bgG, accentB=bgB
-        if (samples.length > 10) {
-          // K-means simple: 3 centroides
-          let cents = [samples[0], samples[Math.floor(samples.length/3)], samples[Math.floor(2*samples.length/3)]]
-          for (let iter=0; iter<8; iter++) {
-            const clusters = [[],[],[]]
-            samples.forEach(s => {
-              let best=0, bd=Infinity
-              cents.forEach((c,ci) => { const d=(s[0]-c[0])**2+(s[1]-c[1])**2+(s[2]-c[2])**2; if(d<bd){bd=d;best=ci} })
-              clusters[best].push(s)
-            })
-            cents = clusters.map(cl => {
-              if (!cl.length) return [128,128,128]
-              return [Math.round(cl.reduce((s,p)=>s+p[0],0)/cl.length),
-                      Math.round(cl.reduce((s,p)=>s+p[1],0)/cl.length),
-                      Math.round(cl.reduce((s,p)=>s+p[2],0)/cl.length)]
-            })
-          }
-          // Elegir el centroide más saturado y diferente al fondo
-          let bestSat = -1, bestCent = cents[0]
-          cents.forEach(c => {
-            const max=Math.max(c[0],c[1],c[2]), min=Math.min(c[0],c[1],c[2])
-            const sat = max===0 ? 0 : (max-min)/max
-            const dBg = Math.sqrt((c[0]-bgR)**2+(c[1]-bgG)**2+(c[2]-bgB)**2)
-            const score = sat * (dBg/255)
-            if (score > bestSat) { bestSat=score; bestCent=c }
-          })
-          accentR=bestCent[0]; accentG=bestCent[1]; accentB=bestCent[2]
-        }
-
-        // Convertir a hex
-        const toHex = n => n.toString(16).padStart(2,'0')
-        const bgHex = '#'+toHex(bgR)+toHex(bgG)+toHex(bgB)
-        const accHex = '#'+toHex(accentR)+toHex(accentG)+toHex(accentB)
-
-        // Aplicar al UI
-        document.getElementById('cajasColor').value = accHex
-        document.getElementById('cajasColorHex').value = accHex
-        document.getElementById('cajasBgColor').value = bgHex
-        document.getElementById('cajasBgColorHex').value = bgHex
-
-        // Feedback visual
-        const fb = document.getElementById('cajasColorFeedback')
-        if (fb) {
-          fb.innerHTML = '<span style="display:inline-block;width:14px;height:14px;border-radius:3px;background:'+bgHex+';border:1px solid rgba(255,255,255,.2);vertical-align:middle;margin-right:4px"></span>Fondo detectado &nbsp;·&nbsp; <span style="display:inline-block;width:14px;height:14px;border-radius:3px;background:'+accHex+';border:1px solid rgba(255,255,255,.2);vertical-align:middle;margin-right:4px"></span>Acento detectado'
-          fb.style.display = 'block'
-        }
-      }
-
-      document.getElementById('cajasColor').addEventListener('input', function() {
-        document.getElementById('cajasColorHex').value = this.value
-      })
-      document.getElementById('cajasColorHex').addEventListener('input', function() {
-        if (/^#[0-9a-fA-F]{6}$/.test(this.value)) document.getElementById('cajasColor').value = this.value
-      })
-      document.getElementById('cajasBgColor').addEventListener('input', function() {
-        document.getElementById('cajasBgColorHex').value = this.value
-      })
-      document.getElementById('cajasBgColorHex').addEventListener('input', function() {
-        if (/^#[0-9a-fA-F]{6}$/.test(this.value)) document.getElementById('cajasBgColor').value = this.value
-      })
-
+      // ── Helpers de color ──────────────────────────────────────────────
       function cajasAlpha(hex, a) {
-        const r=parseInt(hex.slice(1,3),16), g=parseInt(hex.slice(3,5),16), b=parseInt(hex.slice(5,7),16)
+        var r=parseInt(hex.slice(1,3),16), g=parseInt(hex.slice(3,5),16), b=parseInt(hex.slice(5,7),16)
         return 'rgba('+r+','+g+','+b+','+a+')'
       }
-
       function cajasDrawLogo(ctx, img, x, y, w, h, padding) {
         if (!img) return
-        padding = padding === undefined ? 0.12 : padding
-        const pad = Math.min(w, h) * padding
-        const maxW = w - pad*2, maxH = h - pad*2
-        const ratio = Math.min(maxW/img.width, maxH/img.height)
-        const lw = img.width*ratio, lh = img.height*ratio
-        ctx.drawImage(img, x + (w-lw)/2, y + (h-lh)/2, lw, lh)
+        padding = padding === undefined ? 0.1 : padding
+        var pad = Math.min(w,h)*padding, maxW=w-pad*2, maxH=h-pad*2
+        var ratio = Math.min(maxW/img.width, maxH/img.height)
+        var lw=img.width*ratio, lh=img.height*ratio
+        ctx.drawImage(img, x+(w-lw)/2, y+(h-lh)/2, lw, lh)
       }
-
       function cajasText(ctx, text, x, y, maxW, size, color, bold) {
         if (!text) return
-        ctx.font = (bold ? 'bold ' : '') + size + 'px Arial'
-        ctx.fillStyle = color; ctx.textAlign = 'center'
-        let s = size
-        while (ctx.measureText(text).width > maxW && s > 6) { s--; ctx.font = (bold?'bold ':'')+s+'px Arial' }
-        ctx.fillText(text, x, y); ctx.textAlign = 'left'
+        ctx.font=(bold?'bold ':'')+size+'px Arial'
+        ctx.fillStyle=color; ctx.textAlign='center'
+        var s=size; while(ctx.measureText(text).width>maxW&&s>5){s--;ctx.font=(bold?'bold ':'')+s+'px Arial'}
+        ctx.fillText(text,x,y); ctx.textAlign='left'
       }
-
-
-      // Dibuja una etiqueta de cara FUERA de la plantilla
-      function cajasLabel(ctx, text, x, y, align, vertical) {
-        ctx.save()
-        ctx.font = '500 9px Arial'
-        ctx.fillStyle = '#888'
-        ctx.textAlign = align || 'center'
-        if (vertical) {
-          ctx.translate(x, y); ctx.rotate(-Math.PI/2)
-          ctx.fillText(text, 0, 0)
-        } else {
-          ctx.fillText(text, x, y)
-        }
-        ctx.restore()
-      }
-      function cajasLinCorte(ctx, x1,y1,x2,y2) {
-        ctx.save(); ctx.strokeStyle='#222'; ctx.lineWidth=1.5; ctx.setLineDash([])
+      function cajasLinCorte(ctx,x1,y1,x2,y2) {
+        ctx.save(); ctx.strokeStyle='#333'; ctx.lineWidth=1.2; ctx.setLineDash([])
         ctx.beginPath(); ctx.moveTo(x1,y1); ctx.lineTo(x2,y2); ctx.stroke(); ctx.restore()
       }
-      function cajasLinDoblez(ctx, x1,y1,x2,y2, color) {
-        color = color || '#aaa'
-        ctx.save(); ctx.strokeStyle=color; ctx.lineWidth=1; ctx.setLineDash([6,4])
+      function cajasLinDoblez(ctx,x1,y1,x2,y2,color) {
+        color=color||'#aaa'
+        ctx.save(); ctx.strokeStyle=color; ctx.lineWidth=.9; ctx.setLineDash([6,4])
         ctx.beginPath(); ctx.moveTo(x1,y1); ctx.lineTo(x2,y2); ctx.stroke()
         ctx.setLineDash([]); ctx.restore()
       }
-      function cajasRoundRect(ctx, x,y,w,h,r) {
+      function cajasRoundRect(ctx,x,y,w,h,r) {
         ctx.beginPath(); ctx.moveTo(x+r,y)
         ctx.lineTo(x+w-r,y); ctx.quadraticCurveTo(x+w,y,x+w,y+r)
         ctx.lineTo(x+w,y+h-r); ctx.quadraticCurveTo(x+w,y+h,x+w-r,y+h)
         ctx.lineTo(x+r,y+h); ctx.quadraticCurveTo(x,y+h,x,y+h-r)
         ctx.lineTo(x,y+r); ctx.quadraticCurveTo(x,y,x+r,y); ctx.closePath()
       }
+      function cajasLabel(ctx,text,x,y,align,vertical) {
+        ctx.save(); ctx.font='500 8.5px Arial'; ctx.fillStyle='#999'
+        ctx.textAlign=align||'center'
+        if(vertical){ctx.translate(x,y);ctx.rotate(-Math.PI/2);ctx.fillText(text,0,0)}
+        else ctx.fillText(text,x,y)
+        ctx.restore()
+      }
 
       const CAJAS_DISEÑOS = [
 
-        // ─── 1. TUCK TOP CLÁSICA ─────────────────────────────────────────
-        // Forma: [tab-tapa] [tapa-D] [frente-W] [base-D] [tab-base]
-        //        con laterales a ambos lados del frente
+        // 1. TUCK TOP CLÁSICA
+        // Faja: [LAT|FRENTE|LAT|TRASERA|PEGUE] con tapa arriba y base abajo del FRENTE
         { nombre:'Tuck Top clásica', icono:'📦',
           cW:function(W,H,D){ return D+W+D+W+D },
-          cH:function(W,H,D){ return D*0.6+D+H+D+D*0.4 },
-          faceRegion:function(W,H,D){ var TW=D+W+D+W+D,TH=D*0.6+D+H+D+D*0.4; return {x:D/TW,y:(D*0.6+D)/TH,w:W/TW,h:H/TH} },
+          cH:function(W,H,D){ return D*0.55+D+H+D+D*0.35 },
+          faceRegion:function(W,H,D){ var TW=D+W+D+W+D,TH=D*0.55+D+H+D+D*0.35; return {x:D/TW,y:(D*0.55+D)/TH,w:W/TW,h:H/TH} },
           render(ctx,W,H,D,logo,color,bgColor,texto,sc) {
             bgColor=bgColor||'#fff'
-            var tab=D*0.6, base=D*0.4
+            var tab=D*0.55, base=D*0.35
             var TW=(D+W+D+W+D)*sc, TH=(tab+D+H+D+base)*sc
             var x0=D*sc, y0=(tab+D)*sc
             var fw=W*sc, fh=H*sc, dw=D*sc, dh=D*sc, tb=tab*sc, bb=base*sc
+            var MARGEN=14*sc  // espacio fuera de la caja para etiquetas
 
             ctx.fillStyle='#fff'; ctx.fillRect(0,0,TW,TH)
 
-            // ── Lateral izquierdo
-            ctx.fillStyle=cajasAlpha(color,.18); ctx.fillRect(0,y0,dw,fh)
-            // ── Frente (cara principal)
+            // Laterales
+            ctx.fillStyle=cajasAlpha(color,.18)
+            ctx.fillRect(0,y0,dw,fh)
+            ctx.fillRect(x0+fw,y0,dw,fh)
+            // Frente
             ctx.fillStyle=bgColor; ctx.fillRect(x0,y0,fw,fh)
-            // ── Lateral derecho
-            ctx.fillStyle=cajasAlpha(color,.18); ctx.fillRect(x0+fw,y0,dw,fh)
-            // ── Trasera
-            ctx.fillStyle=bgColor; ctx.fillStyle=cajasAlpha(bgColor===('#fff'||'#ffffff')?color:'#000',.04)
+            // Trasera
             ctx.fillStyle=bgColor; ctx.fillRect(x0+fw+dw,y0,fw,fh)
-            // ── Pestaña de pegue derecha
-            ctx.fillStyle=cajasAlpha(color,.12)
-            cajasRoundRect(ctx,x0+fw*2+dw*2,y0+fh*0.1,dw*0.55,fh*0.8,5*sc)
-            ctx.fill()
+            // Pestaña pegue
+            cajasRoundRect(ctx,x0+fw*2+dw*2,y0+fh*0.08,dw*0.5,fh*0.84,5*sc)
+            ctx.fillStyle=cajasAlpha(color,.12); ctx.fill()
 
-            // ── Tapa frente (plegado hacia arriba)
+            // Tapa frente
             ctx.fillStyle=cajasAlpha(color,.3); ctx.fillRect(x0,y0-dh,fw,dh)
-            // ── Tapa trasera
+            // Tapa trasera
             ctx.fillStyle=cajasAlpha(color,.15); ctx.fillRect(x0+fw+dw,y0-dh,fw,dh)
-            // ── Tab de cierre (lengüeta redondeada)
+            // Orejas tapa
+            ctx.fillStyle=cajasAlpha(color,.1)
+            ctx.fillRect(0,y0-dh,dw,dh); ctx.fillRect(x0+fw,y0-dh,dw,dh)
+            // Lengüeta
             cajasRoundRect(ctx,x0+fw*0.18,y0-dh-tb,fw*0.64,tb,10*sc)
             ctx.fillStyle=cajasAlpha(color,.32); ctx.fill()
-            ctx.strokeStyle=color; ctx.lineWidth=1*sc; ctx.stroke()
-            // Muesca en la lengüeta
+            ctx.strokeStyle=color; ctx.lineWidth=sc; ctx.stroke()
             ctx.fillStyle='#fff'
             cajasRoundRect(ctx,x0+fw*0.42,y0-dh-tb*0.75,fw*0.16,6*sc,3*sc); ctx.fill()
 
-            // ── Tapas laterales superiores (orejas)
-            ctx.fillStyle=cajasAlpha(color,.12)
-            ctx.fillRect(0,y0-dh,dw,dh); ctx.fillRect(x0+fw,y0-dh,dw,dh)
-
-            // ── Base frente
+            // Base frente
             ctx.fillStyle=cajasAlpha(color,.28); ctx.fillRect(x0,y0+fh,fw,dh)
-            // ── Base trasera
+            // Base trasera
             ctx.fillStyle=cajasAlpha(color,.14); ctx.fillRect(x0+fw+dw,y0+fh,fw,dh)
-            // ── Tapas laterales base
+            // Orejas base
             ctx.fillStyle=cajasAlpha(color,.1)
             ctx.fillRect(0,y0+fh,dw,dh); ctx.fillRect(x0+fw,y0+fh,dw,dh)
-            // ── Tab base
+            // Tab base
             cajasRoundRect(ctx,x0+fw*0.2,y0+fh+dh,fw*0.6,bb,6*sc)
             ctx.fillStyle=cajasAlpha(color,.2); ctx.fill()
 
-            // Logo y texto en frente
+            // Logo y texto
             cajasDrawLogo(ctx,logo,x0+4,y0+4,fw-8,fh*0.62)
             cajasText(ctx,texto,x0+fw/2,y0+fh*0.85,fw*0.86,10*sc,color,true)
 
-            // Marcas de doblez
+            // Líneas
             cajasLinDoblez(ctx,0,y0,TW,y0,color)
             cajasLinDoblez(ctx,0,y0+fh,TW,y0+fh,color)
             cajasLinDoblez(ctx,0,y0-dh,x0+fw*2+dw*2,y0-dh,color)
             cajasLinDoblez(ctx,x0,y0+fh+dh,x0+fw,y0+fh+dh,color)
-            ;[dw,x0,x0+fw,x0+fw+dw,x0+fw*2+dw].forEach(function(x){
+            cajasLinDoblez(ctx,x0+fw+dw,y0+fh+dh,x0+fw*2+dw,y0+fh+dh,color)
+            ;[0,dw,x0,x0+fw,x0+fw+dw,x0+fw*2+dw].forEach(function(x){
               cajasLinDoblez(ctx,x,0,x,TH,color)
             })
             cajasLinCorte(ctx,0,0,TW,0)
@@ -10177,61 +10077,61 @@
             cajasLinCorte(ctx,0,y0-dh-tb,x0+fw+dw,y0-dh-tb)
             cajasLinCorte(ctx,x0+fw+dw,y0-dh,TW,y0-dh)
 
-            ctx.fillStyle=color; ctx.font='bold '+Math.round(8*sc)+'px Arial'
-            // Etiquetas externas de cara
-            cajasLabel(ctx,'LATERAL',dw/2,y0-4,'center')
-            cajasLabel(ctx,'FRENTE',x0+fw/2,y0-4,'center')
-            cajasLabel(ctx,'LATERAL',x0+fw+dw/2,y0-4,'center')
-            cajasLabel(ctx,'TRASERA',x0+fw+dw+fw/2,y0-4,'center')
-            cajasLabel(ctx,'PEGUE',x0+fw*2+dw+dw*0.3,y0-4,'center')
-            cajasLabel(ctx,'TAPA',x0+fw/2,y0-dh-4,'center')
-            cajasLabel(ctx,'BASE',x0+fw/2,y0+fh+dh+bb+8,'center')
-            cajasLabel(ctx,'LENGÜETA',x0+fw/2,y0-dh-tb-4,'center')
+            // Etiquetas FUERA de la zona visible
+            cajasLabel(ctx,'LENGÜETA (doblar y cerrar)',x0+fw/2,MARGEN/2,'center')
+            cajasLabel(ctx,'TAPA',x0+fw/2,y0-dh-MARGEN/2,'center')
+            cajasLabel(ctx,'T.TRAS.',x0+fw+dw+fw/2,y0-dh-MARGEN/2,'center')
+            cajasLabel(ctx,'LAT.',dw/2,y0-MARGEN/2,'center')
+            cajasLabel(ctx,'FRENTE',x0+fw/2,y0-MARGEN/2,'center')
+            cajasLabel(ctx,'LAT.',x0+fw+dw/2,y0-MARGEN/2,'center')
+            cajasLabel(ctx,'TRASERA',x0+fw+dw+fw/2,y0-MARGEN/2,'center')
+            cajasLabel(ctx,'PEGUE',x0+fw*2+dw*2+dw*0.25,y0+fh/2,'left')
+            cajasLabel(ctx,'BASE',x0+fw/2,TH-MARGEN/2,'center')
           }
         },
 
-        // ─── 2. CAJA MAILER / E-COMMERCE ────────────────────────────────
-        // Forma clásica de caja de envío: tapa que se dobla sobre la base
-        // [lat-tapa][tapa][lat-tapa] arriba, [lat][base][lat] abajo, con pestaña
+        // 2. CAJA MAILER (vista lateral — enrollada)
+        // Disposición: [BASE][PROF.][FRENTE/TAPA][LENGÜETA] en columna
         { nombre:'Caja mailer', icono:'✉️',
           cW:function(W,H,D){ return D+W+D },
-          cH:function(W,H,D){ return H+D+H+D*0.5 },
-          faceRegion:function(W,H,D){ var TW=D+W+D,TH=H+D+H+D*0.5; return {x:D/TW,y:(H+D)/TH,w:W/TW,h:H/TH} },
+          cH:function(W,H,D){ return H+D+H+D*0.45 },
+          faceRegion:function(W,H,D){ var TW=D+W+D,TH=H+D+H+D*0.45; return {x:D/TW,y:(H+D)/TH,w:W/TW,h:H/TH} },
           render(ctx,W,H,D,logo,color,bgColor,texto,sc) {
             bgColor=bgColor||'#fff'
-            var TW=(D+W+D)*sc, TH=(H+D+H+D*0.5)*sc
+            var TW=(D+W+D)*sc, TH=(H+D+H+D*0.45)*sc
             var x0=D*sc, fw=W*sc, dw=D*sc, dh=D*sc
-            // base empieza en y=0, tapa encima
-            var yBase=0, yDepth=H*sc, yTapa=(H+D)*sc
+            var yBase=0, yDepth=H*sc, yTapa=(H+D)*sc, yLeng=(H+D+H)*sc
+            var tabH=D*0.45*sc
+            var MARGEN=12*sc
+
             ctx.fillStyle='#fff'; ctx.fillRect(0,0,TW,TH)
 
-            // BASE (cara inferior del mailer — la caja)
+            // BASE (fondo visible cuando está cerrado)
             ctx.fillStyle=bgColor; ctx.fillRect(x0,yBase,fw,H*sc)
             ctx.fillStyle=cajasAlpha(color,.2)
             ctx.fillRect(0,yBase,dw,H*sc); ctx.fillRect(x0+fw,yBase,dw,H*sc)
 
-            // PROFUNDIDAD (lateral que une base con tapa)
+            // PROFUNDIDAD
             ctx.fillStyle=cajasAlpha(color,.35); ctx.fillRect(x0,yDepth,fw,dh)
             ctx.fillStyle=cajasAlpha(color,.2)
             ctx.fillRect(0,yDepth,dw,dh); ctx.fillRect(x0+fw,yDepth,dw,dh)
 
-            // TAPA (cara superior)
+            // FRENTE (tapa visible)
             ctx.fillStyle=bgColor; ctx.fillRect(x0,yTapa,fw,H*sc)
             ctx.fillStyle=cajasAlpha(color,.2)
             ctx.fillRect(0,yTapa,dw,H*sc); ctx.fillRect(x0+fw,yTapa,dw,H*sc)
 
-            // PESTAÑA CIERRE (con corte de lengüeta)
-            var tabH=D*0.5*sc
-            cajasRoundRect(ctx,x0,yTapa+H*sc,fw,tabH,8*sc)
+            // LENGÜETA DE CIERRE
+            cajasRoundRect(ctx,x0,yLeng,fw,tabH,8*sc)
             ctx.fillStyle=cajasAlpha(color,.28); ctx.fill()
             ctx.strokeStyle=color; ctx.lineWidth=sc; ctx.stroke()
-            cajasRoundRect(ctx,x0+fw*0.4,yTapa+H*sc+tabH*0.3,fw*0.2,7*sc,3*sc)
+            cajasRoundRect(ctx,x0+fw*0.38,yLeng+tabH*0.28,fw*0.24,7*sc,3*sc)
             ctx.fillStyle='#fff'; ctx.fill()
 
             // Logos
             cajasDrawLogo(ctx,logo,x0+4,yTapa+4,fw-8,H*sc*0.62)
             cajasText(ctx,texto,x0+fw/2,yTapa+H*sc*0.85,fw*0.86,10*sc,color,true)
-            cajasDrawLogo(ctx,logo,x0+fw*0.28,yBase+H*sc*0.1,fw*0.44,H*sc*0.6,0.05)
+            cajasDrawLogo(ctx,logo,x0+fw*0.25,yBase+H*sc*0.15,fw*0.5,H*sc*0.6,0.05)
 
             // Líneas
             cajasLinDoblez(ctx,0,yDepth,TW,yDepth,color)
@@ -10240,59 +10140,52 @@
             ;[0,x0,x0+fw,TW].forEach(function(x){cajasLinDoblez(ctx,x,0,x,TH,color)})
             cajasLinCorte(ctx,0,0,TW,0); cajasLinCorte(ctx,0,TH,TW,TH)
 
-            ctx.fillStyle=color; ctx.font='bold '+Math.round(8*sc)+'px Arial'
-            // Etiquetas externas
-            cajasLabel(ctx,'LATERAL',dw/2,yBase-4,'center')
-            cajasLabel(ctx,'BASE / FONDO',x0+fw/2,yBase-4,'center')
-            cajasLabel(ctx,'LATERAL',x0+fw+dw/2,yBase-4,'center')
-            cajasLabel(ctx,'PROFUNDIDAD',x0+fw/2,yTapa-4,'center')
-            cajasLabel(ctx,'TAPA / FRENTE',x0+fw/2,yTapa+H*sc+dh*0.5+8,'center')
-            cajasLabel(ctx,'LENGÜETA CIERRE',x0+fw/2,TH-4,'center')
+            // Etiquetas FUERA
+            cajasLabel(ctx,'LAT.',0,yBase+H*sc/2,'left',true)
+            cajasLabel(ctx,'BASE (fondo)',x0+fw/2,MARGEN/2,'center')
+            cajasLabel(ctx,'LAT.',TW,yBase+H*sc/2,'right',true)
+            cajasLabel(ctx,'PROFUNDIDAD',x0+fw/2,yTapa-MARGEN/2,'center')
+            cajasLabel(ctx,'FRENTE / TAPA',x0+fw/2,yTapa-MARGEN*0.4,'center')
+            cajasLabel(ctx,'LENGÜETA CIERRE',x0+fw/2,TH-MARGEN/2,'center')
           }
         },
 
-        // ─── 3. CAJA CON TAPA SEPARADA (tipo regalo) ─────────────────────
-        // Base y tapa como dos piezas distintas lado a lado
+        // 3. CAJA CON TAPA SEPARADA
         { nombre:'Caja con tapa', icono:'🎁',
-          cW:function(W,H,D){ return (W+D*2)*2+8 },
-          cH:function(W,H,D){ return Math.max(H*0.4+D*2, H*0.6+D*2)+4 },
-          faceRegion:function(W,H,D){ var TW=(W+D*2)*2+8,TH=Math.max(H*0.4+D*2,H*0.6+D*2)+4; return {x:D/TW,y:D/TH,w:W/TW,h:(H*0.4)/TH} },
+          cW:function(W,H,D){ return (W+D*2)*2+10 },
+          cH:function(W,H,D){ return Math.max(H*0.38+D*2, H*0.62+D*2)+4 },
+          faceRegion:function(W,H,D){ var TW=(W+D*2)*2+10,TH=Math.max(H*0.38+D*2,H*0.62+D*2)+4; return {x:D/TW,y:D/TH,w:W/TW,h:(H*0.38)/TH} },
           render(ctx,W,H,D,logo,color,bgColor,texto,sc) {
             bgColor=bgColor||'#fff'
-            var baseH=H*0.6, tapaH=H*0.4  // base más profunda, tapa más baja
+            var tapaH=H*0.38, baseH=H*0.62
             var fw=W*sc, dw=D*sc, dh=D*sc
-            var TW=((W+D*2)*2+8)*sc
-            var TH=(Math.max(baseH+D*2,tapaH+D*2)+4)*sc
+            var TW=((W+D*2)*2+10)*sc
+            var TH=(Math.max(tapaH+D*2,baseH+D*2)+4)*sc
+            var MARGEN=11*sc
+
             ctx.fillStyle='#fff'; ctx.fillRect(0,0,TW,TH)
 
-            // ── TAPA (izquierda, más baja que la base)
-            var tx=0, ty=(TH-( tapaH*sc+dh*2))/2
-            var tfh=tapaH*sc
+            // TAPA (izquierda)
+            var tx=0, tfh=tapaH*sc
+            var ty=(TH-(tfh+dh*2))/2
             ctx.fillStyle=bgColor; ctx.fillRect(tx+dw,ty+dh,fw,tfh)
             ctx.fillStyle=cajasAlpha(color,.28)
             ctx.fillRect(tx,ty+dh,dw,tfh); ctx.fillRect(tx+dw+fw,ty+dh,dw,tfh)
             ctx.fillRect(tx+dw,ty,fw,dh); ctx.fillRect(tx+dw,ty+dh+tfh,fw,dh)
-            // Franja decorativa tapa
-            ctx.fillStyle=color; ctx.fillRect(tx+dw,ty+dh+tfh-4*sc,fw,3*sc)
-            // Logo en tapa
+            ctx.fillStyle=color; ctx.fillRect(tx+dw,ty+dh+tfh-5*sc,fw,3*sc)
             cajasDrawLogo(ctx,logo,tx+dw+4,ty+dh+4,fw-8,tfh-8)
-            ctx.fillStyle='#bbb'; ctx.font=Math.round(7*sc)+'px Arial'
-            ctx.textAlign='center'; ctx.fillText('TAPA',tx+dw+fw/2,ty-3); ctx.textAlign='left'
 
-            // ── BASE (derecha, más profunda)
-            var bx=(W+D*2+8)*sc, by=(TH-(baseH*sc+dh*2))/2
-            var bfh=baseH*sc
+            // BASE (derecha)
+            var bx=(W+D*2+8)*sc, bfh=baseH*sc
+            var by=(TH-(bfh+dh*2))/2
             ctx.fillStyle=bgColor; ctx.fillRect(bx+dw,by+dh,fw,bfh)
             ctx.fillStyle=cajasAlpha(color,.22)
             ctx.fillRect(bx,by+dh,dw,bfh); ctx.fillRect(bx+dw+fw,by+dh,dw,bfh)
             ctx.fillRect(bx+dw,by,fw,dh); ctx.fillRect(bx+dw,by+dh+bfh,fw,dh)
-            // Logo pequeño en base
             cajasDrawLogo(ctx,logo,bx+dw+fw*0.2,by+dh+bfh*0.1,fw*0.6,bfh*0.6,0.08)
             cajasText(ctx,texto,bx+dw+fw/2,by+dh+bfh*0.85,fw*0.84,9*sc,color,true)
-            ctx.fillStyle='#bbb'; ctx.font=Math.round(7*sc)+'px Arial'
-            ctx.textAlign='center'; ctx.fillText('BASE',bx+dw+fw/2,by-3); ctx.textAlign='left'
 
-            // Separador
+            // Separador visual
             ctx.save(); ctx.strokeStyle='#ccc'; ctx.lineWidth=1; ctx.setLineDash([6,4])
             ctx.beginPath(); ctx.moveTo((W+D*2+4)*sc,0); ctx.lineTo((W+D*2+4)*sc,TH); ctx.stroke()
             ctx.setLineDash([]); ctx.restore()
@@ -10301,39 +10194,44 @@
             ;[tx,tx+dw,tx+dw+fw,tx+dw+fw+dw].forEach(function(x){cajasLinDoblez(ctx,x,ty,x,ty+dh+tfh+dh,color)})
             cajasLinDoblez(ctx,tx,ty+dh,tx+dw+fw+dw,ty+dh,color)
             cajasLinDoblez(ctx,tx,ty+dh+tfh,tx+dw+fw+dw,ty+dh+tfh,color)
+            cajasLinCorte(ctx,tx,ty,tx+dw+fw+dw,ty)
+            cajasLinCorte(ctx,tx,ty+dh+tfh+dh,tx+dw+fw+dw,ty+dh+tfh+dh)
             // Líneas base
             ;[bx,bx+dw,bx+dw+fw,bx+dw+fw+dw].forEach(function(x){cajasLinDoblez(ctx,x,by,x,by+dh+bfh+dh,color)})
             cajasLinDoblez(ctx,bx,by+dh,bx+dw+fw+dw,by+dh,color)
             cajasLinDoblez(ctx,bx,by+dh+bfh,bx+dw+fw+dw,by+dh+bfh,color)
-            cajasLinCorte(ctx,0,0,TW,0); cajasLinCorte(ctx,0,TH,TW,TH)
-            cajasLinCorte(ctx,0,ty,tx+dw+fw+dw,ty); cajasLinCorte(ctx,bx,by,bx+dw+fw+dw,by)
+            cajasLinCorte(ctx,bx,by,bx+dw+fw+dw,by)
+            cajasLinCorte(ctx,bx,by+dh+bfh+dh,bx+dw+fw+dw,by+dh+bfh+dh)
 
-            ctx.fillStyle=color; ctx.font='bold '+Math.round(8*sc)+'px Arial'
-            // Etiquetas externas (ya tiene "TAPA" y "BASE" internamente)
-            cajasLabel(ctx,'◄ PIEZA 1',tx+dw-4,ty+dh+tfh/2,'right',false)
-            cajasLabel(ctx,'PIEZA 2 ►',bx+dw+fw+dw+4,by+dh+bfh/2,'left',false)
-            cajasLabel(ctx,'Imprimir y armar por separado',TW/2,TH-3,'center')
+            // Etiquetas FUERA
+            cajasLabel(ctx,'◄ PIEZA 1: TAPA',tx+dw+fw/2,ty-MARGEN/2,'center')
+            cajasLabel(ctx,'PIEZA 2: BASE ►',bx+dw+fw/2,by-MARGEN/2,'center')
+            cajasLabel(ctx,'LAT.',tx,ty+dh+tfh/2,'right',true)
+            cajasLabel(ctx,'LAT.',tx+dw+fw+dw,ty+dh+tfh/2,'left',true)
+            cajasLabel(ctx,'LAT.',bx,by+dh+bfh/2,'right',true)
+            cajasLabel(ctx,'LAT.',bx+dw+fw+dw,by+dh+bfh/2,'left',true)
+            cajasLabel(ctx,'Imprimir y armar por separado',TW/2,TH-MARGEN/2,'center')
           }
         },
 
-        // ─── 4. CAJA SOBRE / BOLSITA PLANA ──────────────────────────────
-        // Sobre de papel — 1 cara frente + 2 laterales + base + solapa triangular
+        // 4. SOBRE / BOLSITA PLANA
         { nombre:'Sobre / Bolsita', icono:'📋',
           cW:function(W,H,D){ return D+W+D },
-          cH:function(W,H,D){ return H*0.4+H+D },
-          faceRegion:function(W,H,D){ var TW=D+W+D,TH=H*0.4+H+D; return {x:D/TW,y:(H*0.4)/TH,w:W/TW,h:H/TH} },
+          cH:function(W,H,D){ return H*0.38+H+D },
+          faceRegion:function(W,H,D){ var TW=D+W+D,TH=H*0.38+H+D; return {x:D/TW,y:(H*0.38)/TH,w:W/TW,h:H/TH} },
           render(ctx,W,H,D,logo,color,bgColor,texto,sc) {
             bgColor=bgColor||'#fff'
-            var solapaH=H*0.4
+            var solapaH=H*0.38
             var TW=(D+W+D)*sc, TH=(solapaH+H+D)*sc
             var x0=D*sc, y0=solapaH*sc
             var fw=W*sc, fh=H*sc, dw=D*sc, dh=D*sc, sh=solapaH*sc
+            var MARGEN=12*sc
 
             ctx.fillStyle='#fff'; ctx.fillRect(0,0,TW,TH)
 
             // FRENTE
             ctx.fillStyle=bgColor; ctx.fillRect(x0,y0,fw,fh)
-            // LATERALES (se doblan hacia adentro)
+            // LATERALES
             ctx.fillStyle=cajasAlpha(color,.25)
             ctx.fillRect(0,y0,dw,fh); ctx.fillRect(x0+fw,y0,dw,fh)
             // BASE
@@ -10343,9 +10241,8 @@
             ctx.beginPath()
             ctx.moveTo(x0,y0); ctx.lineTo(x0+fw/2,0); ctx.lineTo(x0+fw,y0); ctx.closePath()
             ctx.fill(); ctx.strokeStyle=color; ctx.lineWidth=sc; ctx.stroke()
-            // Línea de pegue en solapa
             ctx.setLineDash([4,3]); ctx.strokeStyle=cajasAlpha(color,.5)
-            ctx.beginPath(); ctx.moveTo(x0+fw*0.15,y0*0.3); ctx.lineTo(x0+fw*0.85,y0*0.3); ctx.stroke()
+            ctx.beginPath(); ctx.moveTo(x0+fw*0.15,sh*0.25); ctx.lineTo(x0+fw*0.85,sh*0.25); ctx.stroke()
             ctx.setLineDash([]); ctx.restore()
 
             cajasDrawLogo(ctx,logo,x0+4,y0+4,fw-8,fh*0.62)
@@ -10356,651 +10253,679 @@
             cajasLinDoblez(ctx,x0,y0,x0,TH,color)
             cajasLinDoblez(ctx,x0+fw,y0,x0+fw,TH,color)
             cajasLinCorte(ctx,0,y0+fh+dh,TW,y0+fh+dh)
-            cajasLinCorte(ctx,0,y0,0,y0+fh); cajasLinCorte(ctx,TW,y0,TW,y0+fh)
+            cajasLinCorte(ctx,0,y0,0,y0+fh)
+            cajasLinCorte(ctx,TW,y0,TW,y0+fh)
 
-            ctx.fillStyle=color; ctx.font='bold '+Math.round(8*sc)+'px Arial'
-            // Etiquetas externas
-            cajasLabel(ctx,'SOLAPA (doblar hacia adentro)',x0+fw/2,sh*0.5,'center')
-            cajasLabel(ctx,'LATERAL',dw/2,y0+fh/2,'center',true)
-            cajasLabel(ctx,'FRENTE',x0+fw/2,y0-4,'center')
-            cajasLabel(ctx,'LATERAL',x0+fw+dw/2,y0+fh/2,'center',true)
-            cajasLabel(ctx,'BASE (pegar)',x0+fw/2,y0+fh+dh/2+4,'center')
+            // Etiquetas FUERA de zonas visibles
+            // La solapa Y la base se pegan — etiquetas en los márgenes extremos
+            cajasLabel(ctx,'SOLAPA — doblar hacia adentro y pegar',x0+fw/2,sh*0.12,'center')
+            cajasLabel(ctx,'LAT.',0,y0+fh/2,'right',true)  // fuera izq
+            cajasLabel(ctx,'FRENTE',x0+fw/2,y0-MARGEN/2,'center')
+            cajasLabel(ctx,'LAT.',TW,y0+fh/2,'left',true)  // fuera der
+            cajasLabel(ctx,'BASE — pegar y cerrar',x0+fw/2,y0+fh+dh/2,'center')
           }
         },
 
-        // ─── 5. BOLSA CON ASA ────────────────────────────────────────────
-        // Bolsa de papel tipo tienda: 2 caras principales + 2 laterales + base + asas
+        // 5. BOLSA CON ASA
         { nombre:'Bolsa con asa', icono:'🛍',
           cW:function(W,H,D){ return D+W+D+W+D },
-          cH:function(W,H,D){ return D*0.7+H+D },
-          faceRegion:function(W,H,D){ var TW=D+W+D+W+D,TH=D*0.7+H+D; return {x:D/TW,y:(D*0.7)/TH,w:W/TW,h:H/TH} },
+          cH:function(W,H,D){ return D*0.65+H+D },
+          faceRegion:function(W,H,D){ var TW=D+W+D+W+D,TH=D*0.65+H+D; return {x:D/TW,y:(D*0.65)/TH,w:W/TW,h:H/TH} },
           render(ctx,W,H,D,logo,color,bgColor,texto,sc) {
             bgColor=bgColor||'#fff'
-            var asaH=D*0.7
+            var asaH=D*0.65
             var TW=(D+W+D+W+D)*sc, TH=(asaH+H+D)*sc
             var x0=D*sc, y0=asaH*sc
             var fw=W*sc, fh=H*sc, dw=D*sc, dh=D*sc, ah=asaH*sc
+            var MARGEN=12*sc
 
             ctx.fillStyle='#fff'; ctx.fillRect(0,0,TW,TH)
 
-            // CARA FRONTAL
+            // CARA FRENTE
             ctx.fillStyle=bgColor; ctx.fillRect(x0,y0,fw,fh)
             // LATERAL
             ctx.fillStyle=cajasAlpha(color,.25); ctx.fillRect(x0+fw,y0,dw,fh)
             // CARA TRASERA
             ctx.fillStyle=bgColor; ctx.fillRect(x0+fw+dw,y0,fw,fh)
-            // LATERAL PESTAÑA
-            ctx.fillStyle=cajasAlpha(color,.15)
-            cajasRoundRect(ctx,x0+fw*2+dw*2,y0+fh*0.05,dw*0.65,fh*0.9,5*sc); ctx.fill()
+            // PESTAÑA PEGUE
+            cajasRoundRect(ctx,x0+fw*2+dw*2,y0+fh*0.05,dw*0.6,fh*0.9,5*sc)
+            ctx.fillStyle=cajasAlpha(color,.12); ctx.fill()
             // BASE
             ctx.fillStyle=cajasAlpha(color,.3)
-            ctx.fillRect(x0,y0+fh,fw,dh); ctx.fillRect(x0+fw+dw,y0+fh,fw,dh)
+            ctx.fillRect(x0,y0+fh,fw,dh)
             ctx.fillRect(x0+fw,y0+fh,dw,dh)
+            ctx.fillRect(x0+fw+dw,y0+fh,fw,dh)
+            // Zona de asa (franja en la parte superior de cada cara)
+            ctx.fillStyle=cajasAlpha(color,.1)
+            ctx.fillRect(x0,y0,fw,ah*0.5)
+            ctx.fillRect(x0+fw+dw,y0,fw,ah*0.5)
 
-            // ASAS en cara frontal y trasera
+            // ASAS
             ;[x0,x0+fw+dw].forEach(function(ax){
-              // Zona de asa
-              ctx.fillStyle=cajasAlpha(color,.12); ctx.fillRect(ax,y0,fw,ah*0.6)
-              // Arco del asa
               ctx.save(); ctx.strokeStyle=color; ctx.lineWidth=4*sc
-              ctx.beginPath(); ctx.arc(ax+fw/2,y0,fw*0.17,Math.PI,0); ctx.stroke()
-              // Ojales
+              ctx.beginPath(); ctx.arc(ax+fw/2,y0,fw*0.16,Math.PI,0); ctx.stroke()
               ctx.fillStyle=color
-              ctx.beginPath(); ctx.arc(ax+fw/2-fw*0.17,y0,4*sc,0,Math.PI*2); ctx.fill()
-              ctx.beginPath(); ctx.arc(ax+fw/2+fw*0.17,y0,4*sc,0,Math.PI*2); ctx.fill()
+              ctx.beginPath(); ctx.arc(ax+fw/2-fw*0.16,y0,4*sc,0,Math.PI*2); ctx.fill()
+              ctx.beginPath(); ctx.arc(ax+fw/2+fw*0.16,y0,4*sc,0,Math.PI*2); ctx.fill()
               ctx.restore()
             })
 
-            cajasDrawLogo(ctx,logo,x0+4,y0+ah*0.5+4,fw-8,fh*0.56)
+            cajasDrawLogo(ctx,logo,x0+4,y0+ah*0.45+4,fw-8,fh-ah*0.45-8)
             cajasText(ctx,texto,x0+fw/2,y0+fh*0.88,fw*0.86,9*sc,color,true)
-            cajasDrawLogo(ctx,logo,x0+fw+dw+fw*0.2,y0+ah*0.5,fw*0.6,fh*0.55,0.06)
+            cajasDrawLogo(ctx,logo,x0+fw+dw+fw*0.2,y0+ah*0.45,fw*0.6,fh-ah*0.45,0.06)
 
+            ;[0,x0,x0+fw,x0+fw+dw,x0+fw*2+dw].forEach(function(x){cajasLinDoblez(ctx,x,y0,x,y0+fh+dh,color)})
             cajasLinDoblez(ctx,0,y0,TW,y0,color)
             cajasLinDoblez(ctx,0,y0+fh,TW,y0+fh,color)
-            ;[0,x0,x0+fw,x0+fw+dw,x0+fw*2+dw].forEach(function(x){cajasLinDoblez(ctx,x,y0,x,y0+fh+dh,color)})
-            cajasLinCorte(ctx,0,0,TW,0); cajasLinCorte(ctx,0,TH,TW,TH)
+            cajasLinCorte(ctx,0,0,TW,0)
+            cajasLinCorte(ctx,0,TH,TW,TH)
 
-            ctx.fillStyle=color; ctx.font='bold '+Math.round(8*sc)+'px Arial'
-            // Etiquetas externas
-            cajasLabel(ctx,'CARA FRENTE',x0+fw/2,y0-4,'center')
-            cajasLabel(ctx,'LAT.',x0+fw+dw/2,y0-4,'center')
-            cajasLabel(ctx,'CARA TRASERA',x0+fw+dw+fw/2,y0-4,'center')
-            cajasLabel(ctx,'PEGUE',x0+fw*2+dw*2+dw*0.3,y0-4,'center')
-            cajasLabel(ctx,'BASE',x0+fw/2,y0+fh+dh/2+4,'center')
-            cajasLabel(ctx,'BASE',x0+fw+dw+fw/2,y0+fh+dh/2+4,'center')
-            cajasLabel(ctx,'▲ ZONA ASA',x0+fw/2,y0+ah*0.4+4,'center')
+            // Etiquetas FUERA — todas en los márgenes
+            cajasLabel(ctx,'FRENTE',x0+fw/2,MARGEN/2,'center')
+            cajasLabel(ctx,'LAT.',x0+fw+dw/2,MARGEN/2,'center')
+            cajasLabel(ctx,'TRASERA',x0+fw+dw+fw/2,MARGEN/2,'center')
+            cajasLabel(ctx,'PEGUE',x0+fw*2+dw*2+dw*0.3,y0+fh/2,'left')
+            cajasLabel(ctx,'BASE (pegar)',x0+fw/2,TH-MARGEN/2,'center')
+            cajasLabel(ctx,'BASE (pegar)',x0+fw+dw+fw/2,TH-MARGEN/2,'center')
           }
         },
 
-        // ─── 6. CAJA VENTANA ─────────────────────────────────────────────
-        // Igual a tuck top pero con ventana oval en la cara frontal
+        // 6. CAJA CON VENTANA
         { nombre:'Caja con ventana', icono:'🔵',
           cW:function(W,H,D){ return D+W+D+W+D },
-          cH:function(W,H,D){ return D*0.6+D+H+D+D*0.3 },
-          faceRegion:function(W,H,D){ var TW=D+W+D+W+D,TH=D*0.6+D+H+D+D*0.3; return {x:D/TW,y:(D*0.6+D)/TH,w:W/TW,h:H/TH} },
+          cH:function(W,H,D){ return D*0.55+D+H+D+D*0.3 },
+          faceRegion:function(W,H,D){ var TW=D+W+D+W+D,TH=D*0.55+D+H+D+D*0.3; return {x:D/TW,y:(D*0.55+D)/TH,w:W/TW,h:H/TH} },
           render(ctx,W,H,D,logo,color,bgColor,texto,sc) {
             bgColor=bgColor||'#fff'
-            var tab=D*0.6, base=D*0.3
+            var tab=D*0.55, base=D*0.3
             var TW=(D+W+D+W+D)*sc, TH=(tab+D+H+D+base)*sc
             var x0=D*sc, y0=(tab+D)*sc
-            var fw=W*sc, fh=H*sc, dw=D*sc, dh=D*sc, tb=tab*sc
+            var fw=W*sc, fh=H*sc, dw=D*sc, dh=D*sc, tb=tab*sc, bb=base*sc
+            var MARGEN=12*sc
 
             ctx.fillStyle='#fff'; ctx.fillRect(0,0,TW,TH)
 
             // Laterales
-            ctx.fillStyle=cajasAlpha(color,.18); ctx.fillRect(0,y0,dw,fh); ctx.fillRect(x0+fw,y0,dw,fh)
-            // Trasera
-            ctx.fillStyle=bgColor; ctx.fillRect(x0+fw+dw,y0,fw,fh)
-            // Frente
+            ctx.fillStyle=cajasAlpha(color,.18)
+            ctx.fillRect(0,y0,dw,fh); ctx.fillRect(x0+fw,y0,dw,fh)
+            // Frente (con logo)
             ctx.fillStyle=bgColor; ctx.fillRect(x0,y0,fw,fh)
-            // Tapa y base
+            // Trasera (con ventana)
+            ctx.fillStyle=bgColor; ctx.fillRect(x0+fw+dw,y0,fw,fh)
+            // Pestaña
+            cajasRoundRect(ctx,x0+fw*2+dw*2,y0+fh*0.08,dw*0.5,fh*0.84,5*sc)
+            ctx.fillStyle=cajasAlpha(color,.12); ctx.fill()
+
+            // Tapas y orejas
             ctx.fillStyle=cajasAlpha(color,.3)
             ctx.fillRect(x0,y0-dh,fw,dh); ctx.fillRect(x0+fw+dw,y0-dh,fw,dh)
             ctx.fillRect(x0,y0+fh,fw,dh); ctx.fillRect(x0+fw+dw,y0+fh,fw,dh)
+            ctx.fillStyle=cajasAlpha(color,.1)
             ctx.fillRect(0,y0-dh,dw,dh); ctx.fillRect(x0+fw,y0-dh,dw,dh)
             ctx.fillRect(0,y0+fh,dw,dh); ctx.fillRect(x0+fw,y0+fh,dw,dh)
-            // Tab tapa
+            // Lengüeta
             cajasRoundRect(ctx,x0+fw*0.18,y0-dh-tb,fw*0.64,tb,10*sc)
-            ctx.fillStyle=cajasAlpha(color,.32); ctx.fill(); ctx.strokeStyle=color; ctx.lineWidth=sc; ctx.stroke()
-            ctx.fillStyle='#fff'; cajasRoundRect(ctx,x0+fw*0.42,y0-dh-tb*0.75,fw*0.16,6*sc,3*sc); ctx.fill()
-            // Pestaña pegue
-            cajasRoundRect(ctx,x0+fw*2+dw*2,y0+fh*0.1,dw*0.5,fh*0.8,5*sc)
-            ctx.fillStyle=cajasAlpha(color,.12); ctx.fill()
+            ctx.fillStyle=cajasAlpha(color,.32); ctx.fill()
+            ctx.strokeStyle=color; ctx.lineWidth=sc; ctx.stroke()
+            ctx.fillStyle='#fff'
+            cajasRoundRect(ctx,x0+fw*0.42,y0-dh-tb*0.75,fw*0.16,6*sc,3*sc); ctx.fill()
+            // Base tab
+            cajasRoundRect(ctx,x0+fw*0.2,y0+fh+dh,fw*0.6,bb,6*sc)
+            ctx.fillStyle=cajasAlpha(color,.2); ctx.fill()
 
-            // VENTANA oval en la cara TRASERA (la que se ve como envase)
-            var vx=x0+fw+dw, vcx=vx+fw/2, vcy=y0+fh*0.38
+            // VENTANA oval en la cara TRASERA
+            var vx=x0+fw+dw, vcx=vx+fw/2, vcy=y0+fh*0.4
             ctx.save()
-            ctx.beginPath(); ctx.ellipse(vcx,vcy,fw*0.3,fh*0.28,0,0,Math.PI*2)
+            ctx.beginPath(); ctx.ellipse(vcx,vcy,fw*0.28,fh*0.25,0,0,Math.PI*2)
             ctx.strokeStyle=color; ctx.lineWidth=1.5*sc; ctx.setLineDash([5,3]); ctx.stroke()
-            ctx.fillStyle='rgba(200,240,255,0.35)'; ctx.fill()
+            ctx.fillStyle='rgba(180,230,255,0.4)'; ctx.fill()
             ctx.setLineDash([]); ctx.restore()
-            cajasText(ctx,'VENTANA',vcx,vcy+fh*0.32,fw*0.7,6*sc,'#888',false)
+            // Texto ventana (pequeño, centrado en el círculo)
+            ctx.fillStyle='#999'; ctx.font=Math.round(6*sc)+'px Arial'
+            ctx.textAlign='center'; ctx.fillText('VENTANA',vcx,vcy+4); ctx.textAlign='left'
 
-            // Logo en frente (debajo de la ventana area)
+            // Logo en frente
             cajasDrawLogo(ctx,logo,x0+4,y0+4,fw-8,fh*0.62)
             cajasText(ctx,texto,x0+fw/2,y0+fh*0.85,fw*0.86,9*sc,color,true)
 
+            // Líneas
             cajasLinDoblez(ctx,0,y0,TW,y0,color); cajasLinDoblez(ctx,0,y0+fh,TW,y0+fh,color)
-            cajasLinDoblez(ctx,0,y0-dh,TW,y0-dh,color); cajasLinDoblez(ctx,0,y0+fh+dh,TW,y0+fh+dh,color)
-            ;[dw,x0,x0+fw,x0+fw+dw,x0+fw*2+dw].forEach(function(x){cajasLinDoblez(ctx,x,0,x,TH,color)})
+            cajasLinDoblez(ctx,0,y0-dh,x0+fw*2+dw*2,y0-dh,color)
+            cajasLinDoblez(ctx,x0,y0+fh+dh,x0+fw,y0+fh+dh,color)
+            cajasLinDoblez(ctx,x0+fw+dw,y0+fh+dh,x0+fw*2+dw,y0+fh+dh,color)
+            ;[0,dw,x0,x0+fw,x0+fw+dw,x0+fw*2+dw].forEach(function(x){cajasLinDoblez(ctx,x,0,x,TH,color)})
             cajasLinCorte(ctx,0,0,TW,0); cajasLinCorte(ctx,0,TH,TW,TH)
+            cajasLinCorte(ctx,0,y0-dh-tb,x0+fw+dw,y0-dh-tb)
+            cajasLinCorte(ctx,x0+fw+dw,y0-dh,TW,y0-dh)
 
-            ctx.fillStyle=color; ctx.font='bold '+Math.round(8*sc)+'px Arial'
-            // Etiquetas externas
-            cajasLabel(ctx,'LATERAL',dw/2,y0-4,'center')
-            cajasLabel(ctx,'FRENTE',x0+fw/2,y0-4,'center')
-            cajasLabel(ctx,'LATERAL',x0+fw+dw/2,y0-4,'center')
-            cajasLabel(ctx,'TRASERA (con ventana)',x0+fw+dw+fw/2,y0-4,'center')
+            // Etiquetas FUERA
+            cajasLabel(ctx,'LENGÜETA',x0+fw/2,MARGEN/2,'center')
+            cajasLabel(ctx,'TAPA',x0+fw/2,y0-dh-MARGEN/2,'center')
+            cajasLabel(ctx,'T.TRAS.',x0+fw+dw+fw/2,y0-dh-MARGEN/2,'center')
+            cajasLabel(ctx,'LAT.',dw/2,y0-MARGEN/2,'center')
+            cajasLabel(ctx,'FRENTE (logo)',x0+fw/2,y0-MARGEN/2,'center')
+            cajasLabel(ctx,'LAT.',x0+fw+dw/2,y0-MARGEN/2,'center')
+            cajasLabel(ctx,'TRASERA (ventana)',x0+fw+dw+fw/2,y0-MARGEN/2,'center')
             cajasLabel(ctx,'PEGUE',x0+fw*2+dw*2+dw*0.25,y0+fh/2,'left')
-            cajasLabel(ctx,'TAPA',x0+fw/2,y0-dh-4,'center')
-            cajasLabel(ctx,'BASE',x0+fw/2,y0+fh+dh+4,'center')
+            cajasLabel(ctx,'BASE',x0+fw/2,TH-MARGEN/2,'center')
           }
         },
 
-        // ─── 7. CAJA HEXAGONAL PRISMA ────────────────────────────────────
-        // 6 paneles rectangulares + 2 tapas hexagonales
+        // 7. CAJA HEXAGONAL PRISMA — 6 paneles en faja, tapas hexagonales separadas arriba/abajo
         { nombre:'Caja hexagonal', icono:'⬡',
           cW:function(W,H,D){ return W*6 },
-          cH:function(W,H,D){ return H + W*1.2 },
-          faceRegion:function(W,H,D){ var TW=W*6,TH=H+W*1.2,hexH=W*Math.sqrt(3)/2; return {x:0,y:hexH/TH,w:W/TW,h:H/TH} },
+          cH:function(W,H,D){ return H+W*Math.sqrt(3)*0.55 },
+          faceRegion:function(W,H,D){ var TW=W*6,TH=H+W*Math.sqrt(3)*0.55; var hexH=W*Math.sqrt(3)/2; return {x:0,y:hexH*0.55/TH,w:W/TW,h:H/TH} },
           render(ctx,W,H,D,logo,color,bgColor,texto,sc) {
             bgColor=bgColor||'#fff'
-            var side=W, sw=side*sc, fh=H*sc
-            var hexH=side*Math.sqrt(3)/2  // apotema del hexagono
-            var TW=sw*6, TH=(H+hexH*2+4)*sc
-            var y0=hexH*sc+2*sc
+            var sw=W*sc, fh=H*sc
+            var hexR=W*sc*0.52  // radio circunscrito del hexágono
+            var hexH=hexR*Math.sqrt(3)/2*1.0  // apotema
+            var hexTotalH=hexR*Math.sqrt(3)*0.5  // altura del hexágono
+            var topPad=hexTotalH*0.52+4*sc
+            var TW=sw*6, TH=topPad+fh+hexTotalH*0.52+4*sc
+            var yFaja=topPad
+            var MARGEN=11*sc
+
             ctx.fillStyle='#fff'; ctx.fillRect(0,0,TW,TH)
 
-            // 6 PANELES en faja horizontal
-            var panelColors=[.14,.05,.12,.05,.1,.05]
+            // 6 PANELES en faja horizontal — alternando bgColor y acento
             for(var i=0;i<6;i++){
-              ctx.fillStyle=i%2===0?bgColor:cajasAlpha(color,panelColors[i])
-              ctx.fillRect(i*sw,y0,sw,fh)
-              cajasLinDoblez(ctx,i*sw,y0,i*sw,y0+fh,color)
-              // Logo en paneles pares visibles
-              if(i===0) cajasDrawLogo(ctx,logo,i*sw+4,y0+4,sw-8,fh*0.62)
-              if(i===2) cajasDrawLogo(ctx,logo,i*sw+sw*0.2,y0+fh*0.2,sw*0.6,fh*0.5,0.06)
+              ctx.fillStyle=i%2===0?bgColor:cajasAlpha(color,.18)
+              ctx.fillRect(i*sw,yFaja,sw,fh)
+              cajasLinDoblez(ctx,i*sw,yFaja,i*sw,yFaja+fh,color)
             }
-            cajasLinDoblez(ctx,TW,y0,TW,y0+fh,color)
-            cajasText(ctx,texto,sw/2,y0+fh*0.85,sw*0.86,9*sc,color,true)
+            cajasLinDoblez(ctx,TW,yFaja,TW,yFaja+fh,color)
+            cajasLinDoblez(ctx,0,yFaja,TW,yFaja,color)
+            cajasLinDoblez(ctx,0,yFaja+fh,TW,yFaja+fh,color)
 
-            // TAPAS HEXAGONALES (arriba y abajo del panel 2-3)
-            function hexagon(cx,cy,r,fill,stroke){
-              ctx.save(); ctx.beginPath()
+            // TAPA hexagonal — centrada ARRIBA de la faja, SIN solaparse
+            function hexPath(cx,cy,r){
+              ctx.beginPath()
               for(var k=0;k<6;k++){
                 var a=Math.PI/180*(60*k-90)
                 if(k===0) ctx.moveTo(cx+r*Math.cos(a),cy+r*Math.sin(a))
                 else ctx.lineTo(cx+r*Math.cos(a),cy+r*Math.sin(a))
               }
               ctx.closePath()
-              if(fill){ctx.fillStyle=fill;ctx.fill()}
-              if(stroke){ctx.strokeStyle=stroke;ctx.lineWidth=1.5*sc;ctx.stroke()}
-              ctx.restore()
             }
-            var hexR=hexH*0.92*sc
-            // Tapa superior — centrada sobre panel 2 y 3
-            hexagon(sw*3,y0-hexH*sc*0.5,hexR,cajasAlpha(color,.25),color)
-            // Tapa inferior
-            hexagon(sw*3,y0+fh+hexH*sc*0.5,hexR,cajasAlpha(color,.15),color)
-            // Label
-            ctx.fillStyle='#aaa'; ctx.font=Math.round(6*sc)+'px Arial'; ctx.textAlign='center'
-            ctx.fillText('TAPA',sw*3,y0-hexH*sc*0.5+4); ctx.fillText('BASE',sw*3,y0+fh+hexH*sc*0.5+4)
-            ctx.textAlign='left'
+            var hexCX=sw*3, hexTopY=topPad*0.5
+            ctx.save()
+            hexPath(hexCX,hexTopY,hexR*0.95)
+            ctx.fillStyle=cajasAlpha(color,.25); ctx.fill()
+            ctx.strokeStyle=color; ctx.lineWidth=1.5*sc; ctx.stroke()
+            ctx.restore()
 
-            cajasLinDoblez(ctx,0,y0,TW,y0,color); cajasLinDoblez(ctx,0,y0+fh,TW,y0+fh,color)
-            cajasLinCorte(ctx,0,0,TW,0); cajasLinCorte(ctx,0,TH,TW,TH)
+            // BASE hexagonal — centrada ABAJO de la faja
+            var hexBotY=yFaja+fh+hexTotalH*0.52*0.5+4*sc
+            ctx.save()
+            hexPath(hexCX,hexBotY,hexR*0.95)
+            ctx.fillStyle=cajasAlpha(color,.15); ctx.fill()
+            ctx.strokeStyle=color; ctx.lineWidth=1.5*sc; ctx.stroke()
+            ctx.restore()
 
-            ctx.fillStyle=color; ctx.font='bold '+Math.round(8*sc)+'px Arial'
-            // Etiquetas externas (paneles numerados)
+            // Logos en paneles principales
+            cajasDrawLogo(ctx,logo,0,yFaja+4,sw,fh-8)
+            cajasDrawLogo(ctx,logo,sw*2,yFaja+fh*0.2,sw,fh*0.55,0.06)
+            cajasDrawLogo(ctx,logo,sw*4,yFaja+4,sw,fh-8,0.08)
+            cajasText(ctx,texto,sw/2,yFaja+fh*0.85,sw*0.86,9*sc,color,true)
+
+            cajasLinCorte(ctx,0,yFaja,0,yFaja+fh)
+            cajasLinCorte(ctx,TW,yFaja,TW,yFaja+fh)
+
+            // Etiquetas FUERA de la faja y de las tapas
+            cajasLabel(ctx,'TAPA (recortar y pegar)',hexCX,MARGEN/2,'center')
             for(var pi=0;pi<6;pi++){
-              cajasLabel(ctx, pi===0?'FRENTE':pi===2?'TRASERA':pi===4?'FRENTE 2':'LATERAL',
-                pi*sw+sw/2, y0-4, 'center')
+              var lbl=pi===0?'FRENTE':pi===1?'LAT.':pi===2?'TRASERA':pi===3?'LAT.':pi===4?'FRENTE 2':'LAT.'
+              cajasLabel(ctx,lbl,pi*sw+sw/2,yFaja-MARGEN/2,'center')
             }
-            cajasLabel(ctx,'TAPA (recortar y pegar)',sw*3,y0-hexH*sc*0.5+4,'center')
-            cajasLabel(ctx,'BASE (recortar y pegar)',sw*3,y0+fh+hexH*sc*0.5+4,'center')
+            cajasLabel(ctx,'BASE (recortar y pegar)',hexCX,TH-MARGEN/2,'center')
           }
         },
 
-        // ─── 8. CAJA SOBRE REGALO TRIANGULAR ─────────────────────────────
-        // Tipo bombonera: faja rectangular + 2 cierres triangulares en los extremos
+        // 8. CAJA BOMBONERA / CILÍNDRICA
         { nombre:'Caja bombonera', icono:'🍫',
-          cW:function(W,H,D){ return W*Math.PI },
-          cH:function(W,H,D){ return H + W*0.7 },
-          faceRegion:function(W,H,D){ var TW=W*Math.PI,TH=H+W*0.7; return {x:W*0.4/TW,y:W*0.4/TH,w:W*(Math.PI-0.8)/TW,h:H/TH} },
+          cW:function(W,H,D){ return W*Math.PI+W*0.85 },
+          cH:function(W,H,D){ return H+W*0.75 },
+          faceRegion:function(W,H,D){ var TW=W*Math.PI+W*0.85,TH=H+W*0.75; var radio=W/2; return {x:(radio*1.1)/TW,y:(W*0.38)/TH,w:(W*Math.PI)/TW,h:H/TH} },
           render(ctx,W,H,D,logo,color,bgColor,texto,sc) {
             bgColor=bgColor||'#fff'
-            // Caja cilíndrica desplegada: un rectángulo (faja) + 2 círculos (tapas)
-            var circunf=W*Math.PI, faja=circunf*sc, fh=H*sc
-            var diam=W*sc, radio=diam/2
-            var TW=(circunf+W*0.8)*sc, TH=(H+W*0.8)*sc
-            var x0=W*0.4*sc, y0=W*0.4*sc
+            var circ=W*Math.PI, radio=W/2
+            var TW=(circ+W*0.85)*sc, TH=(H+W*0.75)*sc
+            var x0=radio*1.1*sc, y0=W*0.38*sc
+            var fajaW=circ*sc, fh=H*sc, r=radio*sc
+            var MARGEN=12*sc
+
             ctx.fillStyle='#fff'; ctx.fillRect(0,0,TW,TH)
 
             // FAJA CILÍNDRICA
-            ctx.fillStyle=bgColor; ctx.fillRect(x0,y0,faja,fh)
-            ctx.strokeStyle=cajasAlpha(color,.4); ctx.lineWidth=1*sc
-            ctx.strokeRect(x0,y0,faja,fh)
-
-            // Líneas de división en la faja (representan el curvado)
-            var segs=6
+            ctx.fillStyle=bgColor; ctx.fillRect(x0,y0,fajaW,fh)
+            ctx.strokeStyle=cajasAlpha(color,.5); ctx.lineWidth=sc
+            ctx.strokeRect(x0,y0,fajaW,fh)
+            // Líneas de curvado
+            var segs=8
             for(var i=1;i<segs;i++){
-              cajasLinDoblez(ctx,x0+faja/segs*i,y0,x0+faja/segs*i,y0+fh,cajasAlpha(color,.2))
+              cajasLinDoblez(ctx,x0+fajaW/segs*i,y0,x0+fajaW/segs*i,y0+fh,cajasAlpha(color,.18))
             }
+            // Pestañas de pegue arriba/abajo
+            ctx.fillStyle=cajasAlpha(color,.18)
+            ctx.fillRect(x0,y0-8*sc,fajaW*0.4,7*sc)
+            ctx.fillRect(x0,y0+fh+sc,fajaW*0.4,7*sc)
 
-            // Logo e texto en la faja
-            cajasDrawLogo(ctx,logo,x0+faja*0.08,y0+4,faja*0.84,fh*0.65)
-            cajasText(ctx,texto,x0+faja/2,y0+fh*0.87,faja*0.86,10*sc,color,true)
-
-            // TAPA circular izquierda
-            var tx1=x0-radio*1.1, ty1=y0+fh/2
-            ctx.save(); ctx.beginPath(); ctx.arc(tx1,ty1,radio*0.9,0,Math.PI*2)
+            // TAPA circular — izquierda FUERA de la faja
+            ctx.save()
+            ctx.beginPath(); ctx.arc(x0-r*1.05,y0+fh/2,r*0.92,0,Math.PI*2)
             ctx.fillStyle=cajasAlpha(color,.3); ctx.fill()
-            ctx.strokeStyle=color; ctx.lineWidth=1.5*sc; ctx.stroke(); ctx.restore()
-            ctx.fillStyle='#aaa'; ctx.font=Math.round(6*sc)+'px Arial'; ctx.textAlign='center'
-            ctx.fillText('TAPA',tx1,ty1+4)
+            ctx.strokeStyle=color; ctx.lineWidth=1.5*sc; ctx.stroke()
+            ctx.restore()
 
-            // BASE circular derecha
-            var tx2=x0+faja+radio*1.1, ty2=y0+fh/2
-            ctx.save(); ctx.beginPath(); ctx.arc(tx2,ty2,radio*0.9,0,Math.PI*2)
+            // BASE circular — derecha FUERA de la faja
+            ctx.save()
+            ctx.beginPath(); ctx.arc(x0+fajaW+r*1.05,y0+fh/2,r*0.92,0,Math.PI*2)
             ctx.fillStyle=cajasAlpha(color,.18); ctx.fill()
-            ctx.strokeStyle=color; ctx.lineWidth=1.5*sc; ctx.stroke(); ctx.restore()
-            ctx.fillText('BASE',tx2,ty2+4); ctx.textAlign='left'
+            ctx.strokeStyle=color; ctx.lineWidth=1.5*sc; ctx.stroke()
+            ctx.restore()
 
-            // Pestañas de pegue arriba y abajo
-            cajasRoundRect(ctx,x0,y0-10*sc,faja*0.4,8*sc,3*sc); ctx.fillStyle=cajasAlpha(color,.2); ctx.fill()
-            cajasRoundRect(ctx,x0,y0+fh+2*sc,faja*0.4,8*sc,3*sc); ctx.fill()
+            // Logos y texto
+            cajasDrawLogo(ctx,logo,x0+fajaW*0.08,y0+4,fajaW*0.84,fh*0.65)
+            cajasText(ctx,texto,x0+fajaW/2,y0+fh*0.87,fajaW*0.86,10*sc,color,true)
 
-            cajasLinDoblez(ctx,x0,y0,x0,y0+fh,color); cajasLinDoblez(ctx,x0+faja,y0,x0+faja,y0+fh,color)
-            cajasLinCorte(ctx,x0,y0,x0+faja,y0); cajasLinCorte(ctx,x0,y0+fh,x0+faja,y0+fh)
+            cajasLinDoblez(ctx,x0,y0,x0,y0+fh,color)
+            cajasLinDoblez(ctx,x0+fajaW,y0,x0+fajaW,y0+fh,color)
+            cajasLinCorte(ctx,x0,y0,x0+fajaW,y0)
+            cajasLinCorte(ctx,x0,y0+fh,x0+fajaW,y0+fh)
 
-            ctx.fillStyle=color; ctx.font='bold '+Math.round(8*sc)+'px Arial'
-            // Etiquetas externas
-            cajasLabel(ctx,'FAJA CILÍNDRICA (enrollar y pegar)',x0+faja/2,y0-8,'center')
-            cajasLabel(ctx,'Pegar aquí →',x0-4,y0+fh/2,'right')
-            cajasLabel(ctx,'← Pegar aquí',x0+faja+4,y0+fh/2,'left')
-            cajasLabel(ctx,'TAPA ①',tx1,ty1+radio+12,'center')
-            cajasLabel(ctx,'BASE ②',tx2,ty2+radio+12,'center')
-            cajasLabel(ctx,'Recortar círculos y pegar en los extremos',x0+faja/2,TH-3,'center')
+            // Etiquetas FUERA
+            cajasLabel(ctx,'TAPA ① — recortar y encajar',x0-r*1.05,MARGEN/2,'center')
+            cajasLabel(ctx,'FAJA CILÍNDRICA — enrollar y pegar',x0+fajaW/2,y0-MARGEN/2,'center')
+            cajasLabel(ctx,'BASE ② — recortar y encajar',x0+fajaW+r*1.05,MARGEN/2,'center')
+            cajasLabel(ctx,'← pegar aquí',x0-4,y0+fh/2,'right')
+            cajasLabel(ctx,'pegar aquí →',x0+fajaW+4,y0+fh/2,'left')
           }
         },
 
       ]  // fin CAJAS_DISEÑOS
 
 
-      window.cajasGenerarTodas = function() {
-        var grid = document.getElementById('cajasGrid')
-        var hint = document.getElementById('cajasHint')
-        var tamKey = document.getElementById('cajasTamaño').value
-        var tam = CAJAS_TAMAÑOS[tamKey]
-        var color = document.getElementById('cajasColor').value
-        var bgColor = document.getElementById('cajasBgColor').value
-        var texto = document.getElementById('cajasTexto').value.trim()
-        var W=tam.W, H=tam.H, D=tam.D
-        grid.innerHTML = ''
-        if (hint) hint.style.display = 'none'
+      // ── Sync color pickers ────────────────────────────────────────────
+      function cajasInitColorSync() {
+        ;[['cajasColor','cajasColorHex'],['cajasBgColor','cajasBgColorHex']].forEach(function(pair){
+          var picker=document.getElementById(pair[0]), hex=document.getElementById(pair[1])
+          if(!picker||!hex) return
+          picker.addEventListener('input',function(){hex.value=this.value;cajasRenderActual()})
+          hex.addEventListener('input',function(){if(/^#[0-9a-fA-F]{6}$/.test(this.value)){picker.value=this.value;cajasRenderActual()}})
+        })
+        ;['cajasW','cajasH','cajasD'].forEach(function(id){
+          var el=document.getElementById(id)
+          if(el) el.addEventListener('input',function(){cajasUpdateAreaLabel();cajasRenderActual()})
+        })
+        var textoEl=document.getElementById('cajasTexto')
+        if(textoEl) textoEl.addEventListener('input',function(){cajasRenderActual()})
+      }
 
-        // Fondo del area de preview con contraste
-        grid.style.background = 'rgba(0,0,0,.0)'
+      function cajasGetDims() {
+        var W=parseFloat(document.getElementById('cajasW').value)||12
+        var H=parseFloat(document.getElementById('cajasH').value)||12
+        var D=parseFloat(document.getElementById('cajasD').value)||6
+        return {W:Math.max(3,W)*10, H:Math.max(3,H)*10, D:Math.max(1,D)*10}  // mm
+      }
 
-        CAJAS_DISEÑOS.forEach(function(diseño, idx) {
-          var cW = diseño.cW(W,H,D), cH = diseño.cH(W,H,D)
-          var sc = Math.min(270/cW, 180/cH, 2)
+      function cajasUpdateAreaLabel() {
+        var d=cajasGetDims(), W=d.W/10, H=d.H/10, D=d.D/10
+        var area=((W*H*2+W*D*2+H*D*2)/100).toFixed(1)
+        var el=document.getElementById('cajasAreaLabel')
+        if(el) el.textContent='Área total aprox: '+area+' dm²\n'+W+'×'+H+'×'+D+' cm'
+      }
 
-          var card = document.createElement('div')
-          card.style.cssText='background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:10px;overflow:hidden;display:flex;flex-direction:column'
+      // ── Logo upload ───────────────────────────────────────────────────
+      document.getElementById('cajasLogoFile').addEventListener('change', function(e) {
+        var file=e.target.files[0]; if(!file) return
+        var reader=new FileReader()
+        reader.onload=function(ev){
+          var img=new Image()
+          img.onload=function(){
+            cajasLogoImg=img
+            document.getElementById('cajasLogoImg').src=ev.target.result
+            document.getElementById('cajasLogoPreview').style.display='flex'
+            document.getElementById('cajasLogoPlaceholder').style.display='none'
+            cajasExtraerColores(img)
+            cajasRenderActual()
+          }
+          img.src=ev.target.result
+        }
+        reader.readAsDataURL(file)
+      })
 
-          var canv = document.createElement('canvas')
-          canv.id = 'cajas-canvas-'+idx
-          canv.width = Math.round(cW*sc)
-          canv.height = Math.round(cH*sc)
-          // Fondo del canvas: gris neutro para contraste con la caja
-          canv.style.cssText='width:100%;background:#e8e8e8;display:block'
+      function cajasExtraerColores(img) {
+        var sc=80/Math.max(img.width,img.height), sw=Math.round(img.width*sc), sh=Math.round(img.height*sc)
+        var tc=document.createElement('canvas'); tc.width=sw; tc.height=sh
+        var tCtx=tc.getContext('2d',{willReadFrequently:true})
+        tCtx.drawImage(img,0,0,sw,sh)
+        var data=tCtx.getImageData(0,0,sw,sh).data
+        var bw=Math.max(2,Math.round(Math.min(sw,sh)*0.15))
+        var bgR=0,bgG=0,bgB=0,bgN=0
+        for(var y=0;y<sh;y++) for(var x=0;x<sw;x++){
+          if(x<bw||x>=sw-bw||y<bw||y>=sh-bw){
+            var i=(y*sw+x)*4; var a=data[i+3]
+            if(a>128){bgR+=data[i];bgG+=data[i+1];bgB+=data[i+2];bgN++}
+          }
+        }
+        if(bgN>0){bgR=Math.round(bgR/bgN);bgG=Math.round(bgG/bgN);bgB=Math.round(bgB/bgN)}
+        else{bgR=245;bgG=240;bgB=232}
+        var samples=[]
+        for(var i=0;i<data.length;i+=4){
+          var a=data[i+3]; if(a<128) continue
+          var r=data[i],g=data[i+1],b=data[i+2]
+          var dBg=Math.sqrt((r-bgR)**2+(g-bgG)**2+(b-bgB)**2)
+          if(dBg>40) samples.push([r,g,b])
+        }
+        var accentR=bgR,accentG=bgG,accentB=bgB
+        if(samples.length>10){
+          var cents=[samples[0],samples[Math.floor(samples.length/3)],samples[Math.floor(2*samples.length/3)]]
+          for(var iter=0;iter<8;iter++){
+            var clusters=[[],[],[]]
+            samples.forEach(function(s){
+              var best=0,bd=Infinity
+              cents.forEach(function(c,ci){var d=(s[0]-c[0])**2+(s[1]-c[1])**2+(s[2]-c[2])**2;if(d<bd){bd=d;best=ci}})
+              clusters[best].push(s)
+            })
+            cents=clusters.map(function(cl){
+              if(!cl.length) return [128,128,128]
+              return [Math.round(cl.reduce(function(s,p){return s+p[0]},0)/cl.length),
+                      Math.round(cl.reduce(function(s,p){return s+p[1]},0)/cl.length),
+                      Math.round(cl.reduce(function(s,p){return s+p[2]},0)/cl.length)]
+            })
+          }
+          var bestSat=-1,bestCent=cents[0]
+          cents.forEach(function(c){
+            var max=Math.max(c[0],c[1],c[2]),min=Math.min(c[0],c[1],c[2])
+            var sat=max===0?0:(max-min)/max
+            var dBg=Math.sqrt((c[0]-bgR)**2+(c[1]-bgG)**2+(c[2]-bgB)**2)
+            var score=sat*(dBg/255)
+            if(score>bestSat){bestSat=score;bestCent=c}
+          })
+          accentR=bestCent[0];accentG=bestCent[1];accentB=bestCent[2]
+        }
+        var toHex=function(n){return n.toString(16).padStart(2,'0')}
+        var bgHex='#'+toHex(bgR)+toHex(bgG)+toHex(bgB)
+        var accHex='#'+toHex(accentR)+toHex(accentG)+toHex(accentB)
+        document.getElementById('cajasColor').value=accHex
+        document.getElementById('cajasColorHex').value=accHex
+        document.getElementById('cajasBgColor').value=bgHex
+        document.getElementById('cajasBgColorHex').value=bgHex
+        var fb=document.getElementById('cajasColorFeedback')
+        if(fb){
+          fb.innerHTML='<span style="display:inline-block;width:12px;height:12px;border-radius:3px;background:'+bgHex+';border:1px solid rgba(255,255,255,.2);vertical-align:middle;margin-right:3px"></span>Fondo &nbsp;·&nbsp;<span style="display:inline-block;width:12px;height:12px;border-radius:3px;background:'+accHex+';border:1px solid rgba(255,255,255,.2);vertical-align:middle;margin-right:3px"></span>Acento detectados'
+          fb.style.display='block'
+        }
+      }
 
-          var ctx = canv.getContext('2d', {willReadFrequently:true})
-          // Fondo del canvas gris para contraste
-          ctx.fillStyle='#e8e8e8'; ctx.fillRect(0,0,canv.width,canv.height)
-          try { diseño.render(ctx,W,H,D,cajasLogoImg,color,bgColor,texto,sc) } catch(e) { console.warn('Render caja',diseño.nombre,e) }
+      // ── Selector lateral de tipos ─────────────────────────────────────
+      function cajasRenderTipoList() {
+        var list=document.getElementById('cajasTipoList'); if(!list) return
+        list.innerHTML=''
+        CAJAS_DISEÑOS.forEach(function(d,i){
+          var btn=document.createElement('button')
+          btn.style.cssText='width:100%;text-align:left;padding:.45rem .6rem;border-radius:7px;border:1px solid transparent;background:none;cursor:pointer;font-size:.7rem;color:var(--text);display:flex;align-items:center;gap:.4rem;transition:.15s'
+          btn.innerHTML='<span style="font-size:.9rem">'+d.icono+'</span><span>'+d.nombre+'</span>'
+          btn.onmouseover=function(){if(i!==cajasSelectedIdx)this.style.background='rgba(255,255,255,.05)'}
+          btn.onmouseout=function(){if(i!==cajasSelectedIdx)this.style.background='none'}
+          btn.onclick=function(){cajasSelectTipo(i)}
+          btn.id='cajas-tipo-btn-'+i
+          list.appendChild(btn)
+        })
+        cajasHighlightTipo(0)
+      }
 
-          var info = document.createElement('div')
-          info.style.cssText='padding:.6rem .8rem;display:flex;flex-direction:column;gap:.4rem'
-          info.innerHTML='<p style="margin:0;font-size:.72rem;font-weight:700;color:var(--text)">'+diseño.icono+' '+diseño.nombre+'</p>'+
-            '<p style="margin:0;font-size:.63rem;color:var(--muted)">'+tam.label+'</p>'+
-            '<button onclick="cajaVer3D('+idx+')" class="btn" style="font-size:.68rem;margin-bottom:.2rem;background:rgba(21,154,156,.18);border-color:rgba(21,154,156,.5)">'+
-            '🔄 Vista 3D — rotar y explorar</button>'+
-            '<div style="display:flex;gap:.4rem">'+
-            '<button onclick="cajaDescargarPNG('+idx+')" class="btn btn--sm" style="flex:1;font-size:.65rem">⬇ PNG</button>'+
-            '<button onclick="cajaDescargarPDF('+idx+')" class="btn btn--sm" style="flex:1;font-size:.65rem">📄 PDF</button>'+
-            '</div>'
-
-          card.appendChild(canv); card.appendChild(info); grid.appendChild(card)
+      function cajasHighlightTipo(idx) {
+        CAJAS_DISEÑOS.forEach(function(_,i){
+          var btn=document.getElementById('cajas-tipo-btn-'+i)
+          if(!btn) return
+          if(i===idx){
+            btn.style.background='rgba(21,154,156,.15)'
+            btn.style.borderColor='rgba(21,154,156,.4)'
+            btn.style.color='var(--cyan)'
+          } else {
+            btn.style.background='none'
+            btn.style.borderColor='transparent'
+            btn.style.color='var(--text)'
+          }
         })
       }
 
-      window.cajaDescargarPNG = function(idx) {
-        var tamKey = document.getElementById('cajasTamaño').value
-        var tam = CAJAS_TAMAÑOS[tamKey]
-        var color = document.getElementById('cajasColor').value
-        var bgColor = document.getElementById('cajasBgColor').value
-        var texto = document.getElementById('cajasTexto').value.trim()
-        var d = CAJAS_DISEÑOS[idx], W=tam.W, H=tam.H, D=tam.D
-        var HI = 4.5, cW=d.cW(W,H,D), cH=d.cH(W,H,D)
-        var hiC = document.createElement('canvas')
-        hiC.width=Math.round(cW*HI); hiC.height=Math.round(cH*HI)
-        var hiCtx = hiC.getContext('2d',{willReadFrequently:true})
+      function cajasSelectTipo(idx) {
+        cajasSelectedIdx=idx
+        cajasHighlightTipo(idx)
+        cajasRenderActual()
+      }
+
+      // ── Render principal (plantilla + preview 3D) ─────────────────────
+      function cajasRenderActual() {
+        clearTimeout(_cajasDebounce)
+        _cajasDebounce=setTimeout(function(){
+          var dims=cajasGetDims(), W=dims.W, H=dims.H, D=dims.D
+          var color=document.getElementById('cajasColor').value||'#159A9C'
+          var bgColor=document.getElementById('cajasBgColor').value||'#f5f0e8'
+          var texto=(document.getElementById('cajasTexto')||{}).value||''
+          var d=CAJAS_DISEÑOS[cajasSelectedIdx]
+          if(!d) return
+
+          // ── Render plantilla ──
+          var cP=document.getElementById('cajasPlantilla'); if(!cP) return
+          var cW=d.cW(W,H,D), cH=d.cH(W,H,D)
+          var maxPW=cP.parentElement.clientWidth-24||320
+          var sc=Math.min(maxPW/cW, 240/cH, 3)
+          cP.width=Math.round(cW*sc); cP.height=Math.round(cH*sc)
+          var ctx=cP.getContext('2d',{willReadFrequently:true})
+          ctx.fillStyle='#fff'; ctx.fillRect(0,0,cP.width,cP.height)
+          try{ d.render(ctx,W,H,D,cajasLogoImg,color,bgColor,texto,sc) }catch(e){console.warn(e)}
+
+          // ── Render preview 3D ──
+          cajasRenderPreview3D(W,H,D,color,bgColor,texto)
+
+          // ── Area label ──
+          cajasUpdateAreaLabel()
+        }, 120)
+      }
+
+      // ── Vista previa 3D animada ───────────────────────────────────────
+      // Dibuja una caja isométrica con el panel de tapa en distintos ángulos según el slider
+      function cajasRenderPreview3D(W,H,D,color,bgColor,texto) {
+        var c=document.getElementById('cajasPreview3D'); if(!c) return
+        var size=c.parentElement.clientWidth-24||300
+        c.width=size; c.height=Math.round(size*0.65)
+        var ctx=c.getContext('2d',{willReadFrequently:true})
+
+        // Fondo
+        var grd=ctx.createLinearGradient(0,0,0,c.height)
+        grd.addColorStop(0,'#1e2f3a'); grd.addColorStop(1,'#0f1e26')
+        ctx.fillStyle=grd; ctx.fillRect(0,0,c.width,c.height)
+
+        var slider=document.getElementById('cajasSlider')
+        var t=(slider?parseInt(slider.value):70)/100  // 0=abierto, 1=cerrado
+
+        // Normalizar proporciones
+        var s=Math.max(W,H,D)
+        var hw=W/s*0.38, hh=H/s*0.38, hd=D/s*0.38
+        var zoom=Math.min(c.width,c.height)*0.85
+        var cx=c.width/2, cy=c.height/2+hd*zoom*0.1
+
+        // Rotación isométrica fija — se ve bien
+        var rotY=0.55, rotX=0.42
+
+        function proj3D(x,y,z){
+          var cosY=Math.cos(rotY),sinY=Math.sin(rotY)
+          var x1=x*cosY+z*sinY, z1=-x*sinY+z*cosY
+          var cosX=Math.cos(rotX),sinX=Math.sin(rotX)
+          var y1=y*cosX-z1*sinX
+          return {px:cx+x1*zoom, py:cy+y1*zoom}
+        }
+
+        // 8 vértices de la caja (sin tapa superior)
+        function v(x,y,z){return proj3D(x,y,z)}
+        var fl=v(-hw,-hh, hd), fr=v( hw,-hh, hd)
+        var bl=v(-hw,-hh,-hd), br=v( hw,-hh,-hd)
+        var FL=v(-hw, hh, hd), FR=v( hw, hh, hd)
+        var BL=v(-hw, hh,-hd), BR=v( hw, hh,-hd)
+
+        function face(pts,fill,stroke,alpha){
+          ctx.save(); ctx.globalAlpha=alpha||1
+          ctx.beginPath(); ctx.moveTo(pts[0].px,pts[0].py)
+          pts.slice(1).forEach(function(p){ctx.lineTo(p.px,p.py)})
+          ctx.closePath()
+          if(fill){ctx.fillStyle=fill;ctx.fill()}
+          if(stroke){ctx.strokeStyle=stroke;ctx.lineWidth=1.5;ctx.stroke()}
+          ctx.restore()
+        }
+
+        // Sombra elíptica en el suelo
+        ctx.save(); ctx.globalAlpha=0.15
+        ctx.beginPath(); ctx.ellipse(cx,cy+hh*zoom*0.85,hw*zoom*0.7,hw*zoom*0.18,0,0,Math.PI*2)
+        ctx.fillStyle='#000'; ctx.fill(); ctx.restore()
+
+        // Cara trasera (fondo)
+        face([bl,br,BR,BL], cajasAlpha(bgColor,.5), 'rgba(255,255,255,.1)')
+        // Cara izquierda
+        face([bl,fl,FL,BL], cajasAlpha(bgColor,.65), 'rgba(255,255,255,.12)')
+        // Cara inferior (base)
+        face([bl,br,fr,fl], 'rgba(0,0,0,.3)', 'rgba(255,255,255,.08)')
+        // Cara frontal
+        face([fl,fr,FR,FL], bgColor, 'rgba(255,255,255,.2)')
+        // Logo en frente
+        if(cajasLogoImg){
+          var p0=FL,p1=FR,p2=fl,p3=fr
+          var px=(p0.px+p1.px+p2.px+p3.px)/4, py=(p0.py+p1.py+p2.py+p3.py)/4
+          var faceW=Math.abs(FR.px-FL.px)*0.55, faceH=Math.abs(FR.py-fl.py)*0.45
+          ctx.save()
+          var m=[(p1.px-p0.px)/512,(p1.py-p0.py)/512,(p2.px-p0.px)/512,(p2.py-p0.py)/512,p0.px,p0.py]
+          // Aproximación: escalar logo centrado
+          var lr=Math.min(faceW/cajasLogoImg.width,faceH/cajasLogoImg.height)
+          ctx.drawImage(cajasLogoImg,px-cajasLogoImg.width*lr/2,py-cajasLogoImg.height*lr/2,cajasLogoImg.width*lr,cajasLogoImg.height*lr)
+          ctx.restore()
+        }
+        // Cara derecha
+        face([fr,br,BR,FR], cajasAlpha(bgColor,.75), 'rgba(255,255,255,.15)')
+
+        // ── TAPA (animada según slider t) ──────────────────────────────
+        // t=0 → tapa abierta (rotada ~120° hacia atrás)
+        // t=1 → tapa cerrada (horizontal, encima de la caja)
+        var tapAngle=(1-t)*(-Math.PI*0.72)  // ángulo de apertura
+
+        function vTapa(lx,ly,lz){
+          // La tapa pivota sobre el borde trasero superior (BL→BR)
+          // Rotamos sobre el eje X local del borde trasero
+          var rx=lx, ry=ly*Math.cos(tapAngle)-lz*Math.sin(tapAngle), rz=ly*Math.sin(tapAngle)+lz*Math.cos(tapAngle)
+          // El pivot está en y=hh, z=-hd
+          return proj3D(rx, hh+ry, -hd+rz)
+        }
+
+        var T0=vTapa(-hw,0,0), T1=vTapa( hw,0,0)
+        var T2=vTapa( hw,0,hd*2), T3=vTapa(-hw,0,hd*2)
+
+        // Solapa delantera de la tapa
+        var S0=vTapa(-hw,0,hd*2), S1=vTapa( hw,0,hd*2)
+        var S2=vTapa( hw,0,hd*2+hd*0.55), S3=vTapa(-hw,0,hd*2+hd*0.55)
+
+        // Ordenar tapa según visibilidad
+        face([T0,T1,T2,T3], cajasAlpha(color,.35), color, 0.9)
+        face([S0,S1,S2,S3], cajasAlpha(color,.55), color, 0.85)
+
+        // Borde decorativo del acento en la caja
+        face([fl,fr,FR,FL], 'transparent', color)
+        ctx.save(); ctx.strokeStyle=color; ctx.lineWidth=2
+        ;[[FL,FR],[BL,FL],[BR,FR]].forEach(function(pair){
+          ctx.beginPath(); ctx.moveTo(pair[0].px,pair[0].py); ctx.lineTo(pair[1].px,pair[1].py); ctx.stroke()
+        })
+        ctx.restore()
+
+        // Label del tipo de caja
+        var d=CAJAS_DISEÑOS[cajasSelectedIdx]
+        ctx.fillStyle='rgba(255,255,255,.5)'; ctx.font='bold 11px Arial'
+        ctx.textAlign='center'; ctx.fillText(d?d.icono+' '+d.nombre:'',cx,c.height-8); ctx.textAlign='left'
+      }
+
+      // ── Slider listener ───────────────────────────────────────────────
+      function cajasInitSlider(){
+        var sl=document.getElementById('cajasSlider')
+        if(sl) sl.addEventListener('input',function(){
+          var dims=cajasGetDims()
+          cajasRenderPreview3D(dims.W,dims.H,dims.D,
+            document.getElementById('cajasColor').value||'#159A9C',
+            document.getElementById('cajasBgColor').value||'#f5f0e8',
+            (document.getElementById('cajasTexto')||{}).value||'')
+        })
+      }
+
+      // ── Descarga PNG/PDF del diseño actual ────────────────────────────
+      window.cajasDescargarPNGActual = function() {
+        var dims=cajasGetDims(), W=dims.W, H=dims.H, D=dims.D
+        var color=document.getElementById('cajasColor').value||'#159A9C'
+        var bgColor=document.getElementById('cajasBgColor').value||'#f5f0e8'
+        var texto=(document.getElementById('cajasTexto')||{}).value||''
+        var d=CAJAS_DISEÑOS[cajasSelectedIdx]; if(!d) return
+        var HI=4.5, cW=d.cW(W,H,D), cH=d.cH(W,H,D)
+        var hiC=document.createElement('canvas'); hiC.width=Math.round(cW*HI); hiC.height=Math.round(cH*HI)
+        var hiCtx=hiC.getContext('2d',{willReadFrequently:true})
         hiCtx.fillStyle='#fff'; hiCtx.fillRect(0,0,hiC.width,hiC.height)
-        try { d.render(hiCtx,W,H,D,cajasLogoImg,color,bgColor,texto,HI) } catch(e) {}
+        try{d.render(hiCtx,W,H,D,cajasLogoImg,color,bgColor,texto,HI)}catch(e){}
         var a=document.createElement('a')
         a.href=hiC.toDataURL('image/png')
-        a.download='caja-'+d.nombre.toLowerCase().replace(/\s+/g,'-')+'-'+tam.label.replace(/[^0-9x]/g,'')+'.png'
+        a.download='caja-'+d.nombre.toLowerCase().replace(/\s+/g,'-')+'.png'
         a.click()
       }
 
-      window.cajaDescargarPDF = function(idx) {
-        var tamKey = document.getElementById('cajasTamaño').value
-        var tam = CAJAS_TAMAÑOS[tamKey]
-        var color = document.getElementById('cajasColor').value
-        var bgColor = document.getElementById('cajasBgColor').value
-        var texto = document.getElementById('cajasTexto').value.trim()
-        var d = CAJAS_DISEÑOS[idx], W=tam.W, H=tam.H, D=tam.D
+      window.cajasDescargarPDFActual = function() {
+        var dims=cajasGetDims(), W=dims.W, H=dims.H, D=dims.D
+        var color=document.getElementById('cajasColor').value||'#159A9C'
+        var bgColor=document.getElementById('cajasBgColor').value||'#f5f0e8'
+        var texto=(document.getElementById('cajasTexto')||{}).value||''
+        var d=CAJAS_DISEÑOS[cajasSelectedIdx]; if(!d) return
         var cW=d.cW(W,H,D), cH=d.cH(W,H,D)
         var pC=document.createElement('canvas'); pC.width=794; pC.height=1123
         var pCtx=pC.getContext('2d',{willReadFrequently:true})
         pCtx.fillStyle='#fff'; pCtx.fillRect(0,0,794,1123)
-        var fitSc=Math.min(760/cW, 1040/cH)
-        var offX=(794-cW*fitSc)/2, offY=(1123-cH*fitSc)/2-15
-        pCtx.save(); pCtx.translate(offX,offY)
-        try { d.render(pCtx,W,H,D,cajasLogoImg,color,bgColor,texto,fitSc) } catch(e) {}
+        var fitSc=Math.min(750/cW,1050/cH)
+        pCtx.save(); pCtx.translate((794-cW*fitSc)/2,(1123-cH*fitSc)/2-10)
+        try{d.render(pCtx,W,H,D,cajasLogoImg,color,bgColor,texto,fitSc)}catch(e){}
         pCtx.restore()
-        pCtx.fillStyle='#333'; pCtx.font='bold 13px Arial'; pCtx.textAlign='center'
-        pCtx.fillText('📦 '+d.nombre+' — '+tam.label, 397, 28)
+        pCtx.fillStyle='#555'; pCtx.font='bold 12px Arial'; pCtx.textAlign='center'
+        pCtx.fillText('📦 '+d.nombre+' — '+dims.W/10+'×'+dims.H/10+'×'+dims.D/10+' cm | lamadriguera.site',397,25)
         pCtx.font='10px Arial'; pCtx.fillStyle='#999'
-        pCtx.fillText('Línea sólida = cortar · Punteada = doblar · lamadriguera.site', 397, 1112)
+        pCtx.fillText('Línea sólida = cortar · Punteada = doblar',397,1110)
         pCtx.textAlign='left'
         var img=pC.toDataURL('image/png')
-        var html='<!DOCTYPE html><html><head><style>*{margin:0;padding:0}body{background:#fff}img{width:210mm;height:297mm;display:block}@page{size:A4;margin:0}@media print{body{margin:0}}</style></head><body><img src="'+img+'"/><script>window.onload=function(){setTimeout(function(){window.print()},400)}<\/script></body></html>'
+        var html='<!DOCTYPE html><html><head><style>*{margin:0;padding:0}body{background:#fff}img{width:210mm;height:297mm;display:block}@page{size:A4;margin:0}</style></head><body><img src="'+img+'"/><script>window.onload=function(){setTimeout(function(){window.print()},400)}<\/script></body></html>'
         var w=window.open('','_blank')
         if(w){w.document.write(html);w.document.close()}
-        else alert('Habilitá ventanas emergentes para imprimir.')
+        else alert('Habilitá ventanas emergentes.')
       }
 
+      // Compatibilidad: estas funciones ya no se usan pero pueden llamarse desde lugares viejos
+      window.cajasGenerarTodas = function() { cajasRenderActual() }
+      window.cajaDescargarPNG = function(idx) { cajasSelectedIdx=idx; cajasDescargarPNGActual() }
+      window.cajaDescargarPDF = function(idx) { cajasSelectedIdx=idx; cajasDescargarPDFActual() }
+
+      // ── Init al abrir el modal ─────────────────────────────────────────
       ;(function(){
-        var _orig=window.abrirEmprendedor
+        var _origAbrirE=window.abrirEmprendedor
         window.abrirEmprendedor=function(id){
-          _orig(id)
-          if(id==='modal-cajas-diseño' && cajasLogoImg) setTimeout(cajasGenerarTodas,100)
+          _origAbrirE(id)
+          if(id==='modal-cajas-diseño'){
+            setTimeout(function(){
+              cajasRenderTipoList()
+              cajasInitColorSync()
+              cajasInitSlider()
+              cajasUpdateAreaLabel()
+              cajasRenderActual()
+            },80)
+          }
         }
       })()
-      // ── Fin diseñador de cajas ──────────────────────────────────
+      // ── Fin diseñador de cajas ──────────────────────────────────────
+
 
 
       // ══════════════════════════════════════════════════════════════════
-      // VISTA 3D DE CAJAS — WebGL puro (sin dependencias externas)
-      // ══════════════════════════════════════════════════════════════════
-      // ══════════════════════════════════════════════════════════════════
-      // VISTA 3D DE CAJAS — Canvas 2D isométrico interactivo
-      // ══════════════════════════════════════════════════════════════════
-      var _iso = {
-        rotY: 0.6, rotX: 0.35, zoom: 1,
-        targetRotY: 0.6, targetRotX: 0.35, targetZoom: 1,
-        dragging: false, lastX: 0, lastY: 0,
-        animId: null, currentIdx: -1,
-        faceF: null, faceS: null, faceT: null,
-        W: 1, H: 1, D: 1
-      }
-
-      // Genera texturas de cara para la vista 3D usando el canvas real del diseño
-      function _isoMakeFace(type, planCanvas, W, H, D, color, bgColor) {
-        var fc = document.createElement('canvas'); fc.width=512; fc.height=512
-        var ctx = fc.getContext('2d')
-        color   = color   || document.getElementById('cajasColor').value   || '#159A9C'
-        bgColor = bgColor || document.getElementById('cajasBgColor').value || '#fff'
-
-        if (type === 'front' && planCanvas) {
-          // Recortar solo la cara frontal de la plantilla usando faceRegion
-          var reg = _iso.faceRegion || {x:0,y:0,w:1,h:1}
-          var pw = planCanvas.width, ph = planCanvas.height
-          var sx=reg.x*pw, sy=reg.y*ph, sw2=reg.w*pw, sh2=reg.h*ph
-          // Fondo del color de caja
-          ctx.fillStyle = bgColor||'#fff'; ctx.fillRect(0,0,512,512)
-          // Dibujar solo la región de la cara frontal, estirada a 512×512
-          ctx.drawImage(planCanvas, sx, sy, sw2, sh2, 0, 0, 512, 512)
-          // Borde del acento
-          ctx.strokeStyle = color; ctx.lineWidth = 6; ctx.strokeRect(3,3,506,506)
-        } else if (type === 'side') {
-          ctx.fillStyle = bgColor; ctx.fillRect(0,0,512,512)
-          ctx.fillStyle = color + '44'; ctx.fillRect(0,0,512,512)
-          ctx.strokeStyle = color; ctx.lineWidth = 8; ctx.strokeRect(4,4,504,504)
-          if (cajasLogoImg) {
-            var r2 = Math.min(200/cajasLogoImg.width, 200/cajasLogoImg.height)
-            var lw2=cajasLogoImg.width*r2, lh2=cajasLogoImg.height*r2
-            ctx.globalAlpha=0.5
-            ctx.drawImage(cajasLogoImg,(512-lw2)/2,(512-lh2)/2,lw2,lh2)
-            ctx.globalAlpha=1
-          }
-        } else { // top
-          ctx.fillStyle = bgColor; ctx.fillRect(0,0,512,512)
-          ctx.fillStyle = color + '66'; ctx.fillRect(0,0,512,512)
-          ctx.strokeStyle = color; ctx.lineWidth = 8; ctx.strokeRect(4,4,504,504)
-          // Cruz de doblez
-          ctx.strokeStyle = color + '55'; ctx.lineWidth = 2; ctx.setLineDash([8,5])
-          ctx.beginPath(); ctx.moveTo(256,20); ctx.lineTo(256,492); ctx.stroke()
-          ctx.beginPath(); ctx.moveTo(20,256); ctx.lineTo(492,256); ctx.stroke()
-          ctx.setLineDash([])
-        }
-        return fc
-      }
-
-      // Proyección isométrica de un punto 3D a 2D
-      function _isoProject(x,y,z, cx,cy, rx,ry,zoom) {
-        // Rotar Y
-        var cosY=Math.cos(ry), sinY=Math.sin(ry)
-        var x1 = x*cosY + z*sinY
-        var z1 = -x*sinY + z*cosY
-        // Rotar X
-        var cosX=Math.cos(rx), sinX=Math.sin(rx)
-        var y1 = y*cosX - z1*sinX
-        var z2 = y*sinX + z1*cosX
-        return { px: cx + x1*zoom, py: cy + y1*zoom, z: z2 }
-      }
-
-      function _isoDraw() {
-        var c = document.getElementById('cajas3dCanvas')
-        if (!c) return
-        var ctx = c.getContext('2d')
-        var W2=c.width, H2=c.height
-        ctx.clearRect(0,0,W2,H2)
-
-        // Fondo gradiente
-        var grd = ctx.createLinearGradient(0,0,0,H2)
-        grd.addColorStop(0,'#001520'); grd.addColorStop(1,'#001a28')
-        ctx.fillStyle=grd; ctx.fillRect(0,0,W2,H2)
-
-        // Dimensiones de la caja (normalizadas)
-        var s = Math.max(_iso.W,_iso.H,_iso.D)*1.0
-        var hw=_iso.W/s*0.45, hh=_iso.H/s*0.45, hd=_iso.D/s*0.45
-        var cx=W2/2, cy=H2/2
-        var rx=_iso.rotX, ry=_iso.rotY, zoom=_iso.zoom * Math.min(W2,H2) * 0.82
-
-        // 8 vértices de la caja
-        function pt(x,y,z){ return _isoProject(x,y,z,cx,cy,rx,ry,zoom) }
-        var v = [
-          pt(-hw,-hh,-hd), pt( hw,-hh,-hd), pt( hw, hh,-hd), pt(-hw, hh,-hd),
-          pt(-hw,-hh, hd), pt( hw,-hh, hd), pt( hw, hh, hd), pt(-hw, hh, hd)
-        ]
-
-        // Calcular Z media de cada cara para orden de pintado (painter's algorithm)
-        var faces = [
-          { verts:[v[4],v[5],v[6],v[7]], img:_iso.faceF, zAvg:(v[4].z+v[5].z+v[6].z+v[7].z)/4, light:1.0 },   // front
-          { verts:[v[1],v[0],v[3],v[2]], img:_iso.faceF, zAvg:(v[0].z+v[1].z+v[2].z+v[3].z)/4, light:0.65 },  // back
-          { verts:[v[5],v[1],v[2],v[6]], img:_iso.faceS, zAvg:(v[1].z+v[5].z+v[6].z+v[2].z)/4, light:0.85 },  // right
-          { verts:[v[0],v[4],v[7],v[3]], img:_iso.faceS, zAvg:(v[0].z+v[4].z+v[7].z+v[3].z)/4, light:0.72 },  // left
-          { verts:[v[7],v[6],v[2],v[3]], img:_iso.faceT, zAvg:(v[2].z+v[3].z+v[6].z+v[7].z)/4, light:1.0 },   // top
-          { verts:[v[0],v[1],v[5],v[4]], img:_iso.faceT, zAvg:(v[0].z+v[1].z+v[4].z+v[5].z)/4, light:0.5 },   // bottom
-        ]
-        faces.sort(function(a,b){ return a.zAvg - b.zAvg })
-
-        faces.forEach(function(face) {
-          var ps = face.verts
-          ctx.save()
-          // Clip a la forma del polígono
-          ctx.beginPath()
-          ctx.moveTo(ps[0].px, ps[0].py)
-          for(var i=1;i<ps.length;i++) ctx.lineTo(ps[i].px, ps[i].py)
-          ctx.closePath()
-          ctx.clip()
-
-          // Transformar la textura en el polígono (aproximación afín para cuadrilátero)
-          if (face.img) {
-            // Usar transformación afín de los 3 primeros vértices
-            var p0=ps[0], p1=ps[1], p2=ps[3]
-            var iw=512, ih=512
-            var m = [
-              (p1.px-p0.px)/iw, (p1.py-p0.py)/iw,
-              (p2.px-p0.px)/ih, (p2.py-p0.py)/ih,
-              p0.px, p0.py
-            ]
-            ctx.transform(m[0],m[1],m[2],m[3],m[4],m[5])
-            ctx.drawImage(face.img, 0,0,iw,ih)
-          }
-          ctx.restore()
-
-          // Oscurecer según iluminación
-          if (face.light < 1) {
-            ctx.save()
-            ctx.beginPath()
-            ctx.moveTo(ps[0].px, ps[0].py)
-            for(var i=1;i<ps.length;i++) ctx.lineTo(ps[i].px, ps[i].py)
-            ctx.closePath()
-            ctx.fillStyle = 'rgba(0,0,0,'+(1-face.light)*0.55+')'
-            ctx.fill()
-            ctx.restore()
-          }
-
-          // Borde de la cara
-          ctx.beginPath()
-          ctx.moveTo(ps[0].px, ps[0].py)
-          for(var i=1;i<ps.length;i++) ctx.lineTo(ps[i].px, ps[i].py)
-          ctx.closePath()
-          ctx.strokeStyle = 'rgba(255,255,255,0.18)'; ctx.lineWidth=1.2; ctx.stroke()
-        })
-
-        // Sombra proyectada en el suelo
-        ctx.save()
-        ctx.globalAlpha=0.18
-        ctx.beginPath()
-        var bot=[v[0],v[1],v[5],v[4]]
-        ctx.ellipse(
-          (bot[0].px+bot[1].px+bot[2].px+bot[3].px)/4+8,
-          (bot[0].py+bot[1].py+bot[2].py+bot[3].py)/4+18,
-          Math.abs(bot[1].px-bot[0].px)*0.55,
-          Math.abs(bot[1].px-bot[0].px)*0.18,
-          0,0,Math.PI*2
-        )
-        ctx.fillStyle='#000'; ctx.fill()
-        ctx.restore()
-      }
-
-      function _isoAnimate() {
-        _iso.rotX += (_iso.targetRotX - _iso.rotX) * 0.1
-        _iso.rotY += (_iso.targetRotY - _iso.rotY) * 0.1
-        _iso.zoom += (_iso.targetZoom - _iso.zoom) * 0.1
-        _isoDraw()
-        _iso.animId = requestAnimationFrame(_isoAnimate)
-      }
-
-      function _isoBindEvents() {
-        var c = document.getElementById('cajas3dCanvas')
-        c.onmousedown = function(e){ _iso.dragging=true; _iso.lastX=e.clientX; _iso.lastY=e.clientY }
-        window.addEventListener('mouseup', function(){ _iso.dragging=false })
-        window.addEventListener('mousemove', function(e){
-          if(!_iso.dragging) return
-          var dx=e.clientX-_iso.lastX, dy=e.clientY-_iso.lastY
-          _iso.targetRotY += dx*0.013; _iso.targetRotX += dy*0.013
-          _iso.targetRotX = Math.max(-1.5, Math.min(1.5, _iso.targetRotX))
-          _iso.lastX=e.clientX; _iso.lastY=e.clientY
-        })
-        c.addEventListener('wheel', function(e){
-          e.preventDefault()
-          _iso.targetZoom *= e.deltaY>0 ? 0.93 : 1.07
-          _iso.targetZoom = Math.max(0.3, Math.min(2.5, _iso.targetZoom))
-        },{passive:false})
-        // Touch
-        var lx=0,ly=0,ld=0
-        c.addEventListener('touchstart',function(e){
-          e.preventDefault()
-          if(e.touches.length===1){_iso.dragging=true;lx=e.touches[0].clientX;ly=e.touches[0].clientY}
-          else if(e.touches.length===2) ld=Math.hypot(e.touches[0].clientX-e.touches[1].clientX,e.touches[0].clientY-e.touches[1].clientY)
-        },{passive:false})
-        c.addEventListener('touchmove',function(e){
-          e.preventDefault()
-          if(e.touches.length===1&&_iso.dragging){
-            _iso.targetRotY+=(e.touches[0].clientX-lx)*0.015
-            _iso.targetRotX+=(e.touches[0].clientY-ly)*0.015
-            _iso.targetRotX=Math.max(-1.5,Math.min(1.5,_iso.targetRotX))
-            lx=e.touches[0].clientX; ly=e.touches[0].clientY
-          } else if(e.touches.length===2){
-            var d=Math.hypot(e.touches[0].clientX-e.touches[1].clientX,e.touches[0].clientY-e.touches[1].clientY)
-            _iso.targetZoom*=d/ld; _iso.targetZoom=Math.max(0.3,Math.min(2.5,_iso.targetZoom)); ld=d
-          }
-        },{passive:false})
-        c.addEventListener('touchend',function(){_iso.dragging=false})
-        c.addEventListener('dblclick',function(){
-          _iso.targetRotX=0.35; _iso.targetRotY=0.6; _iso.targetZoom=1
-        })
-      }
-
-      window.cajaVer3D = function(idx) {
-        var d = CAJAS_DISEÑOS[idx]
-        var tamKey = document.getElementById('cajasTamaño').value
-        var tam = CAJAS_TAMAÑOS[tamKey]
-        var color = document.getElementById('cajasColor').value
-        var bgColor = document.getElementById('cajasBgColor').value
-        var ov = document.getElementById('cajas3dOverlay')
-        document.getElementById('cajas3dTitulo').textContent = '🔄 '+d.icono+' '+d.nombre+' — '+tam.label
-        ov.style.display='flex'; document.body.style.overflow='hidden'
-
-        var c = document.getElementById('cajas3dCanvas')
-        var size = Math.min(window.innerWidth*0.88, window.innerHeight*0.68, 660)
-        c.width = size; c.height = size
-
-        // Dimensiones reales
-        _iso.W=tam.W; _iso.H=tam.H; _iso.D=tam.D
-        _iso.targetRotX=0.35; _iso.targetRotY=0.6; _iso.targetZoom=1
-        _iso.rotX=0.35; _iso.rotY=0.6; _iso.zoom=1
-
-        // Generar texturas: frontal usa solo la cara principal del canvas
-        var planCanvas = document.getElementById('cajas-canvas-'+idx)
-        // Guardar la región de la cara frontal de este diseño
-        _iso.faceRegion = d.faceRegion ? d.faceRegion(tam.W, tam.H, tam.D) : {x:0,y:0,w:1,h:1}
-        _iso.faceF = _isoMakeFace('front', planCanvas, tam.W, tam.H, tam.D, color, bgColor)
-        _iso.faceS = _isoMakeFace('side',  null, tam.W, tam.H, tam.D, color, bgColor)
-        _iso.faceT = _isoMakeFace('top',   null, tam.W, tam.H, tam.D, color, bgColor)
-
-        if (_iso.animId) cancelAnimationFrame(_iso.animId)
-        if (_iso.currentIdx < 0) _isoBindEvents()
-        _iso.currentIdx = idx
-        _isoAnimate()
-      }
-
-      window.cajas3dCerrar = function() {
-        document.getElementById('cajas3dOverlay').style.display='none'
-        document.body.style.overflow=''
-        if(_iso.animId){cancelAnimationFrame(_iso.animId);_iso.animId=null}
-      }
-
-      window.cajas3dSetView = function(v) {
-        if(v==='front')     {_iso.targetRotX=0;    _iso.targetRotY=0;    _iso.targetZoom=1.15}
-        else if(v==='side') {_iso.targetRotX=0;    _iso.targetRotY=1.57; _iso.targetZoom=1.15}
-        else if(v==='top')  {_iso.targetRotX=-1.5; _iso.targetRotY=0;    _iso.targetZoom=1.15}
-        else                {_iso.targetRotX=0.35; _iso.targetRotY=0.6;  _iso.targetZoom=1   }
-      }
-
-      document.addEventListener('keydown',function(e){
-        if(e.key==='Escape'){var o=document.getElementById('cajas3dOverlay');if(o&&o.style.display!=='none')cajas3dCerrar()}
-      })
-      // ── Fin vista 3D ────────────────────────────────────────────────────
-
-
     // ══════════════════════════════════════════
     //  TRACKING DE EVENTOS
     // ══════════════════════════════════════════
