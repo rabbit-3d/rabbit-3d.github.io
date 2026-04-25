@@ -1067,11 +1067,11 @@
         </div>
       </div>
 
-      <div class="empr-card" onclick="abrirEmprendedor('modal-cajas-diseño')" data-empr-id="cajas-diseño">
+      <div class="empr-card" onclick="abrirEmprendedor('modal-cajas')" data-empr-id="cajas">
         <div class="empr-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg></div>
         <div class="empr-card__info">
           <span class="empr-card__badge">NUEVO</span>
-          <h3 class="empr-card__title">Diseñador de cajas 📦</h3>
+          <h3 class="empr-card__title">Cajas ensamblables 📦</h3>
           <p class="empr-card__desc">Subí tu logo y generá plantillas imprimibles de cajas personalizadas. 8 estilos distintos, listas para imprimir y armar.</p>
         </div>
       </div>
@@ -1215,8 +1215,7 @@
         <div class="form-group"><label class="form-label">Margen ganancia (%)</label><input type="number" id="costoMargen" class="form-input" placeholder="40" min="0" max="500"/></div>
         <div class="form-group"><label class="form-label">Gastos fijos ($)</label><input type="number" id="costoFijos" class="form-input" placeholder="200" min="0"/></div>
       </div>
-      <button class="btn btn--primary" id="btnCalcularCosto" style="width:100%;margin-top:1.25rem">Calcular precio</button>
-      <div class="costos-resultado" id="costosResultado" style="display:none">
+      <div class="costos-resultado" id="costosResultado" style="margin-bottom:1rem;visibility:hidden;min-height:0;overflow:hidden;transition:all .3s">
         <div class="costos-resultado__fila"><span>Material</span><span id="resMateria">$0</span></div>
         <div class="costos-resultado__fila"><span>Electricidad</span><span id="resElect">$0</span></div>
         <div class="costos-resultado__fila"><span>Mano de obra</span><span id="resTrabajo">$0</span></div>
@@ -1226,6 +1225,7 @@
         <div class="costos-resultado__fila costos-resultado__fila--total"><span>💰 Precio de venta</span><span id="resTotal">$0</span></div>
         <button class="btn btn--sm" id="btnCopiarCosto" style="margin-top:1rem;width:100%">📋 Copiar resumen</button>
       </div>
+      <button class="btn btn--primary" id="btnCalcularCosto" style="width:100%;margin-top:.5rem">Calcular precio</button>
     </div>
   </div>
 
@@ -1963,13 +1963,13 @@
 
   <!-- MODAL DISEÑADOR DE CAJAS -->
   <!-- MODAL DISEÑADOR DE CAJAS — estilo Pacdora -->
-  <div class="modal-overlay" id="modal-cajas-diseño" style="display:none">
+  <div class="modal-overlay" id="modal-cajas" style="display:none">
     <div class="modal" style="max-width:1100px;width:98vw;max-height:96vh;overflow:hidden;padding:0;display:flex;flex-direction:column">
 
       <!-- Header -->
       <div style="display:flex;align-items:center;justify-content:space-between;padding:.9rem 1.2rem;border-bottom:1px solid rgba(255,255,255,.08);flex-shrink:0">
-        <h2 style="font-family:var(--font-head);letter-spacing:.08em;font-size:.9rem;margin:0;color:var(--cyan)">📦 DISEÑADOR DE CAJAS</h2>
-        <button class="modal__close" onclick="cerrarEmprendedor('modal-cajas-diseño')" style="position:static">✕</button>
+        <h2 style="font-family:var(--font-head);letter-spacing:.08em;font-size:.9rem;margin:0;color:var(--cyan)">📦 CAJAS ENSAMBLABLES</h2>
+        <button class="modal__close" onclick="cerrarEmprendedor('modal-cajas')" style="position:static">✕</button>
       </div>
 
       <!-- Body: sidebar izq + contenido derecha -->
@@ -4842,33 +4842,58 @@
     })
     document.getElementById('makerAvatarFile').addEventListener('change', async (e) => {
       const file = e.target.files[0]
-      if (!file || !usuarioActual) return
-      const ext      = file.name.split('.').pop()
-      const fileName = `maker_avatar_${usuarioActual.id}_${Date.now()}.jpg`
-      const fileToUpload = await comprimirImagen(file, 400, 400, 0.80)
-      const { error: upErr } = await supabase.storage.from('media').upload(fileName, fileToUpload, { upsert: true })
-      if (upErr) return
-      const { data: urlData } = supabase.storage.from('media').getPublicUrl(fileName)
-      const url = urlData.publicUrl
-      document.getElementById('makerModalAvatarImg').src = url
-      document.getElementById('makerModalAvatarImg').style.display = 'block'
-      document.getElementById('makerModalAvatarTxt').style.display = 'none'
-      if (!miMaker) miMaker = {}
-      miMaker.foto_url = url
+      if (!file) return
+      if (!usuarioActual) {
+        document.getElementById('makerError').textContent = 'Necesitás iniciar sesión para subir una foto.'
+        return
+      }
+      const errEl = document.getElementById('makerError')
+      const overlay = document.querySelector('.maker-modal-avatar-overlay')
+      if (overlay) overlay.textContent = 'Subiendo...'
+      try {
+        const fileName = `maker_avatar_${usuarioActual.id}_${Date.now()}.jpg`
+        const fileToUpload = await comprimirImagen(file, 400, 400, 0.80)
+        const { error: upErr } = await supabase.storage.from('media').upload(fileName, fileToUpload, { upsert: true })
+        if (upErr) throw upErr
+        const { data: urlData } = supabase.storage.from('media').getPublicUrl(fileName)
+        const url = urlData.publicUrl
+        document.getElementById('makerModalAvatarImg').src = url
+        document.getElementById('makerModalAvatarImg').style.display = 'block'
+        document.getElementById('makerModalAvatarTxt').style.display = 'none'
+        if (!miMaker) miMaker = {}
+        miMaker.foto_url = url
+        errEl.textContent = ''
+      } catch(err) {
+        errEl.textContent = 'Error al subir la foto: ' + (err.message || 'intentá de nuevo')
+      } finally {
+        if (overlay) overlay.textContent = '✎ Cambiar foto'
+      }
     })
 
     // Guardar maker
     document.getElementById('btnGuardarMaker').addEventListener('click', async () => {
-      if (!usuarioActual) return
       const errEl   = document.getElementById('makerError')
       const exitoEl = document.getElementById('makerExito')
       const btn     = document.getElementById('btnGuardarMaker')
       errEl.textContent = ''; exitoEl.style.display = 'none'
+
+      // Verificar sesión vigente
+      if (!usuarioActual) {
+        errEl.textContent = 'Tu sesión expiró. Por favor iniciá sesión nuevamente.'
+        return
+      }
+      // Verificar que tenga nombre al menos
+      const nombreFinal = perfilUsuario?.nombre || usuarioActual.email.split('@')[0]
+      if (!nombreFinal) {
+        errEl.textContent = 'Completá tu perfil de usuario antes de crear un perfil Maker.'
+        return
+      }
+
       btn.disabled = true; btn.textContent = 'Guardando...'
 
       const datos = {
         user_id:     usuarioActual.id,
-        nombre:      perfilUsuario?.nombre || usuarioActual.email.split('@')[0],
+        nombre:      nombreFinal,
         foto_url:    miMaker?.foto_url || perfilUsuario?.foto_url || null,
         descripcion: document.getElementById('makerDesc').value.trim() || null,
         instagram:   document.getElementById('makerInstagram').value.trim() || null,
@@ -4885,7 +4910,11 @@
       const esNuevo = !miMaker?.id
       const { error } = await supabase.from('makers').upsert([datos], { onConflict: 'user_id' })
       btn.disabled = false; btn.textContent = 'Guardar perfil'
-      if (error) { errEl.textContent = 'Error al guardar: ' + error.message; return }
+      if (error) {
+        console.error('Error makers upsert:', error)
+        errEl.textContent = 'Error al guardar: ' + (error.message || error.details || 'Error desconocido')
+        return
+      }
 
       // Notificar por email:
       // - Si es perfil nuevo con Instagram (cualquier usuario)
@@ -5679,7 +5708,7 @@
             var url=URL.createObjectURL(blob)
             var a=document.createElement('a')
             if (!usuarioActual) { window.requireLogin(function(){}); URL.revokeObjectURL(url); return }
-            a.href=url; a.download='llavero_'+p.nombre.replace(/\s/g,'_')+'.stl'; a.click(); if(window.trackDescarga) trackDescarga('llavero')
+            window.dlCheck('llavero',function(){ a.href=url; a.download='llavero_'+p.nombre.replace(/\s/g,'_')+'.stl'; a.click(); if(window.trackDescarga) trackDescarga('llavero') })
             setTimeout(function(){URL.revokeObjectURL(url)},1000)
             var kb=(buf.byteLength/1024).toFixed(1)
             document.getElementById('llInfoTris').textContent=tris.length.toLocaleString()
@@ -5834,6 +5863,23 @@
             if (row.tipo.startsWith('empr-img-')) {
               const tool = row.tipo.replace('empr-img-', '')
               window._portadasMap[tool] = row.url
+              // Aplicar portada a la card de emprendedores
+              const emprCard = document.querySelector('[data-empr-id="'+tool+'"]')
+              if (emprCard) {
+                const imgEl = emprCard.querySelector('.empr-card__img, .empr-card__cover, img')
+                if (imgEl) {
+                  imgEl.src = row.url; imgEl.style.display = 'block'
+                } else {
+                  // Insertar imagen de fondo en el área de icono
+                  const iconEl = emprCard.querySelector('.empr-card__icon')
+                  if (iconEl) {
+                    iconEl.style.backgroundImage = 'url('+row.url+')'
+                    iconEl.style.backgroundSize = 'cover'
+                    iconEl.style.backgroundPosition = 'center'
+                    iconEl.innerHTML = ''
+                  }
+                }
+              }
             }
           })        }
       } catch(e) { console.warn('cargarHcardImgs:', e) }
@@ -6577,9 +6623,10 @@
       try {
         let data = []
         if (plat === 'todas') {
-          const [prints, cults, thing] = await Promise.all([
+          const _scrap = await Promise.all([
             fetchPlat('printables'), fetchPlat('cults3d'), fetchPlat('thingiverse')
           ])
+          const prints=_scrap[0], cults=_scrap[1], thing=_scrap[2]
           const maxLen = Math.max(prints.length, cults.length, thing.length)
           for (let i = 0; i < maxLen; i++) {
             if (prints[i]) data.push(prints[i])
@@ -6798,7 +6845,7 @@
       if (el) el.style.display = 'none'
       document.body.style.overflow = ''
     }
-    ;['modal-tarjetas','modal-potenciador','modal-costos','modal-mejora','modal-presupuesto','modal-fotoproducto','modal-cajas-diseño'].forEach(id=>{
+    ;['modal-tarjetas','modal-potenciador','modal-costos','modal-mejora','modal-presupuesto','modal-fotoproducto','modal-cajas'].forEach(id=>{
       const el=document.getElementById(id)
       if(el) el.addEventListener('click',e=>{ if(e.target===el) cerrarEmprendedor(id) })
     })
@@ -6827,7 +6874,7 @@
 
     // Muestra overlay visual en la card si está en mantenimiento
     function _aplicarOverlaysMant() {
-      Object.entries(_maintTools).forEach(([id, enMant]) => {
+      Object.entries(_maintTools).forEach(function(entry) { var id=entry[0], enMant=entry[1];
         // Cards de laboratorio
         const labCard = document.querySelector('.herramienta-card[onclick*="modal-' + id + '"]')
         if (labCard) _toggleMantOverlay(labCard, id, enMant, 'lab')
@@ -6965,18 +7012,19 @@
             const sorted = Object.entries(colorMap).sort((a,b) => b[1]-a[1])
             // Tomar los 4 más frecuentes y distintos entre sí
             const picked = []
-            for (const [key] of sorted) {
-              const [r2,g2,b2] = key.split(',').map(Number)
-              const esDistinto = picked.every(([pr,pg,pb]) =>
-                Math.abs(r2-pr)+Math.abs(g2-pg)+Math.abs(b2-pb) > 60
-              )
+            for (var ki=0; ki<sorted.length; ki++) {
+              var key = sorted[ki][0]
+              var rgb = key.split(',').map(Number)
+              var r2=rgb[0],g2=rgb[1],b2=rgb[2]
+              var esDistinto = picked.every(function(p) {
+                return Math.abs(r2-p[0])+Math.abs(g2-p[1])+Math.abs(b2-p[2]) > 60
+              })
               if (esDistinto) picked.push([r2,g2,b2])
               if (picked.length === 4) break
             }
-            // Completar con defaults si hay menos de 4
             const defaults = [[21,154,156],[0,21,32],[255,255,255],[240,160,40]]
             while (picked.length < 4) picked.push(defaults[picked.length])
-            tarjColores = picked.map(([r2,g2,b2]) => `rgb(${r2},${g2},${b2})`)
+            tarjColores = picked.map(function(p) { return 'rgb('+p[0]+','+p[1]+','+p[2]+')' })
             tarjLogoColor = tarjColores[0]
             tarjActualizarSelectores()
           } catch(e) { tarjLogoColor = null }
@@ -7157,129 +7205,75 @@
         ctx.font=`${H*0.046}px Arial`;ctx.fillStyle='rgba(255,255,255,0.6)'
         ctx.fillText(con||'',leftW+rightW/2,H*0.76);ctx.textAlign='left'
       }}
-      ,{nombre:'Acuarela pastel',render(ctx,W,H,logo,neg,msg,con,ac,c2,c3,c4){
-        const accent=ac||'#9b59b6';const col2=c2||'#6c3483';const col3=c3||'#fce4ec'
-        // Fondo degradado con colores del logo
-        const bg=ctx.createLinearGradient(0,0,W,H)
-        bg.addColorStop(0,tarjColorAlpha(accent,0.15));bg.addColorStop(0.5,tarjColorAlpha(col2,0.10));bg.addColorStop(1,tarjColorAlpha(accent,0.08))
-        ctx.fillStyle=col3||'#fff3e0';ctx.fillRect(0,0,W,H)
-        ctx.fillStyle=bg;ctx.fillRect(0,0,W,H)
-        // Manchas de acuarela con colores del logo
-        const manchas=[[W*0.1,H*0.15,H*0.55,tarjColorAlpha(accent,0.18)],[W*0.85,H*0.3,H*0.45,tarjColorAlpha(col2,0.15)],[W*0.5,H*0.8,H*0.5,tarjColorAlpha(accent,0.12)],[W*0.7,H*0.1,H*0.3,tarjColorAlpha(col2,0.14)]]
-        manchas.forEach(([mx,my,mr,mc])=>{const rg=ctx.createRadialGradient(mx,my,0,mx,my,mr);rg.addColorStop(0,mc);rg.addColorStop(1,'transparent');ctx.fillStyle=rg;ctx.fillRect(0,0,W,H)})
-        // Marco fino con color del logo
-        ctx.strokeStyle=tarjColorAlpha(accent,0.5);ctx.lineWidth=2;ctx.strokeRect(10,10,W-20,H-20)
-        // Logo centrado arriba
-        const lScale=tarjLogoScale||1
-        if(logo){const lh=H*0.28*(tarjLogoScale||1)*lScale,lw=logo.width*(lh/logo.height);ctx.drawImage(logo,(W-Math.min(lw,W*0.5*(tarjLogoScale||1)*lScale))/2,H*0.05,Math.min(lw,W*0.5*(tarjLogoScale||1)*lScale),lh)}
-        // Nombre
-        ctx.font=`bold ${H*0.10}px Georgia,serif`;ctx.fillStyle=col2;ctx.textAlign='center'
-        ctx.fillText(neg||'Tu Negocio',W/2,H*0.47)
-        // Separador floral
-        ctx.font=`${H*0.07}px Arial`;ctx.fillStyle=tarjColorAlpha(accent,0.7)
-        ctx.fillText('\u273f \u2665 \u273f',W/2,H*0.57)
-        // Mensaje
-        tarjWrapText(ctx,msg||'\u00a1Gracias por tu compra!',W/2,H*0.68,W*0.78,H*0.065,col2,`italic ${H*0.062}px Georgia,serif`,'center')
-        ctx.font=`${H*0.048}px Arial`;ctx.fillStyle=tarjColorAlpha(col2,0.7)
-        ctx.fillText(con||'',W/2,H*0.88);ctx.textAlign='left'
+      ,{nombre:'Acuarela pastel',render:function(ctx,W,H,logo,neg,msg,con,ac,c2,c3,c4){
+        var accent=ac||'#9b59b6'; var col2=c2||'#6c3483'; var col3=c3||'#fce4ec'
+        var bg=ctx.createLinearGradient(0,0,W,H)
+        bg.addColorStop(0,tarjColorAlpha(accent,0.15)); bg.addColorStop(0.5,tarjColorAlpha(col2,0.10)); bg.addColorStop(1,tarjColorAlpha(accent,0.08))
+        ctx.fillStyle=col3; ctx.fillRect(0,0,W,H)
+        ctx.fillStyle=bg; ctx.fillRect(0,0,W,H)
+        var manchas=[[0.1,0.1,0.3],[0.7,0.05,0.25],[0.05,0.7,0.28],[0.65,0.65,0.22]]
+        for(var mi=0;mi<manchas.length;mi++){
+          var g=ctx.createRadialGradient(W*manchas[mi][0],H*manchas[mi][1],0,W*manchas[mi][0],H*manchas[mi][1],W*manchas[mi][2])
+          g.addColorStop(0,tarjColorAlpha(accent,0.18)); g.addColorStop(1,'transparent')
+          ctx.fillStyle=g; ctx.fillRect(0,0,W,H)
+        }
+        if(logo){var lh=H*0.26*(tarjLogoScale||1),lw=logo.width*(lh/logo.height);ctx.drawImage(logo,(W-Math.min(lw,W*0.42*(tarjLogoScale||1)))/2,H*0.08,Math.min(lw,W*0.42*(tarjLogoScale||1)),lh)}
+        ctx.font='bold '+Math.round(H*0.092)+'px Georgia,serif'; ctx.fillStyle=col2; ctx.textAlign='center'
+        ctx.fillText(neg||'Tu Negocio',W/2,H*0.50)
+        ctx.font=Math.round(H*0.055)+'px Arial'; ctx.fillStyle='#888'
+        ctx.fillText('☆ ♡ ☆',W/2,H*0.60)
+        tarjWrapText(ctx,msg||'¡Gracias por tu compra!',W/2,H*0.72,W*0.76,H*0.062,tarjColorAlpha(col2,0.75),'italic '+Math.round(H*0.060)+'px Georgia,serif','center')
+        ctx.font=Math.round(H*0.052)+'px Arial'; ctx.fillStyle=accent; ctx.fillText(con||'',W/2,H*0.90); ctx.textAlign='left'
       }}
-      ,{nombre:'Neon oscuro',render(ctx,W,H,logo,neg,msg,con,ac,c2,c3,c4){
-        const accent=ac||'#00f5c4'
-        // Fondo muy oscuro
-        ctx.fillStyle=c2||'#050d12';ctx.fillRect(0,0,W,H)
-        // Rejilla sutil (grid lines)
-        ctx.strokeStyle='rgba(0,245,196,0.06)';ctx.lineWidth=1
-        for(let x=0;x<W;x+=W*0.08){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,H);ctx.stroke()}
-        for(let y=0;y<H;y+=H*0.12){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(W,y);ctx.stroke()}
-        // Borde neon brillante
-        ctx.shadowColor=accent;ctx.shadowBlur=18
-        ctx.strokeStyle=accent;ctx.lineWidth=2;ctx.strokeRect(8,8,W-16,H-16)
-        ctx.shadowBlur=0
-        // Línea horizontal acento
-        const lg=ctx.createLinearGradient(0,0,W,0)
-        lg.addColorStop(0,'transparent');lg.addColorStop(0.5,accent);lg.addColorStop(1,'transparent')
-        ctx.strokeStyle=lg;ctx.lineWidth=1.5
-        ctx.beginPath();ctx.moveTo(0,H*0.50);ctx.lineTo(W,H*0.50);ctx.stroke()
-        // Logo arriba izquierda
-        const lScale=tarjLogoScale||1
-        if(logo){const lh=H*0.28*(tarjLogoScale||1)*lScale,lw=logo.width*(lh/logo.height);ctx.drawImage(logo,W*0.06,H*0.08,Math.min(lw,W*0.40*(tarjLogoScale||1)*lScale),lh)}
-        // Nombre con glow
-        ctx.shadowColor=accent;ctx.shadowBlur=12
-        ctx.font=`900 ${H*0.105}px Arial`;ctx.fillStyle=accent;ctx.textAlign='left'
-        ctx.fillText(neg||'Tu Negocio',W*0.06,H*0.44)
-        ctx.shadowBlur=0
-        // Separador
-        ctx.fillStyle=accent;ctx.fillRect(W*0.06,H*0.48,W*0.20,1.5)
-        // Mensaje
-        tarjWrapText(ctx,msg||'\u00a1Gracias por tu compra!',W*0.06,H*0.62,W*0.88,H*0.065,'#b0e8e0',`${H*0.060}px Arial`)
-        ctx.font=`${H*0.050}px Arial`;ctx.fillStyle='rgba(0,245,196,0.55)'
-        ctx.fillText(con||'',W*0.06,H*0.90)
-        // Triángulo decorativo esquina
-        ctx.fillStyle='rgba(0,245,196,0.08)';ctx.beginPath()
-        ctx.moveTo(W,H);ctx.lineTo(W,H*0.45);ctx.lineTo(W*0.55,H);ctx.closePath();ctx.fill()
+      ,{nombre:'Neon oscuro',render:function(ctx,W,H,logo,neg,msg,con,ac,c2,c3,c4){
+        var accent=ac||'#00ff88'; var col2=c2||'#001520'; var col3=c3||'#00ccff'
+        ctx.fillStyle='#050d15'; ctx.fillRect(0,0,W,H)
+        ctx.fillStyle='rgba(0,255,136,0.06)'
+        for(var gx=0;gx<W;gx+=18) for(var gy=0;gy<H;gy+=18){ctx.beginPath();ctx.arc(gx,gy,1,0,Math.PI*2);ctx.fill()}
+        ctx.shadowColor=accent; ctx.shadowBlur=12; ctx.strokeStyle=accent; ctx.lineWidth=2
+        ctx.strokeRect(8,8,W-16,H-16); ctx.shadowBlur=0
+        if(logo){var lh2=H*0.26*(tarjLogoScale||1),lw2=logo.width*(lh2/logo.height);ctx.drawImage(logo,W*0.07,H*0.10,Math.min(lw2,W*0.38*(tarjLogoScale||1)),lh2)}
+        ctx.shadowColor=accent; ctx.shadowBlur=10
+        ctx.font='900 '+Math.round(H*0.10)+'px Arial'; ctx.fillStyle=accent; ctx.textAlign='left'
+        ctx.fillText(neg||'Tu Negocio',W*0.07,H*0.56); ctx.shadowBlur=0
+        tarjWrapText(ctx,msg||'¡gracias por tu compra!',W*0.07,H*0.70,W*0.86,H*0.062,col3,Math.round(H*0.058)+'px Arial')
+        ctx.font=Math.round(H*0.050)+'px Arial'; ctx.fillStyle='rgba(0,255,136,0.6)'; ctx.fillText(con||'',W*0.07,H*0.90); ctx.textAlign='left'
       }}
-      ,{nombre:'Retro vintage',render(ctx,W,H,logo,neg,msg,con,ac,c2,c3,c4){
-        const accent=ac||'#8B5E3C';const col2=c2||'#5a3510';const col3=c3||'#f5e6c8'
-        // Fondo papel con tono del logo
-        const bg=ctx.createLinearGradient(0,0,W,H)
-        bg.addColorStop(0,col3);bg.addColorStop(1,tarjColorAlpha(accent,0.3))
-        ctx.fillStyle=bg;ctx.fillRect(0,0,W,H)
-        // Textura de ruido
-        for(let i=0;i<800;i++){const px=Math.random()*W,py=Math.random()*H;ctx.fillStyle=tarjColorAlpha(col2,Math.random()*0.04);ctx.fillRect(px,py,1.5,1.5)}
-        // Marco doble con colores del logo
-        ctx.strokeStyle=col2;ctx.lineWidth=4;ctx.strokeRect(10,10,W-20,H-20)
-        ctx.strokeStyle=accent;ctx.lineWidth=1.5;ctx.strokeRect(18,18,W-36,H-36)
-        // Banda central decorativa
-        ctx.fillStyle=col2;ctx.fillRect(0,H*0.40,W,H*0.02)
-        ctx.fillStyle=accent;ctx.fillRect(0,H*0.43,W,H*0.01)
-        // Logo arriba centrado
-        const lScale=tarjLogoScale||1
-        if(logo){const lh=H*0.22*(tarjLogoScale||1)*lScale,lw=logo.width*(lh/logo.height);ctx.drawImage(logo,(W-Math.min(lw,W*0.42*(tarjLogoScale||1)*lScale))/2,H*0.07,Math.min(lw,W*0.42*(tarjLogoScale||1)*lScale),lh)}
-        // Nombre estilo letras de sello
-        ctx.font=`bold ${H*0.095}px Georgia,serif`;ctx.fillStyle=col2;ctx.textAlign='center'
-        ctx.fillText(neg||'Tu Negocio',W/2,H*0.35)
-        // Estrellitas decorativas
-        ctx.font=`${H*0.055}px Arial`;ctx.fillStyle=accent
-        ctx.fillText('\u2605 \u2605 \u2605',W/2,H*0.50)
-        // Mensaje
-        tarjWrapText(ctx,msg||'\u00a1Gracias por su preferencia!',W/2,H*0.64,W*0.75,H*0.068,col2,`italic ${H*0.065}px Georgia,serif`,'center')
-        ctx.font=`${H*0.050}px Arial`;ctx.fillStyle=accent
-        ctx.fillText(con||'',W/2,H*0.86);ctx.textAlign='left'
+      ,{nombre:'Retro vintage',render:function(ctx,W,H,logo,neg,msg,con,ac,c2,c3,c4){
+        var accent=ac||'#c0392b'; var col2=c2||'#2c2c2c'; var col3=c3||'#f5e6d0'
+        ctx.fillStyle=col3; ctx.fillRect(0,0,W,H)
+        ctx.fillStyle='rgba(139,90,43,0.07)'; ctx.fillRect(0,0,W,H)
+        ctx.strokeStyle=accent; ctx.lineWidth=4; ctx.strokeRect(8,8,W-16,H-16)
+        ctx.strokeStyle=tarjColorAlpha(accent,0.4); ctx.lineWidth=1.5; ctx.strokeRect(16,16,W-32,H-32)
+        var corn=[[20,20],[W-20,20],[20,H-20],[W-20,H-20]]
+        for(var ci=0;ci<corn.length;ci++){ctx.font=Math.round(H*0.07)+'px serif';ctx.fillStyle=accent;ctx.textAlign='center';ctx.fillText('✶',corn[ci][0],corn[ci][1]+8)}
+        if(logo){var lh3=H*0.24*(tarjLogoScale||1),lw3=logo.width*(lh3/logo.height);ctx.drawImage(logo,(W-Math.min(lw3,W*0.40*(tarjLogoScale||1)))/2,H*0.08,Math.min(lw3,W*0.40*(tarjLogoScale||1)),lh3)}
+        ctx.font='bold '+Math.round(H*0.09)+'px Georgia,serif'; ctx.fillStyle=col2; ctx.textAlign='center'
+        ctx.fillText(neg||'Tu Negocio',W/2,H*0.50)
+        ctx.strokeStyle=accent; ctx.lineWidth=1; ctx.beginPath(); ctx.moveTo(W*0.2,H*0.55); ctx.lineTo(W*0.8,H*0.55); ctx.stroke()
+        tarjWrapText(ctx,msg||'¡Gracias por su preferencia!',W/2,H*0.68,W*0.72,H*0.065,col2,'italic '+Math.round(H*0.062)+'px Georgia,serif','center')
+        ctx.font=Math.round(H*0.050)+'px Arial'; ctx.fillStyle=accent; ctx.fillText(con||'',W/2,H*0.88); ctx.textAlign='left'
       }}
-      ,{nombre:'Ondas dinamicas',render(ctx,W,H,logo,neg,msg,con,ac,c2,c3,c4){
-        const accent=ac||'#6c63ff'
-        const col2u=c2||'#1a1a3e'
-        // Fondo claro
-        ctx.fillStyle=c3||'#f8f8ff';ctx.fillRect(0,0,W,H)
-        // Onda superior
-        ctx.fillStyle=col2u
-        ctx.beginPath();ctx.moveTo(0,0);ctx.lineTo(W,0);ctx.lineTo(W,H*0.38)
-        ctx.bezierCurveTo(W*0.75,H*0.52,W*0.25,H*0.28,0,H*0.42)
-        ctx.closePath();ctx.fill()
-        // Onda acento
-        ctx.fillStyle=accent
-        ctx.beginPath();ctx.moveTo(0,H*0.36)
-        ctx.bezierCurveTo(W*0.25,H*0.22,W*0.75,H*0.48,W,H*0.34)
-        ctx.lineTo(W,H*0.40);ctx.bezierCurveTo(W*0.75,H*0.54,W*0.25,H*0.30,0,H*0.44)
-        ctx.closePath();ctx.fill()
-        // Logo arriba centrado en zona oscura
-        const lScale=tarjLogoScale||1
-        if(logo){const lh=H*0.24*(tarjLogoScale||1)*lScale,lw=logo.width*(lh/logo.height);ctx.drawImage(logo,(W-Math.min(lw,W*0.45*(tarjLogoScale||1)*lScale))/2,H*0.04,Math.min(lw,W*0.45*(tarjLogoScale||1)*lScale),lh)}
-        // Nombre en zona oscura
-        ctx.font=`bold ${H*0.085}px Arial`;ctx.fillStyle='#ffffff';ctx.textAlign='center'
-        ctx.fillText(neg||'Tu Negocio',W/2,H*0.31)
-        // Zona clara — mensaje
-        ctx.font=`bold ${H*0.082}px Georgia,serif`;ctx.fillStyle=accent
-        ctx.fillText('\u00a1Gracias!',W/2,H*0.58)
-        ctx.fillStyle=tarjColorAlpha(accent,0.4);ctx.fillRect(W*0.35,H*0.63,W*0.30,2)
-        tarjWrapText(ctx,msg||'Tu compra nos hace felices.',W/2,H*0.74,W*0.78,H*0.062,'#333',`${H*0.058}px Arial`,'center')
-        ctx.font=`${H*0.048}px Arial`;ctx.fillStyle='#888'
-        ctx.fillText(con||'',W/2,H*0.90);ctx.textAlign='left'
-        // Círculos decorativos esquina inferior izquierda
-        ;[[W*0.06,H*0.88,H*0.10],[W*0.02,H*0.92,H*0.06]].forEach(([cx,cy,cr])=>{
-          ctx.beginPath();ctx.arc(cx,cy,cr,0,Math.PI*2)
-          ctx.fillStyle=tarjColorAlpha(accent,0.12);ctx.fill()
-        })
+      ,{nombre:'Ondas dinamicas',render:function(ctx,W,H,logo,neg,msg,con,ac,c2,c3,c4){
+        var accent=ac||'#3498db'; var col2=c2||'#1abc9c'
+        ctx.fillStyle='#f8faff'; ctx.fillRect(0,0,W,H)
+        for(var w=0;w<3;w++){
+          var wg=ctx.createLinearGradient(0,0,W,0)
+          wg.addColorStop(0,tarjColorAlpha(accent,0.15-w*0.04))
+          wg.addColorStop(1,tarjColorAlpha(col2,0.12-w*0.03))
+          ctx.fillStyle=wg; ctx.beginPath(); ctx.moveTo(0,H*(0.55+w*0.08))
+          for(var xi=0;xi<=W;xi+=W/6) ctx.quadraticCurveTo(xi+W/12,H*(0.50+w*0.08)-H*0.05*(xi%2?1:-1),xi+W/6,H*(0.55+w*0.08))
+          ctx.lineTo(W,H); ctx.lineTo(0,H); ctx.closePath(); ctx.fill()
+        }
+        if(logo){var lh4=H*0.26*(tarjLogoScale||1),lw4=logo.width*(lh4/logo.height);ctx.drawImage(logo,W*0.06,H*0.10,Math.min(lw4,W*0.35*(tarjLogoScale||1)),lh4)}
+        ctx.font='bold '+Math.round(H*0.10)+'px Arial'; ctx.fillStyle=accent; ctx.textAlign='left'
+        ctx.fillText(neg||'Tu Negocio',W*0.06,H*0.52)
+        ctx.fillStyle=col2; ctx.fillRect(W*0.06,H*0.56,W*0.14,3)
+        tarjWrapText(ctx,msg||'¡Gracias!',W*0.06,H*0.68,W*0.55,H*0.065,col2,Math.round(H*0.062)+'px Arial')
+        ctx.font=Math.round(H*0.052)+'px Arial'; ctx.fillStyle='#888'; ctx.fillText(con||'',W*0.06,H*0.88)
+        ctx.save(); ctx.globalAlpha=0.12; ctx.fillStyle=accent
+        ctx.beginPath(); ctx.arc(W*0.78,H*0.35,H*0.28,0,Math.PI*2); ctx.fill(); ctx.restore()
+        ctx.textAlign='left'
       }}
     ]
     // Orden de diseños — admin puede reordenar, se guarda en Supabase
@@ -7291,8 +7285,13 @@
         if (res.data && res.data.nombre) {
           const order = JSON.parse(res.data.nombre)
           const ordered = []
-          order.forEach(n => { const d = TARJ_DISENOS.find(x => x.nombre === n); if (d) ordered.push(d) })
-          TARJ_DISENOS.forEach(d => { if (!order.includes(d.nombre)) ordered.push(d) })
+          const seen = new Set()
+          // Solo agregar diseños que existen Y no se hayan agregado ya (eliminar duplicados del orden guardado)
+          order.forEach(n => {
+            const d = TARJ_DISENOS.find(x => x.nombre === n)
+            if (d && !seen.has(n)) { seen.add(n); ordered.push(d) }
+          })
+          TARJ_DISENOS.forEach(d => { if (!seen.has(d.nombre)) ordered.push(d) })
           tarjDisenosOrden = ordered.map(d => d.nombre)
           // Reordenar el array en lugar
           ordered.forEach((d, i) => { TARJ_DISENOS[i] = d })
@@ -7423,7 +7422,7 @@
         // Promediar color de las 4 esquinas como color de fondo
         const corners = [[0,0],[W2-1,0],[0,H2-1],[W2-1,H2-1]]
         let bgR=0,bgG=0,bgB=0
-        corners.forEach(([cx,cy])=>{ const i=(cy*W2+cx)*4; bgR+=d[i]; bgG+=d[i+1]; bgB+=d[i+2] })
+        corners.forEach(function(cc){ var cx=cc[0],cy=cc[1]; const i=(cy*W2+cx)*4; bgR+=d[i]; bgG+=d[i+1]; bgB+=d[i+2] })
         bgR=Math.round(bgR/4); bgG=Math.round(bgG/4); bgB=Math.round(bgB/4)
         // Tolerancia según el slider (0 = 0px, 1 = 120px de distancia en RGB)
         const tol = tarjBgRemoval * 120
@@ -7451,7 +7450,7 @@
         const prev=document.createElement('canvas');prev.width=TARJ_W/2;prev.height=TARJ_H/2;prev.style.cssText='width:100%;border-radius:8px;border:1px solid var(--border-sub);display:block'
         prev.getContext('2d').drawImage(canvas,0,0,TARJ_W/2,TARJ_H/2)
         const btn=document.createElement('button');btn.className='btn btn--sm tarj-dl-btn';btn.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> Descargar PNG'
-        btn.addEventListener('click',()=>{if(!usuarioActual){window.requireLogin(()=>{});return};canvas.toBlob(blob=>{const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=`tarjeta-${idx+1}.png`;a.click();URL.revokeObjectURL(url);if(window.trackDescarga)trackDescarga('tarjetas')},'image/png')})
+        btn.addEventListener('click',()=>{window.dlCheck('tarjetas',function(){canvas.toBlob(blob=>{const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=`tarjeta-${idx+1}.png`;a.click();URL.revokeObjectURL(url);if(window.trackDescarga)trackDescarga('tarjetas')},'image/png')})})
         const btnEdit=document.createElement('button');btnEdit.className='btn btn--sm';btnEdit.style.cssText='display:flex;align-items:center;gap:.3rem;margin-top:.3rem;width:100%;justify-content:center;border-color:var(--cyan);color:var(--cyan)'
         btnEdit.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg> Editar posición'
         btnEdit.addEventListener('click',()=>window.tarjEditorAbrir(d,idx))
@@ -7480,7 +7479,7 @@
     document.getElementById('btnPotenciar').addEventListener('click',async()=>{const err=document.getElementById('potencError'),load=document.getElementById('potencLoading'),res=document.getElementById('potencResultados'),btn=document.getElementById('btnPotenciar');err.textContent='';if(!potencImgBase64){err.textContent='Primero subi una foto.';return}const desc=document.getElementById('potencDesc').value.trim();btn.disabled=true;load.style.display='flex';res.style.display='none';const msgs=['Analizando imagen...','Generando propuestas...','Creando descripcion...','Casi listo...'];let mi=0;const mel=document.getElementById('potencLoadingMsg');const intv=setInterval(()=>{mi=(mi+1)%msgs.length;mel.textContent=msgs[mi]},2200);try{const resp=await fetch(EDGE_FN_URL,{method:'POST',headers:{'Content-Type':'application/json','apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY},body:JSON.stringify({imageBase64:potencImgBase64,imageType:potencImgType,descripcion:desc||null})});const data=await resp.json();if(!resp.ok||!data.ok)throw new Error(data?.error||data?.detail||`Error ${resp.status}`);const p=data.data;document.getElementById('potencPromptImg').textContent=p.prompt_imagen||'';document.getElementById('potencTitulos').innerHTML=(p.titulos||[]).map((t,i)=>`<div class="potenc-titulo-item"><span class="potenc-titulo-num">${i+1}</span><span class="potenc-titulo-text">${t}</span><button class="potenc-copy-mini" onclick="potencCopiarTitulo(this,${JSON.stringify(t)})">copiar</button></div>`).join('');document.getElementById('potencDescResult').textContent=p.descripcion||'';res.style.display='block';res.scrollIntoView({behavior:'smooth',block:'nearest'})}catch(e){let msg=e.message||'Intenta de nuevo.';if(msg.includes('ANTHROPIC_API_KEY'))msg='Falta la API key en Supabase Edge Functions Secrets.';else if(msg.includes('Failed to fetch'))msg='No se pudo conectar con la Edge Function.';err.textContent=msg}finally{clearInterval(intv);load.style.display='none';btn.disabled=false}})
 
     // ── CALCULADORA ───────────────────────────────────────────────────
-    document.getElementById('btnCalcularCosto').addEventListener('click',()=>{const g=id=>parseFloat(document.getElementById(id).value)||0;const mat=(g('costoGramos')/1000)*g('costoPorKg'),el=g('costoHoras')*g('costoElect'),trab=(g('costoTrabajo')/60)*g('costoHoraTrabajo'),fij=g('costoFijos');const sub=mat+el+trab+fij,gan=sub*(g('costoMargen')/100),tot=sub+gan;const fmt=n=>'$'+Math.round(n).toLocaleString('es-AR');[['resMateria',mat],['resElect',el],['resTrabajo',trab],['resFijos',fij],['resSubtotal',sub],['resGanancia',gan],['resTotal',tot]].forEach(([id,v])=>document.getElementById(id).textContent=fmt(v));document.getElementById('costosResultado').style.display='block'; if(window.trackDescarga) trackDescarga('costos')})
+    document.getElementById('btnCalcularCosto').addEventListener('click',()=>{const g=id=>parseFloat(document.getElementById(id).value)||0;const mat=(g('costoGramos')/1000)*g('costoPorKg'),el=g('costoHoras')*g('costoElect'),trab=(g('costoTrabajo')/60)*g('costoHoraTrabajo'),fij=g('costoFijos');const sub=mat+el+trab+fij,gan=sub*(g('costoMargen')/100),tot=sub+gan;const fmt=n=>'$'+Math.round(n).toLocaleString('es-AR');[['resMateria',mat],['resElect',el],['resTrabajo',trab],['resFijos',fij],['resSubtotal',sub],['resGanancia',gan],['resTotal',tot]].forEach(function(pair){document.getElementById(pair[0]).textContent=fmt(pair[1])});const _resEl=document.getElementById('costosResultado'); _resEl.style.visibility='visible'; _resEl.style.minHeight=''; _resEl.style.overflow='visible'; if(window.trackDescarga) trackDescarga('costos')})
     document.getElementById('btnCopiarCosto').addEventListener('click',()=>{const g=id=>document.getElementById(id).textContent;const txt=['Calculadora Rabbit3D','Material: '+g('resMateria'),'Electricidad: '+g('resElect'),'Mano de obra: '+g('resTrabajo'),'Gastos fijos: '+g('resFijos'),'Subtotal: '+g('resSubtotal'),'Ganancia: '+g('resGanancia'),'PRECIO VENTA: '+g('resTotal')].join('\n');navigator.clipboard.writeText(txt).then(()=>{const b=document.getElementById('btnCopiarCosto');b.textContent='Copiado!';setTimeout(()=>{b.textContent='Copiar resumen'},2000)})})
 
     // ══════════════════════════════════════════
@@ -7531,8 +7530,8 @@
     ;[['mejoraSuavizado','mejoraSuavizadoVal'],['mejoraNitidez','mejoraNitidezVal'],
       ['mejoraContraste','mejoraContrasteVal'],['mejoraRuido','mejoraRuidoVal'],
       ['mejoraSat','mejoraSatVal']
-    ].forEach(([id,vid]) => {
-      const el = document.getElementById(id)
+    ].forEach(function(pair) { var id=pair[0],vid=pair[1];
+      var el = document.getElementById(id)
       if (el) el.addEventListener('input', function() { document.getElementById(vid).textContent = this.value })
     })
 
@@ -7740,9 +7739,11 @@
       c.toBlob(blob => {
         const url = URL.createObjectURL(blob)
         const a = document.createElement('a')
-        if (!usuarioActual) { window.requireLogin(()=>{}); return }
-        a.href = url; a.download = 'imagen-mejorada.png'; a.click(); if(window.trackDescarga) trackDescarga('mejora')
-        URL.revokeObjectURL(url)
+        window.dlCheck('mejora', function(){
+          a.href = url; a.download = 'imagen-mejorada.png'; a.click()
+          if(window.trackDescarga) trackDescarga('mejora')
+        })
+        // No revocar URL acá — se revoca después del click en el callback
       }, 'image/png')
     })
 
@@ -8517,7 +8518,7 @@
             // Samplear esquinas del fondo (evitar el centro donde puede estar el producto)
             const pts = [[10,10],[OUT_W-60,10],[10,OUT_H-60],[OUT_W-60,OUT_H-60]]
             let sr=0,sg=0,sb=0,sn=0
-            pts.forEach(([px,py]) => {
+            pts.forEach(function(pt) { var px=pt[0],py=pt[1];
               try {
                 const s = ctx.getImageData(px, py, 50, 50).data
                 for(let i=0;i<s.length;i+=4){sr+=s[i];sg+=s[i+1];sb+=s[i+2];sn++}
@@ -8669,7 +8670,7 @@
         ['fotoSombraOff','fotoSombraOffVal','px'],
         ['fotoVignet','fotoVignetVal','%'],
         ['fotoBgBlur','fotoBgBlurVal','px'],
-      ].forEach(([id, valId, suffix, showSign]) => {
+      ].forEach(function(p) { var id=p[0],valId=p[1],suffix=p[2],showSign=p[3];
         const el = document.getElementById(id)
         if (!el) return
         el.addEventListener('input', function() {
@@ -8745,16 +8746,14 @@
         fotoPosX = 0; fotoPosY = 0; fotoRender()
       })
       document.getElementById('fotoBtnDescargar').addEventListener('click', () => {
-        if (!requireLogin) return
-        window.requireLogin(() => {
-          if(window.trackDescarga) trackDescarga('fotoproducto')
-          canvas.toBlob(blob => {
-            const url = URL.createObjectURL(blob)
-            const a = document.createElement('a')
+        canvas.toBlob(blob => {
+          const url = URL.createObjectURL(blob)
+          const a = document.createElement('a')
+          window.dlCheck('fotoproducto', function(){
             a.href = url; a.download = 'foto-producto-lamadriguera.png'; a.click()
-            URL.revokeObjectURL(url)
-          }, 'image/png')
-        })
+            if(window.trackDescarga) trackDescarga('fotoproducto')
+          })
+        }, 'image/png')
       })
       document.getElementById('fotoBtnNueva').addEventListener('click', () => {
         fotoOrigImg = null; fotoRecortada = null; fotoBgColor = null
@@ -8774,12 +8773,12 @@
         ;[['fotoBrillo',0],['fotoContraste',0],['fotoSaturacion',0],['fotoTinte',0],
           ['fotoBordes',0],['fotoOpacidad',100],['fotoSombraOpac',0],['fotoSombraBlur',20],
           ['fotoSombraOff',10],['fotoVignet',0],['fotoBgBlur',0]
-        ].forEach(([id,val]) => { const el=document.getElementById(id); if(el) el.value=val })
+        ].forEach(function(p) { var id=p[0],val=p[1]; var el=document.getElementById(id); if(el) el.value=val })
         ;[['fotoBrilloVal','0'],['fotoContrasteVal','0'],['fotoSaturacionVal','0'],
           ['fotoTinteVal','0%'],['fotoBordesVal','0px'],['fotoOpacidadVal','100%'],
           ['fotoSombraOpacVal','0%'],['fotoSombraBlurVal','20px'],['fotoSombraOffVal','10px'],
           ['fotoVignetVal','0%'],['fotoBgBlurVal','0px']
-        ].forEach(([id,val]) => { const el=document.getElementById(id); if(el) el.textContent=val })
+        ].forEach(function(p) { var id=p[0],val=p[1]; var el=document.getElementById(id); if(el) el.textContent=val })
         fotoSetSize(1080, 1080)
         document.querySelectorAll('.foto-size-btn').forEach(b => b.classList.remove('foto-size-btn--active'))
         document.querySelector('.foto-size-btn[data-w="1080"][data-h="1080"]').classList.add('foto-size-btn--active')
@@ -9077,7 +9076,7 @@
         ['CANT.',       C_QTY],
         ['PRECIO UNIT.', C_PRICE],
         ['SUBTOTAL',    C_SUB],
-      ].forEach(([label, col]) => {
+      ].forEach(function(p) { var label=p[0],col=p[1];
         ctx.font = 'bold 21px Arial'; ctx.fillStyle = C.cyan
         ctx.textAlign = col.align; ctx.fillText(label, col.x, cy + 36); ctx.textAlign = 'left'
       })
@@ -9208,18 +9207,22 @@
           })
           pdf.addImage(imgData, 'PNG', 0, 0, 210, 297)
           const nombreArchivo = `presupuesto-${(g('presNumero')||'001').padStart(3,'0')}-${(g('presClienteNombre')||'cliente').toLowerCase().replace(/\s+/g,'-')}.pdf`
-          if (!usuarioActual) { window.requireLogin(()=>{}); return }
-          pdf.save(nombreArchivo)
+          window.dlCheck('presupuesto', function(){
+            pdf.save(nombreArchivo)
+            if(window.trackDescarga) trackDescarga('presupuesto')
+          })
         } catch(err) {
           // Fallback: descargar como PNG si jsPDF falla
           console.warn('jsPDF error, fallback a PNG:', err)
           const url = URL.createObjectURL(blob)
           const a = document.createElement('a')
           a.href = url
-          a.download = `presupuesto-${g('presNumero')||'001'}.png`; if(window.trackDescarga) trackDescarga('presupuesto')
-          if (!usuarioActual) { window.requireLogin(function(){}); URL.revokeObjectURL(url); return }
-          a.click()
-          URL.revokeObjectURL(url)
+          window.dlCheck('presupuesto', function(){
+            a.download = `presupuesto-${g('presNumero')||'001'}.png`
+            a.click()
+            URL.revokeObjectURL(url)
+            if(window.trackDescarga) trackDescarga('presupuesto')
+          })
         } finally {
           btnGen.disabled = false
           btnGen.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="15" height="15"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> Generar y descargar PDF'
@@ -9448,12 +9451,14 @@
       }
 
       // ── EMPRENDEDORES: orden + portada ────────────────────────────
+      // EMPR_TOOLS — se construye dinámicamente desde el DOM para incluir nuevas herramientas automáticamente
       var EMPR_TOOLS = [
         {id:'tarjetas',      label:'Tarjetas de agradecimiento'},
-        {id:'costos',        label:'Calculadora de costos'},
-        {id:'mejora',        label:'Mejorador de imágenes'},
-        {id:'presupuesto',   label:'Generador de presupuestos'},
         {id:'fotoproducto',  label:'Cambiar fondo de producto'},
+        {id:'presupuesto',   label:'Generador de presupuestos'},
+        {id:'mejora',        label:'Mejorador de imágenes'},
+        {id:'costos',        label:'Calculadora de costos'},
+        {id:'cajas',         label:'Cajas ensamblables'},
       ]
       var EMPR_IMG_KEY = 'empr-img-'
 
@@ -9463,11 +9468,12 @@
           var res = await supabase.from('media').select('nombre').eq('tipo','empr-order').maybeSingle()
           if (res.data && res.data.nombre) {
             var order = JSON.parse(res.data.nombre)
-            if (order.length === EMPR_TOOLS.length && order.every(function(id){ return EMPR_TOOLS.find(function(t){return t.id===id}) })) {
-              var parsed = order.map(function(id){ return EMPR_TOOLS.find(function(t){return t.id===id}) })
-              emprCurrentOrder = parsed
-              applyEmprOrder(parsed)
-            }
+            // Filtrar solo ids que existen actualmente, agregar los nuevos al final
+            var validOrder = order.filter(function(id){ return EMPR_TOOLS.find(function(t){return t.id===id}) })
+            EMPR_TOOLS.forEach(function(t){ if (!validOrder.includes(t.id)) validOrder.push(t.id) })
+            var parsed = validOrder.map(function(id){ return EMPR_TOOLS.find(function(t){return t.id===id}) }).filter(Boolean)
+            emprCurrentOrder = parsed
+            applyEmprOrder(parsed)
           }
         } catch(e) { console.warn('loadEmprOrderFromSupabase:', e) }
       }
@@ -9871,21 +9877,36 @@
 
 
       // ── Gestor de Mantenimiento (admin) ──────────────────────────────────
-      const MANT_TOOLS = [
-        // Laboratorio 3D
-        { id: 'llavero',      label: '🔑 Llaveros con nombre',        tipo: 'lab'  },
-        { id: 'caja',         label: '📦 Cajas personalizadas',        tipo: 'lab'  },
-        { id: 'maceta',       label: '🌱 Macetas personalizadas',      tipo: 'lab'  },
-        { id: 'marco',        label: '🖼 Marcos personalizados',       tipo: 'lab'  },
-        { id: 'cortante',     label: '✂️ Cortantes personalizados',    tipo: 'lab'  },
-        // Emprendedores
-        { id: 'tarjetas',     label: '💌 Tarjetas de agradecimiento',  tipo: 'empr' },
-        { id: 'costos',       label: '🧮 Calculadora de costos',       tipo: 'empr' },
-        { id: 'mejora',       label: '✨ Mejorador de imágenes',       tipo: 'empr' },
-        { id: 'presupuesto',  label: '📄 Generador de presupuestos',   tipo: 'empr' },
-        { id: 'fotoproducto', label: '🖼 Cambiar fondo de producto',   tipo: 'empr' },
-        { id: 'cajas-diseño', label: '📦 Diseñador de cajas',          tipo: 'empr' },
-      ]
+      // Lee dinámicamente las herramientas desde el DOM — se actualiza solo al agregar nuevas
+      window._getMantTools = function() {
+        var tools = []
+
+        // Laboratorio 3D: herramienta-card — extraer id sin regex
+        document.querySelectorAll('.herramienta-card[onclick]').forEach(function(card) {
+          var onc = card.getAttribute('onclick') || ''
+          var raw = ''
+          var q1 = onc.indexOf("'"), q2 = onc.indexOf("'", q1+1)
+          var q3 = onc.indexOf('"'), q4 = onc.indexOf('"', q3+1)
+          if (q1 >= 0 && q2 > q1) raw = onc.slice(q1+1, q2)
+          else if (q3 >= 0 && q4 > q3) raw = onc.slice(q3+1, q4)
+          if (!raw) return
+          var id = raw.indexOf('modal-') === 0 ? raw.slice(6) : raw
+          var titulo = card.querySelector('h3,.herramienta-card__title')
+          var label = titulo ? titulo.textContent.trim() : id
+          if (!tools.find(function(t){ return t.id === id })) tools.push({ id: id, label: label, tipo: 'lab' })
+        })
+
+        // Emprendedores: data-empr-id — lectura directa, soporta cualquier caracter
+        document.querySelectorAll('[data-empr-id]').forEach(function(card) {
+          var id = card.getAttribute('data-empr-id')
+          if (!id) return
+          var titulo = card.querySelector('h3,.empr-card__title')
+          var label = titulo ? titulo.textContent.trim() : id
+          if (!tools.find(function(t){ return t.id === id })) tools.push({ id: id, label: label, tipo: 'empr' })
+        })
+
+        return tools
+      }
 
       window.abrirGestorMantenimiento = async function() {
         const modal = document.getElementById('modalGestorMant')
@@ -9903,10 +9924,15 @@
       }
 
       function _renderMantListas() {
+        var MANT_TOOLS = (window._getMantTools || function(){return []}).call()
         ;['lab','empr'].forEach(tipo => {
           const lista = document.getElementById('mantLista' + (tipo==='lab'?'Lab':'Empr'))
           if (!lista) return
           lista.innerHTML = ''
+          if (!MANT_TOOLS.filter(t => t.tipo === tipo).length) {
+            lista.innerHTML = '<p style="font-size:.7rem;color:var(--muted);padding:.3rem">No hay herramientas registradas.</p>'
+            return
+          }
           MANT_TOOLS.filter(t => t.tipo === tipo).forEach(tool => {
             const enMant = !!_maintTools[tool.id]
             const row = document.createElement('div')
@@ -10733,115 +10759,266 @@
       function cajasRenderPreview3D(W,H,D,color,bgColor,texto) {
         var c=document.getElementById('cajasPreview3D'); if(!c) return
         var size=c.parentElement.clientWidth-24||300
-        c.width=size; c.height=Math.round(size*0.65)
+        c.width=size; c.height=Math.round(size*0.68)
         var ctx=c.getContext('2d',{willReadFrequently:true})
+        var slider=document.getElementById('cajasSlider')
+        var t=(slider?parseInt(slider.value):70)/100
+        var d=CAJAS_DISEÑOS[cajasSelectedIdx]
 
         // Fondo
         var grd=ctx.createLinearGradient(0,0,0,c.height)
-        grd.addColorStop(0,'#1e2f3a'); grd.addColorStop(1,'#0f1e26')
+        grd.addColorStop(0,'#1a2c38'); grd.addColorStop(1,'#0d1a22')
         ctx.fillStyle=grd; ctx.fillRect(0,0,c.width,c.height)
 
-        var slider=document.getElementById('cajasSlider')
-        var t=(slider?parseInt(slider.value):70)/100  // 0=abierto, 1=cerrado
-
-        // Normalizar proporciones
+        // ── Infraestructura 3D compartida ──────────────────────────────
         var s=Math.max(W,H,D)
-        var hw=W/s*0.38, hh=H/s*0.38, hd=D/s*0.38
-        var zoom=Math.min(c.width,c.height)*0.85
-        var cx=c.width/2, cy=c.height/2+hd*zoom*0.1
+        var hw=W/s*0.36, hh=H/s*0.36, hd=D/s*0.36
+        var zoom=Math.min(c.width,c.height)*0.88
+        var cx=c.width/2, cy=c.height*0.52
+        var rotY=0.52, rotX=0.40
 
-        // Rotación isométrica fija — se ve bien
-        var rotY=0.55, rotX=0.42
-
-        function proj3D(x,y,z){
-          var cosY=Math.cos(rotY),sinY=Math.sin(rotY)
-          var x1=x*cosY+z*sinY, z1=-x*sinY+z*cosY
-          var cosX=Math.cos(rotX),sinX=Math.sin(rotX)
-          var y1=y*cosX-z1*sinX
-          return {px:cx+x1*zoom, py:cy+y1*zoom}
+        function proj(x,y,z){
+          var cY=Math.cos(rotY),sY=Math.sin(rotY)
+          var x1=x*cY+z*sY, z1=-x*sY+z*cY
+          var cX=Math.cos(rotX),sX=Math.sin(rotX)
+          return {px:cx+x1*zoom, py:cy+(y*cX-z1*sX)*zoom}
         }
-
-        // 8 vértices de la caja (sin tapa superior)
-        function v(x,y,z){return proj3D(x,y,z)}
-        var fl=v(-hw,-hh, hd), fr=v( hw,-hh, hd)
-        var bl=v(-hw,-hh,-hd), br=v( hw,-hh,-hd)
-        var FL=v(-hw, hh, hd), FR=v( hw, hh, hd)
-        var BL=v(-hw, hh,-hd), BR=v( hw, hh,-hd)
-
-        function face(pts,fill,stroke,alpha){
-          ctx.save(); ctx.globalAlpha=alpha||1
+        function face(pts,fill,stroke,lw,alpha){
+          ctx.save(); if(alpha!=null) ctx.globalAlpha=alpha
           ctx.beginPath(); ctx.moveTo(pts[0].px,pts[0].py)
-          pts.slice(1).forEach(function(p){ctx.lineTo(p.px,p.py)})
+          for(var i=1;i<pts.length;i++) ctx.lineTo(pts[i].px,pts[i].py)
           ctx.closePath()
           if(fill){ctx.fillStyle=fill;ctx.fill()}
-          if(stroke){ctx.strokeStyle=stroke;ctx.lineWidth=1.5;ctx.stroke()}
+          if(stroke){ctx.strokeStyle=stroke;ctx.lineWidth=lw||1.5;ctx.stroke()}
           ctx.restore()
         }
+        function shadow(cx2,cy2,rx,ry){
+          ctx.save(); ctx.globalAlpha=0.13
+          ctx.beginPath(); ctx.ellipse(cx2,cy2,rx,ry,0,0,Math.PI*2)
+          ctx.fillStyle='#000'; ctx.fill(); ctx.restore()
+        }
+        function drawLogo(p0,p1,p2,p3){
+          if(!cajasLogoImg) return
+          var px=(p0.px+p1.px+p2.px+p3.px)/4
+          var py=(p0.py+p1.py+p2.py+p3.py)/4
+          var fw=Math.abs(p1.px-p0.px)*0.5, fh=Math.abs(p3.py-p0.py)*0.38
+          var lr=Math.min(fw/cajasLogoImg.width, fh/cajasLogoImg.height)
+          ctx.drawImage(cajasLogoImg, px-cajasLogoImg.width*lr/2, py-cajasLogoImg.height*lr/2,
+            cajasLogoImg.width*lr, cajasLogoImg.height*lr)
+        }
 
-        // Sombra elíptica en el suelo
-        ctx.save(); ctx.globalAlpha=0.15
-        ctx.beginPath(); ctx.ellipse(cx,cy+hh*zoom*0.85,hw*zoom*0.7,hw*zoom*0.18,0,0,Math.PI*2)
-        ctx.fillStyle='#000'; ctx.fill(); ctx.restore()
+        // Tapa animada (pivota sobre el borde trasero superior)
+        var tapAngle=(1-t)*(-Math.PI*0.75)
+        function vT(x,y,z){
+          var ry=y*Math.cos(tapAngle)-z*Math.sin(tapAngle)
+          var rz=y*Math.sin(tapAngle)+z*Math.cos(tapAngle)
+          return proj(x, hh+ry, -hd+rz)
+        }
 
-        // Cara trasera (fondo)
-        face([bl,br,BR,BL], cajasAlpha(bgColor,.5), 'rgba(255,255,255,.1)')
-        // Cara izquierda
-        face([bl,fl,FL,BL], cajasAlpha(bgColor,.65), 'rgba(255,255,255,.12)')
-        // Cara inferior (base)
-        face([bl,br,fr,fl], 'rgba(0,0,0,.3)', 'rgba(255,255,255,.08)')
-        // Cara frontal
-        face([fl,fr,FR,FL], bgColor, 'rgba(255,255,255,.2)')
-        // Logo en frente
-        if(cajasLogoImg){
-          var p0=FL,p1=FR,p2=fl,p3=fr
-          var px=(p0.px+p1.px+p2.px+p3.px)/4, py=(p0.py+p1.py+p2.py+p3.py)/4
-          var faceW=Math.abs(FR.px-FL.px)*0.55, faceH=Math.abs(FR.py-fl.py)*0.45
-          ctx.save()
-          var m=[(p1.px-p0.px)/512,(p1.py-p0.py)/512,(p2.px-p0.px)/512,(p2.py-p0.py)/512,p0.px,p0.py]
-          // Aproximación: escalar logo centrado
-          var lr=Math.min(faceW/cajasLogoImg.width,faceH/cajasLogoImg.height)
-          ctx.drawImage(cajasLogoImg,px-cajasLogoImg.width*lr/2,py-cajasLogoImg.height*lr/2,cajasLogoImg.width*lr,cajasLogoImg.height*lr)
+        var idx=cajasSelectedIdx
+
+        // ══════════════════════════════════════════════════════════════
+        // PREVIEW POR TIPO DE CAJA
+        // ══════════════════════════════════════════════════════════════
+
+        if(idx===0||idx===2||idx===5) {
+          // CAJA RECTANGULAR CON TAPA — Tuck Top, Caja con tapa, Con ventana
+          var fl=proj(-hw,-hh, hd), fr=proj( hw,-hh, hd)
+          var bl=proj(-hw,-hh,-hd), br=proj( hw,-hh,-hd)
+          var FL=proj(-hw, hh, hd), FR=proj( hw, hh, hd)
+          var BL=proj(-hw, hh,-hd), BR=proj( hw, hh,-hd)
+
+          shadow(cx, cy+hh*zoom*0.9, hw*zoom*0.75, hw*zoom*0.18)
+          face([bl,br,BR,BL], cajasAlpha(bgColor,.45), 'rgba(255,255,255,.08)')
+          face([bl,fl,FL,BL], cajasAlpha(bgColor,.6),  'rgba(255,255,255,.1)')
+          face([bl,br,fr,fl], 'rgba(0,0,0,.35)',        'rgba(255,255,255,.06)')
+          face([fl,fr,FR,FL], bgColor, 'rgba(255,255,255,.18)')
+          drawLogo(FL,FR,fl,fr)
+
+          if(idx===5) {
+            // Con ventana: circulo en cara frontal
+            var vcx=(FL.px+FR.px)/2, vcy=(FL.py+fl.py)/2
+            ctx.save(); ctx.beginPath()
+            ctx.ellipse(vcx, vcy, Math.abs(FR.px-FL.px)*0.22, Math.abs(fl.py-FL.py)*0.2, 0,0,Math.PI*2)
+            ctx.strokeStyle=color; ctx.lineWidth=2; ctx.setLineDash([4,3]); ctx.stroke()
+            ctx.fillStyle='rgba(180,230,255,0.2)'; ctx.fill()
+            ctx.setLineDash([]); ctx.restore()
+          }
+
+          face([fr,br,BR,FR], cajasAlpha(bgColor,.72), 'rgba(255,255,255,.12)')
+
+          // Tapa
+          var T0=vT(-hw,0,0), T1=vT(hw,0,0), T2=vT(hw,0,hd*2), T3=vT(-hw,0,hd*2)
+          var S0=vT(-hw,0,hd*2), S1=vT(hw,0,hd*2), S2=vT(hw,0,hd*2+hd*.55), S3=vT(-hw,0,hd*2+hd*.55)
+          face([T0,T1,T2,T3], cajasAlpha(color,.4), color, 1.5, 0.92)
+          face([S0,S1,S2,S3], cajasAlpha(color,.6), color, 1.5, 0.88)
+          face([fl,fr,FR,FL], 'transparent', color, 2)
+
+        } else if(idx===1||idx===6) {
+          // MAILER / RECTANGULAR — caja plana tipo e-commerce
+          var mhw=hw*1.3, mhd=hd*0.5  // más ancha, menos profunda
+          var fl=proj(-mhw,-hh, mhd), fr=proj( mhw,-hh, mhd)
+          var bl=proj(-mhw,-hh,-mhd), br=proj( mhw,-hh,-mhd)
+          var FL=proj(-mhw, hh, mhd), FR=proj( mhw, hh, mhd)
+          var BL=proj(-mhw, hh,-mhd), BR=proj( mhw, hh,-mhd)
+
+          shadow(cx, cy+hh*zoom*0.88, mhw*zoom*0.75, mhw*zoom*0.12)
+          face([bl,br,BR,BL], cajasAlpha(bgColor,.45), 'rgba(255,255,255,.08)')
+          face([bl,fl,FL,BL], cajasAlpha(bgColor,.55), 'rgba(255,255,255,.1)')
+          face([bl,br,fr,fl], 'rgba(0,0,0,.35)',        'rgba(255,255,255,.06)')
+          face([fl,fr,FR,FL], bgColor, 'rgba(255,255,255,.18)')
+          drawLogo(FL,FR,fl,fr)
+          face([fr,br,BR,FR], cajasAlpha(bgColor,.7),  'rgba(255,255,255,.12)')
+
+          // Tapa que se abre hacia arriba (como caja de zapatos)
+          var tapAngle2=(1-t)*(-Math.PI*0.68)
+          function vT2(x,y,z){
+            var ry=y*Math.cos(tapAngle2)-z*Math.sin(tapAngle2)
+            var rz=y*Math.sin(tapAngle2)+z*Math.cos(tapAngle2)
+            return proj(x, hh+ry, -mhd+rz)
+          }
+          var T0=vT2(-mhw,0,0),T1=vT2(mhw,0,0),T2=vT2(mhw,0,mhd*2),T3=vT2(-mhw,0,mhd*2)
+          face([T0,T1,T2,T3], cajasAlpha(color,.4), color, 1.5, 0.92)
+          face([fl,fr,FR,FL], 'transparent', color, 2)
+
+        } else if(idx===3) {
+          // SOBRE / BOLSITA PLANA — caja muy plana, solapa triangular visible
+          var shw=hw*1.1, shd=hd*0.25
+          var fl=proj(-shw,-hh, shd), fr=proj( shw,-hh, shd)
+          var bl=proj(-shw,-hh,-shd), br=proj( shw,-hh,-shd)
+          var FL=proj(-shw, hh, shd), FR=proj( shw, hh, shd)
+          var BL=proj(-shw, hh,-shd), BR=proj( shw, hh,-shd)
+
+          shadow(cx, cy+hh*zoom*0.88, shw*zoom*0.7, shw*zoom*0.08)
+          face([bl,br,BR,BL], cajasAlpha(bgColor,.4),  'rgba(255,255,255,.07)')
+          face([bl,fl,FL,BL], cajasAlpha(bgColor,.5),  'rgba(255,255,255,.08)')
+          face([bl,br,fr,fl], 'rgba(0,0,0,.3)',          'rgba(255,255,255,.05)')
+          face([fl,fr,FR,FL], bgColor, 'rgba(255,255,255,.15)')
+          drawLogo(FL,FR,fl,fr)
+          face([fr,br,BR,FR], cajasAlpha(bgColor,.65), 'rgba(255,255,255,.1)')
+
+          // Solapa triangular animada
+          var solapaH=hh*0.7
+          var tapAngle3=(1-t)*(-Math.PI*0.55)
+          function vSolapa(x,y,z){
+            var ry=y*Math.cos(tapAngle3)-z*Math.sin(tapAngle3)
+            var rz=y*Math.sin(tapAngle3)+z*Math.cos(tapAngle3)
+            return proj(x, hh+ry, -shd+rz)
+          }
+          var peak=vSolapa(0,0,solapaH*2)
+          var sl=vSolapa(-shw,0,0), sr=vSolapa(shw,0,0)
+          face([sl,sr,peak], cajasAlpha(color,.45), color, 1.5, 0.9)
+          face([fl,fr,FR,FL], 'transparent', color, 1.5)
+
+        } else if(idx===4) {
+          // BOLSA CON ASA — caja con asas en la parte superior
+          var bw=hw*0.95, bh=hh*1.1, bd=hd*0.4
+          var fl=proj(-bw,-bh, bd), fr=proj( bw,-bh, bd)
+          var bl=proj(-bw,-bh,-bd), br=proj( bw,-bh,-bd)
+          var FL=proj(-bw, bh, bd), FR=proj( bw, bh, bd)
+          var BL=proj(-bw, bh,-bd), BR=proj( bw, bh,-bd)
+
+          shadow(cx, cy+bh*zoom*0.88, bw*zoom*0.65, bw*zoom*0.14)
+          face([bl,br,BR,BL], cajasAlpha(bgColor,.45), 'rgba(255,255,255,.08)')
+          face([bl,fl,FL,BL], cajasAlpha(bgColor,.6),  'rgba(255,255,255,.1)')
+          face([bl,br,fr,fl], 'rgba(0,0,0,.35)',        'rgba(255,255,255,.06)')
+          face([fl,fr,FR,FL], bgColor, 'rgba(255,255,255,.18)')
+          drawLogo(FL,FR,fl,fr)
+          face([fr,br,BR,FR], cajasAlpha(bgColor,.72), 'rgba(255,255,255,.12)')
+
+          // Asas (arcos sobre la caja)
+          var asaT = t  // cuando cerrado, el asa está arriba
+          var topL=proj(-bw, bh, bd), topR=proj(bw, bh, bd)
+          ctx.save(); ctx.strokeStyle=color; ctx.lineWidth=3.5; ctx.globalAlpha=0.9
+          // Asa izquierda
+          var aL=proj(-bw*0.55, bh+bh*0.35*asaT, 0)
+          ctx.beginPath(); ctx.moveTo(topL.px,topL.py)
+          ctx.quadraticCurveTo(aL.px,aL.py, proj(-bw*0.05,bh,bd).px, proj(-bw*0.05,bh,bd).py)
+          ctx.stroke()
+          // Asa derecha
+          var aR=proj(bw*0.55, bh+bh*0.35*asaT, 0)
+          var topR2=proj(bw*0.05,bh,bd)
+          ctx.beginPath(); ctx.moveTo(topR2.px,topR2.py)
+          ctx.quadraticCurveTo(aR.px,aR.py, topR.px,topR.py)
+          ctx.stroke(); ctx.restore()
+
+          // Sin tapa — la bolsa se cierra con el asa
+          face([fl,fr,FR,FL], 'transparent', color, 1.5)
+
+        } else if(idx===6) {
+          // (ya cubierto arriba con mailer)
+
+        } else if(idx===6 || idx===7) {
+          // HEXAGONAL / BOMBONERA — prisma de 6 lados o cilíndrico
+          // Dibujar un hexágono isométrico
+          var sides=6, hr=hw*1.0
+          var topPts=[], botPts=[]
+          for(var k=0;k<sides;k++){
+            var ang=Math.PI/180*(60*k-90)
+            topPts.push(proj(hr*Math.cos(ang), hh, hr*Math.sin(ang)))
+            botPts.push(proj(hr*Math.cos(ang),-hh, hr*Math.sin(ang)))
+          }
+
+          shadow(cx,cy+hh*zoom*0.88, hr*zoom*0.7, hr*zoom*0.15)
+
+          // Caras laterales visibles (lado derecho)
+          for(var k=0;k<sides;k++){
+            var next=(k+1)%sides
+            var inView = topPts[k].px > cx-5
+            if(inView){
+              var bright = 0.45 + (topPts[k].px-cx)/(hr*zoom)*0.3
+              face([botPts[k],botPts[next],topPts[next],topPts[k]],
+                cajasAlpha(bgColor,Math.min(0.85,bright)), 'rgba(255,255,255,.1)')
+            }
+          }
+
+          // Cara superior (tapa animada)
+          var tapAng6=(1-t)*(-Math.PI*0.65)
+          var pivL=topPts[3], pivR=topPts[0]
+          function vH(px2,py2){
+            // Rotar la cara top sobre el borde trasero
+            return {px:px2, py:py2*Math.cos(tapAng6)-py2*Math.sin(tapAng6)*0.3}
+          }
+          // Tapa simple: polígono hexagonal en la parte superior, rotado
+          ctx.save(); ctx.globalAlpha=0.88
+          ctx.beginPath(); ctx.moveTo(topPts[0].px,topPts[0].py)
+          for(var k=1;k<sides;k++) ctx.lineTo(topPts[k].px, topPts[k].py + (1-t)*(-hh*zoom*0.8*(k<3?1:-0.2)))
+          ctx.closePath()
+          ctx.fillStyle=cajasAlpha(color,.45); ctx.fill()
+          ctx.strokeStyle=color; ctx.lineWidth=1.5; ctx.stroke()
           ctx.restore()
+
+          // Logo en cara frontal
+          if(cajasLogoImg){
+            var fc=topPts[5]||topPts[0], fc2=topPts[1]||topPts[0]
+            var fb=botPts[5]||botPts[0]
+            var px2=(fc.px+fc2.px)/2, py2=(fc.py+fb.py)/2
+            var fw2=Math.abs(fc2.px-fc.px)*0.6, fh2=Math.abs(fb.py-fc.py)*0.5
+            var lr2=Math.min(fw2/cajasLogoImg.width, fh2/cajasLogoImg.height)
+            ctx.drawImage(cajasLogoImg, px2-cajasLogoImg.width*lr2/2, py2-cajasLogoImg.height*lr2/2,
+              cajasLogoImg.width*lr2, cajasLogoImg.height*lr2)
+          }
+
+        } else {
+          // Fallback: caja rectangular genérica
+          var fl=proj(-hw,-hh, hd), fr=proj( hw,-hh, hd)
+          var bl=proj(-hw,-hh,-hd), br=proj( hw,-hh,-hd)
+          var FL=proj(-hw, hh, hd), FR=proj( hw, hh, hd)
+          var BL=proj(-hw, hh,-hd), BR=proj( hw, hh,-hd)
+          shadow(cx,cy+hh*zoom*0.9, hw*zoom*0.7, hw*zoom*0.18)
+          face([bl,br,BR,BL], cajasAlpha(bgColor,.45), 'rgba(255,255,255,.08)')
+          face([bl,fl,FL,BL], cajasAlpha(bgColor,.6),  'rgba(255,255,255,.1)')
+          face([fl,fr,FR,FL], bgColor, 'rgba(255,255,255,.18)')
+          drawLogo(FL,FR,fl,fr)
+          face([fr,br,BR,FR], cajasAlpha(bgColor,.72), 'rgba(255,255,255,.12)')
+          var T0=vT(-hw,0,0),T1=vT(hw,0,0),T2=vT(hw,0,hd*2),T3=vT(-hw,0,hd*2)
+          face([T0,T1,T2,T3], cajasAlpha(color,.4), color, 1.5, 0.92)
         }
-        // Cara derecha
-        face([fr,br,BR,FR], cajasAlpha(bgColor,.75), 'rgba(255,255,255,.15)')
 
-        // ── TAPA (animada según slider t) ──────────────────────────────
-        // t=0 → tapa abierta (rotada ~120° hacia atrás)
-        // t=1 → tapa cerrada (horizontal, encima de la caja)
-        var tapAngle=(1-t)*(-Math.PI*0.72)  // ángulo de apertura
-
-        function vTapa(lx,ly,lz){
-          // La tapa pivota sobre el borde trasero superior (BL→BR)
-          // Rotamos sobre el eje X local del borde trasero
-          var rx=lx, ry=ly*Math.cos(tapAngle)-lz*Math.sin(tapAngle), rz=ly*Math.sin(tapAngle)+lz*Math.cos(tapAngle)
-          // El pivot está en y=hh, z=-hd
-          return proj3D(rx, hh+ry, -hd+rz)
-        }
-
-        var T0=vTapa(-hw,0,0), T1=vTapa( hw,0,0)
-        var T2=vTapa( hw,0,hd*2), T3=vTapa(-hw,0,hd*2)
-
-        // Solapa delantera de la tapa
-        var S0=vTapa(-hw,0,hd*2), S1=vTapa( hw,0,hd*2)
-        var S2=vTapa( hw,0,hd*2+hd*0.55), S3=vTapa(-hw,0,hd*2+hd*0.55)
-
-        // Ordenar tapa según visibilidad
-        face([T0,T1,T2,T3], cajasAlpha(color,.35), color, 0.9)
-        face([S0,S1,S2,S3], cajasAlpha(color,.55), color, 0.85)
-
-        // Borde decorativo del acento en la caja
-        face([fl,fr,FR,FL], 'transparent', color)
-        ctx.save(); ctx.strokeStyle=color; ctx.lineWidth=2
-        ;[[FL,FR],[BL,FL],[BR,FR]].forEach(function(pair){
-          ctx.beginPath(); ctx.moveTo(pair[0].px,pair[0].py); ctx.lineTo(pair[1].px,pair[1].py); ctx.stroke()
-        })
-        ctx.restore()
-
-        // Label del tipo de caja
-        var d=CAJAS_DISEÑOS[cajasSelectedIdx]
-        ctx.fillStyle='rgba(255,255,255,.5)'; ctx.font='bold 11px Arial'
-        ctx.textAlign='center'; ctx.fillText(d?d.icono+' '+d.nombre:'',cx,c.height-8); ctx.textAlign='left'
+        // Label
+        ctx.fillStyle='rgba(255,255,255,.45)'; ctx.font='bold 11px Arial'
+        ctx.textAlign='center'; ctx.fillText(d?d.icono+' '+d.nombre:'',cx,c.height-8)
+        ctx.textAlign='left'
       }
 
       // ── Slider listener ───────────────────────────────────────────────
@@ -10869,9 +11046,11 @@
         hiCtx.fillStyle='#fff'; hiCtx.fillRect(0,0,hiC.width,hiC.height)
         try{d.render(hiCtx,W,H,D,cajasLogoImg,color,bgColor,texto,HI)}catch(e){}
         var a=document.createElement('a')
-        a.href=hiC.toDataURL('image/png')
-        a.download='caja-'+d.nombre.toLowerCase().replace(/\s+/g,'-')+'.png'
-        a.click()
+        window.dlCheck('cajas', function(){
+          a.href=hiC.toDataURL('image/png')
+          a.download='caja-'+d.nombre.toLowerCase().replace(/\s+/g,'-')+'.png'
+          a.click()
+        })
       }
 
       window.cajasDescargarPDFActual = function() {
@@ -10895,9 +11074,11 @@
         pCtx.textAlign='left'
         var img=pC.toDataURL('image/png')
         var html='<!DOCTYPE html><html><head><style>*{margin:0;padding:0}body{background:#fff}img{width:210mm;height:297mm;display:block}@page{size:A4;margin:0}</style></head><body><img src="'+img+'"/><script>window.onload=function(){setTimeout(function(){window.print()},400)}<\/script></body></html>'
-        var w=window.open('','_blank')
-        if(w){w.document.write(html);w.document.close()}
-        else alert('Habilitá ventanas emergentes.')
+        window.dlCheck('cajas', function(){
+          var w=window.open('','_blank')
+          if(w){w.document.write(html);w.document.close()}
+          else alert('Habilitá ventanas emergentes.')
+        })
       }
 
       // Compatibilidad: estas funciones ya no se usan pero pueden llamarse desde lugares viejos
@@ -10910,7 +11091,7 @@
         var _origAbrirE=window.abrirEmprendedor
         window.abrirEmprendedor=function(id){
           _origAbrirE(id)
-          if(id==='modal-cajas-diseño'){
+          if(id==='modal-cajas'){
             setTimeout(function(){
               cajasRenderTipoList()
               cajasInitColorSync()
@@ -10926,6 +11107,103 @@
 
 
       // ══════════════════════════════════════════════════════════════════
+
+      // ══════════════════════════════════════════════════════════════════
+      // LÍMITE DE DESCARGAS — 2 por herramienta sin login, ilimitado con login
+      // ══════════════════════════════════════════════════════════════════
+      const DESCARGA_LIMITE = 2
+
+      function _dlKey(tool) { return 'lm_dl_' + tool }
+
+      function dlContador(tool) {
+        if (usuarioActual) return Infinity  // usuario logueado: ilimitado
+        try { return parseInt(localStorage.getItem(_dlKey(tool)) || '0') } catch(e) { return 0 }
+      }
+
+      function dlIncrementar(tool) {
+        if (usuarioActual) return  // no contar si está logueado
+        try {
+          var n = dlContador(tool) + 1
+          localStorage.setItem(_dlKey(tool), String(n))
+        } catch(e) {}
+      }
+
+      function dlPuedeDescargar(tool) {
+        return usuarioActual || dlContador(tool) < DESCARGA_LIMITE
+      }
+
+      function dlRestablecerSiLogin() {
+        // Llamar cuando el usuario inicia sesión — limpiar contadores
+        ;['tarjetas','mejora','fotoproducto','cajas','costos','presupuesto','llavero','caja','maceta','marco','cortante'].forEach(function(t){
+          try { localStorage.removeItem(_dlKey(t)) } catch(e) {}
+        })
+      }
+
+      function dlMostrarModal(tool, callback) {
+        // Modal que pide login mostrando cuántas descargas usó
+        var existente = document.getElementById('dl-limit-modal')
+        if (existente) existente.remove()
+
+        var modal = document.createElement('div')
+        modal.id = 'dl-limit-modal'
+        modal.style.cssText = 'position:fixed;inset:0;z-index:99999;background:rgba(0,8,15,.88);display:flex;align-items:center;justify-content:center;padding:1rem'
+        modal.innerHTML = `
+          <div style="background:var(--bg-card,#0a2535);border:1px solid rgba(21,154,156,.4);border-radius:16px;padding:2rem;max-width:380px;width:100%;text-align:center;display:flex;flex-direction:column;gap:1rem">
+            <div style="font-size:2.2rem">🔒</div>
+            <h3 style="font-family:var(--font-head);font-size:.9rem;font-weight:700;color:var(--cyan);letter-spacing:.06em;margin:0">DESCARGA GRATUITA AGOTADA</h3>
+            <p style="font-size:.78rem;color:var(--text);margin:0;line-height:1.6">
+              Usaste tus <strong>${DESCARGA_LIMITE} descargas gratuitas</strong> de esta herramienta.<br>
+              Creá una cuenta gratis para descargas ilimitadas.
+            </p>
+            <div style="display:flex;flex-direction:column;gap:.5rem">
+              <button id="dl-limit-login" class="btn btn--primary" style="font-size:.82rem">
+                Iniciar sesión / Registrarse gratis
+              </button>
+              <button id="dl-limit-cerrar" style="background:none;border:none;color:var(--muted);font-size:.72rem;cursor:pointer;padding:.3rem">
+                Cancelar
+              </button>
+            </div>
+            <p style="font-size:.65rem;color:var(--muted);margin:0">
+              ¿Ya tenés cuenta? Iniciá sesión y las descargas se desbloquean automáticamente.
+            </p>
+          </div>`
+
+        document.body.appendChild(modal)
+        document.getElementById('dl-limit-cerrar').onclick = function() { modal.remove() }
+        document.getElementById('dl-limit-login').onclick = function() {
+          modal.remove()
+          var btn = document.getElementById('btnUserLogin') || document.getElementById('btn-login')
+          if (btn) btn.click()
+          else window.requireLogin && window.requireLogin(function(){})
+        }
+        modal.addEventListener('click', function(e){ if(e.target===modal) modal.remove() })
+      }
+
+      // Función principal a llamar antes de cada descarga
+      // Devuelve true si puede descargar, false si no (y muestra el modal)
+      window.dlCheck = function(tool, callback) {
+        if (dlPuedeDescargar(tool)) {
+          dlIncrementar(tool)
+          if (typeof callback === 'function') callback()
+          return true
+        } else {
+          dlMostrarModal(tool)
+          return false
+        }
+      }
+
+      // Resetear al hacer login
+      ;(function() {
+        var origVerificar = window.verificarSesion || function(){}
+        // Interceptar cambio de sesión para resetear contadores
+        if (window.supabase && window.supabase.auth) {
+          window.supabase.auth.onAuthStateChange(function(event) {
+            if (event === 'SIGNED_IN') dlRestablecerSiLogin()
+          })
+        }
+      })()
+      // ── Fin sistema de descargas ────────────────────────────────────────
+
     // ══════════════════════════════════════════
     //  TRACKING DE EVENTOS
     // ══════════════════════════════════════════
@@ -11089,7 +11367,7 @@
         const entries = Object.entries(countObj).sort((a,b) => b[1]-a[1])
         if (!entries.length) { el.innerHTML = '<p style="color:var(--muted);font-size:.75rem">Sin datos en este período</p>'; return }
         const max = entries[0][1]
-        el.innerHTML = entries.map(([key, val]) => {
+        el.innerHTML = entries.map(function(e) { var key=e[0], val=e[1];
           const pct = Math.round(val/max*100)
           const label = NOMBRES[key] || key
           return `<div style="display:grid;grid-template-columns:140px 1fr 40px;gap:.5rem;align-items:center">
@@ -11412,9 +11690,7 @@
       const item = idx >= 0 ? carruselItems[idx] : null
 
       // Construir opciones del select — al elegir herramienta, auto-carga su portada
-      const h_opts = Object.entries(CARRUSEL_HERRAMIENTAS).map(([id,h]) =>
-        `<option value="${id}" ${item?.herramienta_id===id?'selected':''}>${h.icono} ${h.titulo}</option>`
-      ).join('')
+      const h_opts = Object.entries(CARRUSEL_HERRAMIENTAS).map(function(e) { var id=e[0],h=e[1]; return `<option value="${id}" ${item?.herramienta_id===id?'selected':''}>${h.icono} ${h.titulo}</option>` }).join('')
 
       const modal = document.createElement('div')
       modal.style.cssText = 'position:fixed;inset:0;z-index:99999;background:rgba(0,8,15,.92);display:flex;align-items:center;justify-content:center'
@@ -11729,7 +12005,7 @@
     // TARJ_ED_POS eliminado — textos no son movibles
 
     window.tarjEditorDescargar = function() {
-      if(!_ted.diseno||!usuarioActual){if(!usuarioActual)window.requireLogin(()=>{});return}
+      if(!_ted.diseno){ return }
       const W=TARJ_W, H=TARJ_H, t=_tedTexts()
       const neg=t.neg||'Tu Negocio', msg=t.msg||'¡Gracias por tu compra!', con=t.con
       const c=document.createElement('canvas'); c.width=W; c.height=H
@@ -11748,7 +12024,7 @@
       }
       c.toBlob(blob=>{
         const url=URL.createObjectURL(blob),a=document.createElement('a')
-        a.href=url;a.download=`tarjeta-editada-${_ted.idx+1}.png`;a.click();URL.revokeObjectURL(url);if(window.trackDescarga)trackDescarga('tarjetas')
+        window.dlCheck('tarjetas',function(){ a.href=url;a.download=`tarjeta-editada-${_ted.idx+1}.png`;a.click();URL.revokeObjectURL(url);if(window.trackDescarga)trackDescarga('tarjetas') })
         c.width=0;c.height=0
       },'image/png')
     }

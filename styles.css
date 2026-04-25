@@ -1696,7 +1696,6 @@ a { text-decoration: none; color: inherit; }
 .empr-card:hover{border-color:var(--cyan);transform:translateY(-4px);box-shadow:0 12px 40px rgba(21,154,156,.12)}
 .empr-card--soon{opacity:.65;cursor:default}.empr-card--soon:hover{transform:none;border-color:var(--border);box-shadow:none}
 .empr-card__icon{width:100%;height:240px;background:var(--bg2);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:center;color:var(--cyan);flex-shrink:0;transition:border-color .25s}
-@media(max-width:480px){.empr-card__icon{height:160px}}
 .empr-card:hover .empr-card__icon{border-color:var(--cyan-mid)}
 .empr-card__icon svg{width:52px;height:52px;opacity:.8}
 .empr-card__info{padding:1.4rem 1.5rem 1.5rem;display:flex;flex-direction:column;gap:.5rem;flex:1}
@@ -1745,7 +1744,7 @@ a { text-decoration: none; color: inherit; }
 .potenc-copy-mini{background:transparent;border:1px solid var(--border-sub);color:var(--muted);padding:.2rem .45rem;border-radius:5px;font-size:.7rem;cursor:pointer;flex-shrink:0;transition:all .18s}
 .potenc-copy-mini:hover{border-color:var(--cyan);color:var(--cyan)}
 /* Calculadora */
-.modal-costos{max-width:560px;width:95%;max-height:90vh;overflow-y:auto}
+.modal-costos{max-width:560px;width:95%;max-height:85vh;overflow-y:auto;padding-bottom:2rem}
 .costos-grid{display:grid;grid-template-columns:1fr 1fr;gap:.75rem;margin-top:1.25rem}
 .costos-resultado{margin-top:1.5rem;background:var(--bg3);border:1px solid var(--border);border-radius:10px;overflow:hidden}
 .costos-resultado__fila{display:flex;justify-content:space-between;align-items:center;padding:.6rem 1rem;font-size:.82rem;color:var(--muted);border-bottom:1px solid var(--border-sub)}
@@ -2109,9 +2108,9 @@ a { text-decoration: none; color: inherit; }
 }
 .maker-card__admin-del:hover { background: #d94060; color: #fff; }
 
-/* Contacto visible en mobile con padding ajustado */
+/* Ocultar sección contacto separada en mobile — ya aparece en Sobre mí */
 @media (max-width: 768px) {
-  section.contacto { display: block; }
+  section.contacto { display: none; }
 }
 
 /* Alias para dropdown temáticas (compatible con nuevo HTML) */
@@ -2807,12 +2806,8 @@ a { text-decoration: none; color: inherit; }
   transition: border-color .25s;
   flex-shrink: 0;
 }
-@media (max-width: 480px) {
-  .herramienta-card__visual { height: 160px; }
-}
 .herramienta-card:hover .herramienta-card__visual { border-color: var(--cyan-mid); }
 .herramienta-card__visual svg { display: block; }
-.herramienta-card__visual img { width: 100%; height: 100%; object-fit: cover; object-position: center; display: block; }
 
 .herramienta-card__info {
   padding: 1.4rem 1.5rem 1.5rem;
