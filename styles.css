@@ -1696,6 +1696,7 @@ a { text-decoration: none; color: inherit; }
 .empr-card:hover{border-color:var(--cyan);transform:translateY(-4px);box-shadow:0 12px 40px rgba(21,154,156,.12)}
 .empr-card--soon{opacity:.65;cursor:default}.empr-card--soon:hover{transform:none;border-color:var(--border);box-shadow:none}
 .empr-card__icon{width:100%;height:240px;background:var(--bg2);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:center;color:var(--cyan);flex-shrink:0;transition:border-color .25s}
+@media(max-width:480px){.empr-card__icon{height:160px}}
 .empr-card:hover .empr-card__icon{border-color:var(--cyan-mid)}
 .empr-card__icon svg{width:52px;height:52px;opacity:.8}
 .empr-card__info{padding:1.4rem 1.5rem 1.5rem;display:flex;flex-direction:column;gap:.5rem;flex:1}
@@ -2108,9 +2109,9 @@ a { text-decoration: none; color: inherit; }
 }
 .maker-card__admin-del:hover { background: #d94060; color: #fff; }
 
-/* Ocultar sección contacto separada en mobile — ya aparece en Sobre mí */
+/* Contacto visible en mobile con padding ajustado */
 @media (max-width: 768px) {
-  section.contacto { display: none; }
+  section.contacto { display: block; }
 }
 
 /* Alias para dropdown temáticas (compatible con nuevo HTML) */
@@ -2806,8 +2807,12 @@ a { text-decoration: none; color: inherit; }
   transition: border-color .25s;
   flex-shrink: 0;
 }
+@media (max-width: 480px) {
+  .herramienta-card__visual { height: 160px; }
+}
 .herramienta-card:hover .herramienta-card__visual { border-color: var(--cyan-mid); }
 .herramienta-card__visual svg { display: block; }
+.herramienta-card__visual img { width: 100%; height: 100%; object-fit: cover; object-position: center; display: block; }
 
 .herramienta-card__info {
   padding: 1.4rem 1.5rem 1.5rem;
