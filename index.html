@@ -2649,7 +2649,6 @@
         const url = URL.createObjectURL(file)
         img.onload = () => {
           URL.revokeObjectURL(url)
-          // Calcular nuevas dimensiones manteniendo proporción
           let w = img.width, h = img.height
           if (w > maxW || h > maxH) {
             const ratio = Math.min(maxW/w, maxH/h)
@@ -2657,11 +2656,28 @@
           }
           const canvas = document.createElement('canvas')
           canvas.width = w; canvas.height = h
-          canvas.getContext('2d').drawImage(img, 0, 0, w, h)
-          canvas.toBlob(blob => {
-            if (!blob || blob.size >= file.size) { resolve(file); return }
-            resolve(new File([blob], file.name.replace(/\.[^.]+$/, '.jpg'), { type: 'image/jpeg' }))
-          }, 'image/jpeg', quality)
+          const ctx = canvas.getContext('2d')
+
+          // Detectar si el archivo tiene transparencia (PNG, WEBP, GIF)
+          const hasAlpha = file.type === 'image/png' || file.type === 'image/webp' || file.type === 'image/gif'
+
+          if (hasAlpha) {
+            // Mantener como PNG para preservar transparencia — NO agregar fondo
+            ctx.drawImage(img, 0, 0, w, h)
+            canvas.toBlob(blob => {
+              if (!blob || blob.size >= file.size) { resolve(file); return }
+              resolve(new File([blob], file.name.replace(/\.[^.]+$/, '.png'), { type: 'image/png' }))
+            }, 'image/png')
+          } else {
+            // JPEG: agregar fondo blanco para evitar fondo negro en transparencias residuales
+            ctx.fillStyle = '#ffffff'
+            ctx.fillRect(0, 0, w, h)
+            ctx.drawImage(img, 0, 0, w, h)
+            canvas.toBlob(blob => {
+              if (!blob || blob.size >= file.size) { resolve(file); return }
+              resolve(new File([blob], file.name.replace(/\.[^.]+$/, '.jpg'), { type: 'image/jpeg' }))
+            }, 'image/jpeg', quality)
+          }
         }
         img.onerror = () => { URL.revokeObjectURL(url); resolve(file) }
         img.src = url
